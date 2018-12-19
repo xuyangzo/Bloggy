@@ -1,2 +1,2 @@
 # Bloggy
-A blog engine that with CMS that allows user to view/post/edit blogs
+A blog engine with CMS that allows user to view/post/edit blogs
