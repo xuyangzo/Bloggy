@@ -1,0 +1,36 @@
+{
+  "name": "Bloggy",
+  "version": "1.0.0",
+  "description": "A blog engine with CMS that allows user to view/post/edit blogs",
+  "main": "index.js",
+  "repository": "https://github.com/LynchZou/Bloggy.git",
+  "author": "Lynch Zou <lynch0114@outlook.com>",
+  "license": "Apache-2.0",
+  "private": false,
+  "scripts": {
+    "serve": "live-server public",
+    "build": "webpack",
+    "watch": "webpack --watch",
+    "dev-server": "webpack-dev-server"
+  },
+  "dependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-loader": "7",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-react": "^6.24.1",
+    "css-loader": "^2.0.1",
+    "node-sass": "^4.11.0",
+    "react": "^16.7.0",
+    "react-dom": "^16.7.0",
+    "sass-loader": "^7.1.0",
+    "style-loader": "^0.23.1",
+    "webpack": "^4.28.1"
+  },
+  "devDependencies": {
+    "live-server": "^1.2.1",
+    "webpack-cli": "^3.1.2",
+    "webpack-dev-server": "^3.1.10"
+  }
+}
