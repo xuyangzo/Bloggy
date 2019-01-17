@@ -20,7 +20,7 @@ class MongoOperation {
                 const collection = this.client.db("test").collection("devices");
 
                 // perform actions on the collection object
-                collection.insertOne(data, function(err, result) {
+                collection.insertOne(data, function (err, result) {
                     // assert result and call callback function
                     console.log("Inserted 1 document into the collection");
                 });

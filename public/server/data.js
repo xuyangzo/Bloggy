@@ -19,4 +19,9 @@ app.post('/data', (req, res) => {
     mongo.insert({ name: req.body.name, age: req.body.age });
 });
 
-app.listen(8081);
+// app.get('/', (req, res) => {
+//     console.log('Main!');
+//     res.sendStatus('200');
+// });
+
+app.listen(8080);

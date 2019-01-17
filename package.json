@@ -7,11 +7,13 @@
   "author": "Lynch Zou <lynch0114@outlook.com>",
   "license": "Apache-2.0",
   "private": false,
+  "proxy": "http://localhost:8080/",
   "scripts": {
-    "serve": "live-server public",
     "build": "webpack",
     "watch": "webpack --watch",
-    "dev-server": "webpack-dev-server"
+    "dev-server": "webpack-dev-server",
+    "serve-backend": "nodemon public/server/server.js",
+    "start-concurrent": "concurrently \"webpack-dev-server \" \"node public/server/data.js\""
   },
   "dependencies": {
     "babel-cli": "^6.26.0",
@@ -20,21 +22,30 @@
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-preset-env": "^1.7.0",
     "babel-preset-react": "^6.24.1",
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
+    "concurrently": "^4.1.0",
     "css-loader": "^2.0.1",
     "express": "^4.16.4",
+    "gravatar": "^1.8.0",
+    "jsonwebtoken": "^8.4.0",
     "mongodb": "^3.1.10",
+    "mongoose": "^5.4.4",
     "node-sass": "^4.11.0",
+    "passport": "^0.4.0",
+    "passport-jwt": "^4.0.0",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
     "react-router-dom": "^4.3.1",
     "sass-loader": "^7.1.0",
     "style-loader": "^0.23.1",
+    "validator": "^10.11.0",
     "webpack": "^4.28.1"
   },
   "devDependencies": {
     "assert": "^1.4.1",
     "live-server": "^1.2.1",
+    "nodemon": "^1.18.9",
     "webpack-cli": "^3.1.2",
     "webpack-dev-server": "^3.1.10"
   }
