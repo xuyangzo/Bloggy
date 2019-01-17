@@ -3,7 +3,8 @@ const router = express.Router();
 const passport = require("passport");
 
 // Load Input Validation
-const validatePostInput = require("../../validation/post.validation.js");
+const validatePostCreateInput = require("../../validation/post_create.validation.js");
+const validatePostUpdateInput = require("../../validation/post_update.validation.js");
 
 // Load Post and User Model
 const Post = require("../../models/Post");
@@ -26,7 +27,7 @@ router.post(
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     // check validation
-    const { errors, isValid } = validatePostInput(req.body);
+    const { errors, isValid } = validatePostCreateInput(req.body);
     if (!isValid) {
       // Return any errors with 400 status
       return res.status(400).json(errors);
@@ -61,11 +62,42 @@ router.post(
   }
 );
 
-// if post already exists, update
-// Post.findOneAndUpdate(
-//     { linked_userid: req.user.id },
-//     { $set: postFields },
-//     { new: true }
-//   ).then(post => res.json(post));
+// @route   POST api/posts/edit
+// @desc    Edit Post
+// @access  Private
+router.post(
+  "/edit",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    // check validation
+    const { errors, isValid } = validatePostUpdateInput(req.body);
+    if (!isValid) {
+      // Return any errors with 400 status
+      return res.status(400).json(errors);
+    }
+
+    // get fields
+    const postFields = {};
+    postFields.linked_userid = req.user.id;
+    if (postFields.post_id) postFields.post_id = req.body.post_id;
+    if (req.body.title) postFields.title = req.body.title;
+    if (req.body.subtitle) postFields.subtitle = req.body.subtitle;
+    if (req.body.dateTime) postFields.dateTime = req.body.dateTime;
+    if (req.body.text) postFields.text = req.body.text;
+    // sources - split into array
+    if (typeof req.body.sources !== "undefined") {
+      postFields.sources = req.body.sources.split(",");
+    }
+
+    // update post
+    Post.findOneAndUpdate(
+      { _id: req.body.post_id },
+      { $set: postFields },
+      { new: true }
+    )
+      .then(post => res.json(post))
+      .catch(err => res.status(400).json(err));
+  }
+);
 
 module.exports = router;
