@@ -3,8 +3,7 @@ const router = express.Router();
 const passport = require("passport");
 
 // Load Input Validation
-const validatePostCreateInput = require("../../validation/post_create.validation.js");
-const validatePostUpdateInput = require("../../validation/post_update.validation.js");
+const validatePostInput = require("../../validation/post.validation.js");
 
 // Load Post and User Model
 const Post = require("../../models/Post");
@@ -27,7 +26,7 @@ router.post(
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     // check validation
-    const { errors, isValid } = validatePostCreateInput(req.body);
+    const { errors, isValid } = validatePostInput(req.body);
     if (!isValid) {
       // Return any errors with 400 status
       return res.status(400).json(errors);
@@ -66,11 +65,11 @@ router.post(
 // @desc    Edit Post
 // @access  Private
 router.post(
-  "/edit",
+  "/edit/:post_id",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     // check validation
-    const { errors, isValid } = validatePostUpdateInput(req.body);
+    const { errors, isValid } = validatePostInput(req.body);
     if (!isValid) {
       // Return any errors with 400 status
       return res.status(400).json(errors);
@@ -78,8 +77,6 @@ router.post(
 
     // get fields
     const postFields = {};
-    postFields.linked_userid = req.user.id;
-    if (postFields.post_id) postFields.post_id = req.body.post_id;
     if (req.body.title) postFields.title = req.body.title;
     if (req.body.subtitle) postFields.subtitle = req.body.subtitle;
     if (req.body.dateTime) postFields.dateTime = req.body.dateTime;
@@ -91,13 +88,32 @@ router.post(
 
     // update post
     Post.findOneAndUpdate(
-      { _id: req.body.post_id },
+      { _id: req.params.post_id },
       { $set: postFields },
-      { new: true }
+      { new: true, useFindAndModify: false }
     )
       .then(post => res.json(post))
       .catch(err => res.status(400).json(err));
   }
 );
+
+// @route   GET api/posts/view
+// @desc    View Post
+// @access  Public
+router.get("/view/:post_id", (req, res) => {
+  let errors = {};
+  Post.findOne({ _id: req.params.post_id })
+    .then(post => {
+      if (!post) {
+        errors.post = "There is no content for this post";
+        res.status(404).json(errors);
+      }
+
+      res.json(post);
+    })
+    .catch(err =>
+      res.status(404).json({ post: "There is no content fot this post" })
+    );
+});
 
 module.exports = router;
