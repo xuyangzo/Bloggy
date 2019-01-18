@@ -7,7 +7,11 @@
   "author": "Lynch Zou <lynch0114@outlook.com>",
   "license": "Apache-2.0",
   "private": false,
-  "proxy": "http://localhost:8081/",
+  "proxy": {
+    "/api": {
+      "target": "http://localhost:8081"
+    }
+  },
   "scripts": {
     "build": "webpack",
     "watch": "webpack --watch",
@@ -16,6 +20,7 @@
     "start-concurrent": "concurrently \"yarn run dev-server\" \"yarn run serve-backend\""
   },
   "dependencies": {
+    "axios": "^0.18.0",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
     "babel-loader": "7",
