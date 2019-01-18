@@ -7,13 +7,13 @@
   "author": "Lynch Zou <lynch0114@outlook.com>",
   "license": "Apache-2.0",
   "private": false,
-  "proxy": "http://localhost:8080/",
+  "proxy": "http://localhost:8081/",
   "scripts": {
     "build": "webpack",
     "watch": "webpack --watch",
     "dev-server": "webpack-dev-server",
     "serve-backend": "nodemon public/server/server.js",
-    "start-concurrent": "concurrently \"webpack-dev-server \" \"node public/server/data.js\""
+    "start-concurrent": "concurrently \"yarn run dev-server\" \"yarn run serve-backend\""
   },
   "dependencies": {
     "babel-cli": "^6.26.0",
