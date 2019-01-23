@@ -5,7 +5,7 @@ const passport = require("passport");
 
 const users = require("./routers/api/users");
 const posts = require("./routers/api/posts");
-
+const searches = require("./routers/api/search");
 const app = express();
 
 // Body parser middleware
@@ -45,6 +45,7 @@ require("./config/passport")(passport);
 // Use Routes
 app.use("/api/users", users);
 app.use("/api/posts", posts);
+app.use("/api/search", searches);
 
 const port = process.env.PORT || 8081;
 
