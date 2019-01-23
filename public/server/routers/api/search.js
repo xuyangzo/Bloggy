@@ -2,7 +2,8 @@ const express = require("express");
 const router = express.Router();
 
 const Post = require("../../models/Post");
-// @route   GET api/posts/view
+
+// @route   GET api/search/view
 // @desc    View Post
 // @access  Public
 router.get("/view/author/:author", (req, res) => {
@@ -21,6 +22,10 @@ router.get("/view/author/:author", (req, res) => {
         );
 });
 
+
+// @route   GET api/search/view
+// @desc    View Post
+// @access  Public
 router.get("/view/title/:title", (req, res) => {
     let errors = {};
     Post.find({title: req.params.title})
