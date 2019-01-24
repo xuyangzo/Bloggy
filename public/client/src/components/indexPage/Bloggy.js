@@ -6,7 +6,7 @@ import Navbar from "../common/Navbar";
 import Body from "./Body";
 import Register from "../auth/Register";
 import Login from "../auth/Login";
-
+import Footer from "../common/Footer";
 export default class Bloggy extends React.Component {
   constructor(props) {
     super(props);
@@ -16,13 +16,14 @@ export default class Bloggy extends React.Component {
     return (
       <Router>
         <div>
-          <Header />
           <Navbar />
+          <Header />
           <Route exact path="/" component={Body} />
           <div className="container">
             <Route exact path="/register" component={Register} />
             <Route exact path="/login" component={Login} />
           </div>
+          <Footer />
         </div>
       </Router>
     );
