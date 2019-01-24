@@ -1,13 +1,16 @@
 const express = require("express");
 const router = express.Router();
 const passport = require("passport");
-
+const mongoosastic = require('mongoosastic');
 // Load Input Validation
 const validatePostInput = require("../../validation/post.validation.js");
+var elasticsearch = require('elasticsearch');
 
 // Load Post and User Model
 const Post = require("../../models/Post");
 const User = require("../../models/User");
+
+const esClient = new elasticsearch.Client({host: 'https://search-bloggy-iec77mrsmswpriiofnkjh3ggrq.us-west-1.es.amazonaws.com'});
 
 // @route   GET api/posts/test
 // @desc    Tests users route
@@ -58,6 +61,7 @@ router.post(
         }
       );
     });
+
   }
 );
 
