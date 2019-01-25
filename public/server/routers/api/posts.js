@@ -90,6 +90,9 @@ router.post(
     if (typeof req.body.sources !== "undefined") {
       postFields.sources = req.body.sources.split(",");
     }
+    if (typeof req.body.sources !== "undefined") {
+        postFields.tags = req.body.tags.split(",");
+    }
 
     // update post
     Post.findOneAndUpdate(
@@ -101,6 +104,46 @@ router.post(
       .catch(err => res.status(400).json(err));
   }
 );
+
+// @route   POST api/posts/addTag
+// @desc    Add Tag
+// @access  Private
+router.post(
+    "/addTag/:post_id",
+    passport.authenticate("jwt", { session: false }),
+    (req, res) => {
+        // check validation
+        const { errors, isValid } = validatePostInput(req.body);
+        if (!isValid) {
+            // Return any errors with 400 status
+            return res.status(400).json(errors);
+        }
+
+        Post.findOne({ _id: req.params.post_id })
+            .then(post => {
+                // const newTag = {
+                // tagname = req.body.tagname;
+                // };
+                if(post.tags.length == 3){
+                    errors.post = "The tag amount reaches the maximum value!";
+                    res.status(404).json(errors);
+                }
+                else if(post.tags.includes(req.body.tagName)){
+                    errors.post = "This tag has already been assigned!";
+                    res.status(404).json(errors);
+                }
+                else{
+                    // Add to tags list
+                    post.tags.unshift(req.body.tagName);
+                    // Save post
+                    post.save().then(post => res.json(post));
+                }
+                
+            })
+            .catch(err => res.status(404).json({ nopostfound: "No post found" }));
+    }
+);
+
 
 // @route   GET api/posts/view
 // @desc    View Post
@@ -128,6 +171,7 @@ router.delete(
   "/delete/:post_id",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
+      
     Post.findOneAndDelete(
       { _id: req.params.post_id },
       { safe: true, useFindAndModify: false }
@@ -146,6 +190,14 @@ router.delete(
       .catch(err =>
         res.status(404).json({ posts: "There is no content for this post" })
       );
+    client.deleteByQuery({
+        index: 'postss',
+        body: {
+            query: {
+                  term: { _id: req.params.post_id}
+            }
+        }
+    })
   }
 );
 
