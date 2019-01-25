@@ -1,18 +1,22 @@
 const express = require("express");
 const router = express.Router();
 const passport = require("passport");
-const mongoosastic = require('mongoosastic');
+const mongoosastic = require("mongoosastic");
+const uuidv1 = require("uuid/v1");
 
 // Load Input Validation
 const validatePostInput = require("../../validation/post.validation.js");
 const validateCommentInput = require("../../validation/comment.validation.js");
-var elasticsearch = require('elasticsearch');
+var elasticsearch = require("elasticsearch");
 
 // Load Post and User Model
 const Post = require("../../models/Post");
 const User = require("../../models/User");
 
-const esClient = new elasticsearch.Client({host: 'https://search-bloggy-iec77mrsmswpriiofnkjh3ggrq.us-west-1.es.amazonaws.com'});
+const esClient = new elasticsearch.Client({
+  host:
+    "https://search-bloggy-iec77mrsmswpriiofnkjh3ggrq.us-west-1.es.amazonaws.com"
+});
 
 
 // Array.prototype.indexOf = function(val) {
@@ -78,7 +82,6 @@ router.post(
         }
       );
     });
-
   }
 );
 
@@ -160,8 +163,28 @@ router.post(
             })
             .catch(err => res.status(404).json({ nopostfound: "No post found" }));
     }
-);
 
+    Post.findOne({ _id: req.params.post_id })
+      .then(post => {
+        // const newTag = {
+        // tagname = req.body.tagname;
+        // };
+        if (post.tags.length == 3) {
+          errors.post = "The tag amount reaches the maximum value!";
+          res.status(404).json(errors);
+        } else if (post.tags.includes(req.body.tagName)) {
+          errors.post = "This tag has already been assigned!";
+          res.status(404).json(errors);
+        } else {
+          // Add to tags list
+          post.tags.unshift(req.body.tagName);
+          // Save post
+          post.save().then(post => res.json(post));
+        }
+      })
+      .catch(err => res.status(404).json({ nopostfound: "No post found" }));
+  }
+);
 
 // @route   POST api/posts/removeTag
 // @desc    Remove Tag
@@ -225,7 +248,6 @@ router.delete(
   "/delete/:post_id",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-      
     Post.findOneAndDelete(
       { _id: req.params.post_id },
       { safe: true, useFindAndModify: false }
@@ -245,13 +267,13 @@ router.delete(
         res.status(404).json({ posts: "There is no content for this post" })
       );
     client.deleteByQuery({
-        index: 'postss',
-        body: {
-            query: {
-                  term: { _id: req.params.post_id}
-            }
+      index: "postss",
+      body: {
+        query: {
+          term: { _id: req.params.post_id }
         }
-    })
+      }
+    });
   }
 );
 
@@ -272,16 +294,34 @@ router.post(
     Post.findOne({ _id: req.params.post_id })
       .then(post => {
         const newComment = {
+          _id: uuidv1(),
           text: req.body.text,
           username: req.user.username,
           avatar: req.body.avatar,
-          linked_comm_userid: req.user.id
+          linked_comm_userid: req.user.id,
+          dateTime: Date.now()
         };
 
         // Add to comments array
         post.comments.unshift(newComment);
-        // Save
-        post.save().then(post => res.json(post));
+        post.save().then();
+
+        // Add comment to current User
+        const userComment = {
+          text: req.body.text,
+          linked_post_id: req.params.post_id,
+          linked_comm_id: newComment._id,
+          dateTime: newComment.dateTime
+        };
+        User.findOneAndUpdate(
+          { _id: req.user.id },
+          { $push: { comments: userComment } },
+          { safe: true, useFindAndModify: false }
+        )
+          .then(user => res.json(user))
+          .catch(err =>
+            res.status(404).json({ usernotfound: "User not found" })
+          );
       })
       .catch(err => res.status(404).json({ nopostfound: "No post found" }));
   }
