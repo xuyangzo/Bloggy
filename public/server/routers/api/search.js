@@ -3,8 +3,15 @@ const router = express.Router();
 
 const Post = require("../../models/Post");
 
+var elasticsearch = require('elasticsearch');
+var client = new elasticsearch.Client({
+    host: 'https://search-bloggy-iec77mrsmswpriiofnkjh3ggrq.us-west-1.es.amazonaws.com',
+    log: 'trace'
+});
+
+
 // @route   GET api/search/view
-// @desc    View Post
+// @desc    Search Post
 // @access  Public
 router.get("/view/author/:author", (req, res) => {
     let errors = {};
@@ -24,7 +31,7 @@ router.get("/view/author/:author", (req, res) => {
 
 
 // @route   GET api/search/view
-// @desc    View Post
+// @desc    Search Post
 // @access  Public
 router.get("/view/title/:title", (req, res) => {
     let errors = {};
@@ -41,5 +48,22 @@ router.get("/view/title/:title", (req, res) => {
             res.status(404).json({ post: "There is no content fot this post" })
         );
 });
+
+// @route   GET api/search/view
+// @desc    View Post
+// @access  Public
+router.get("/view/all/:key", (req, res) => {
+    client.search({
+        q: req.params.keyword,
+        index: 'postss',
+        size: 999
+    }).then(function (body) {
+        var hits = body.hits.hits
+        res.send(hits)
+    }, function (error) {
+        console.trace(error.message)
+    })
+});
+
 
 module.exports = router;
