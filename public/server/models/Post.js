@@ -39,9 +39,9 @@ const PostSchema = new Schema({
   sources: {
     type: [String]
   },
-  tag: [
+  tags: {
     type: [String]
-  ]
+  },
   likes: [
     {
       linked_like_userid: {
