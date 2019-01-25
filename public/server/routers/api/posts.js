@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const passport = require("passport");
 const mongoosastic = require('mongoosastic');
+
 // Load Input Validation
 const validatePostInput = require("../../validation/post.validation.js");
 const validateCommentInput = require("../../validation/comment.validation.js");
@@ -12,6 +13,21 @@ const Post = require("../../models/Post");
 const User = require("../../models/User");
 
 const esClient = new elasticsearch.Client({host: 'https://search-bloggy-iec77mrsmswpriiofnkjh3ggrq.us-west-1.es.amazonaws.com'});
+
+
+// Array.prototype.indexOf = function(val) {
+//     for (var i = 0; i < this.length; i++) {
+//         if (this[i] == val) return i;
+//     }
+//     return -1;
+// };
+//
+// Array.prototype.remove = function(val) {
+//     var index = this.indexOf(val);
+//     if (index > -1) {
+//         this.splice(index, 1);
+//     }
+// };
 
 // @route   GET api/posts/test
 // @desc    Tests users route
@@ -90,7 +106,7 @@ router.post(
     if (typeof req.body.sources !== "undefined") {
       postFields.sources = req.body.sources.split(",");
     }
-    if (typeof req.body.sources !== "undefined") {
+    if (typeof req.body.tags !== "undefined") {
         postFields.tags = req.body.tags.split(",");
     }
 
@@ -104,6 +120,7 @@ router.post(
       .catch(err => res.status(400).json(err));
   }
 );
+
 
 // @route   POST api/posts/addTag
 // @desc    Add Tag
@@ -134,16 +151,54 @@ router.post(
                 }
                 else{
                     // Add to tags list
+                    
                     post.tags.unshift(req.body.tagName);
                     // Save post
                     post.save().then(post => res.json(post));
                 }
-                
+
             })
             .catch(err => res.status(404).json({ nopostfound: "No post found" }));
     }
 );
 
+
+// @route   POST api/posts/removeTag
+// @desc    Remove Tag
+// @access  Private
+router.delete(
+    "/removeTag/:post_id",
+    passport.authenticate("jwt", { session: false }),
+    (req, res) => {
+        // check validation
+        const { errors, isValid } = validatePostInput(req.body);
+        if (!isValid) {
+            // Return any errors with 400 status
+            return res.status(400).json(errors);
+        }
+
+        Post.findOne({ _id: req.params.post_id })
+            .then(post => {
+                //find the tag
+                if(post.tags.includes(req.body.tagName)){
+                    for(var i = 0; i < post.tags.length;i++){
+                        if(post.tags[i] == req.body.tagName)
+                            post.tags.splice(i,1);
+                    }
+                    // Save post
+                    post.save().then(post => res.json(post));
+                    
+                }
+                else{
+                   
+                    errors.post = "This tag does not exist!";
+                    res.status(404).json(errors);
+                }
+
+            })
+            .catch(err => res.status(404).json({ nopostfound: "No post found" }));
+    }
+);
 
 // @route   GET api/posts/view
 // @desc    View Post
@@ -156,7 +211,6 @@ router.get("/view/:post_id", (req, res) => {
         errors.post = "There is no content for this post";
         res.status(404).json(errors);
       }
-
       res.json(post);
     })
     .catch(err =>
