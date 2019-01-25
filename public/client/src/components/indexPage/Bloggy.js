@@ -1,11 +1,23 @@
 import React from "react";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 
-import Header from "./Header";
+// Common
 import Navbar from "../common/Navbar";
-import Body from "./Body";
 import Register from "../auth/Register";
 import Login from "../auth/Login";
+import Footer from "../common/Footer";
+
+// Index Page
+import Index from "./Index";
+
+// About Page
+import About from "../aboutPage/About";
+
+// Post Page
+import Post from "../postPage/Post";
+
+// Contact Page
+import Contact from "../contactPage/Contact";
 
 export default class Bloggy extends React.Component {
   constructor(props) {
@@ -16,13 +28,14 @@ export default class Bloggy extends React.Component {
     return (
       <Router>
         <div>
-          <Header />
           <Navbar />
-          <Route exact path="/" component={Body} />
-          <div className="container">
-            <Route exact path="/register" component={Register} />
-            <Route exact path="/login" component={Login} />
-          </div>
+          <Route exact path="/" component={Index} />
+          <Route exact path="/about" component={About} />
+          <Route exact path="/post" component={Post} />
+          <Route exact path="/contact" component={Contact} />
+          <Route exact path="/register" component={Register} />
+          <Route exact path="/login" component={Login} />
+          <Footer />
         </div>
       </Router>
     );
