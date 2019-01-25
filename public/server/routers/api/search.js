@@ -9,7 +9,6 @@ var client = new elasticsearch.Client({
     log: 'trace'
 });
 
-
 // @route   GET api/search/author
 // @desc    Search Post
 // @access  Public
