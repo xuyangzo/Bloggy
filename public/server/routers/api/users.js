@@ -133,4 +133,55 @@ router.get(
   }
 );
 
+// @route   GET api/users/public/:user_id
+// @desc    Return user with that user id
+// @access  Public
+// TODO
+
+// @route   POST api/users/follow/:followed_user_id
+// @desc    Follow another user
+// @access  Private
+router.post(
+  "/follow/:followed_user_id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    User.findOneAndUpdate(
+      { _id: req.params.followed_user_id },
+      { $push: { beingFollowed: req.user.id } },
+      { safe: true, useFindAndModify: false }
+    )
+      .then(user => {
+        if (user) {
+          User.findOneAndUpdate(
+            { _id: req.user.id },
+            { $push: { following: req.params.followed_user_id } },
+            { safe: true, useFindAndModify: false }
+          )
+            .then(current_user => res.json(current_user))
+            .catch(err =>
+              res.status(404).json({ usernotfound: "User not found" })
+            );
+        }
+      })
+      .catch(err => res.status(404).json({ usernotfound: "User not found" }));
+  }
+);
+
+// @route   POST api/users/subscribe
+// @desc    Subscribe or cancel subscription
+// @access  Private
+router.post(
+  "/subscribe",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    User.findOneAndUpdate(
+      { _id: req.user.id },
+      { $set: { subscribe: req.body.tosubscribe } },
+      { safe: true, useFindAndModify: false }
+    )
+      .then(user => res.json(user))
+      .catch(err => res.status(404).json({ usernotfound: "User not found" }));
+  }
+);
+
 module.exports = router;
