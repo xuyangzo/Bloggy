@@ -18,6 +18,21 @@ const esClient = new elasticsearch.Client({
     "https://search-bloggy-iec77mrsmswpriiofnkjh3ggrq.us-west-1.es.amazonaws.com"
 });
 
+
+// Array.prototype.indexOf = function(val) {
+//     for (var i = 0; i < this.length; i++) {
+//         if (this[i] == val) return i;
+//     }
+//     return -1;
+// };
+//
+// Array.prototype.remove = function(val) {
+//     var index = this.indexOf(val);
+//     if (index > -1) {
+//         this.splice(index, 1);
+//     }
+// };
+
 // @route   GET api/posts/test
 // @desc    Tests users route
 // @access  Public
@@ -94,8 +109,8 @@ router.post(
     if (typeof req.body.sources !== "undefined") {
       postFields.sources = req.body.sources.split(",");
     }
-    if (typeof req.body.sources !== "undefined") {
-      postFields.tags = req.body.tags.split(",");
+    if (typeof req.body.tags !== "undefined") {
+        postFields.tags = req.body.tags.split(",");
     }
 
     // update post
@@ -109,18 +124,44 @@ router.post(
   }
 );
 
+
 // @route   POST api/posts/addTag
 // @desc    Add Tag
 // @access  Private
 router.post(
-  "/addTag/:post_id",
-  passport.authenticate("jwt", { session: false }),
-  (req, res) => {
-    // check validation
-    const { errors, isValid } = validatePostInput(req.body);
-    if (!isValid) {
-      // Return any errors with 400 status
-      return res.status(400).json(errors);
+    "/addTag/:post_id",
+    passport.authenticate("jwt", { session: false }),
+    (req, res) => {
+        // check validation
+        const { errors, isValid } = validatePostInput(req.body);
+        if (!isValid) {
+            // Return any errors with 400 status
+            return res.status(400).json(errors);
+        }
+
+        Post.findOne({ _id: req.params.post_id })
+            .then(post => {
+                // const newTag = {
+                // tagname = req.body.tagname;
+                // };
+                if(post.tags.length == 3){
+                    errors.post = "The tag amount reaches the maximum value!";
+                    res.status(404).json(errors);
+                }
+                else if(post.tags.includes(req.body.tagName)){
+                    errors.post = "This tag has already been assigned!";
+                    res.status(404).json(errors);
+                }
+                else{
+                    // Add to tags list
+                    
+                    post.tags.unshift(req.body.tagName);
+                    // Save post
+                    post.save().then(post => res.json(post));
+                }
+
+            })
+            .catch(err => res.status(404).json({ nopostfound: "No post found" }));
     }
 
     Post.findOne({ _id: req.params.post_id })
@@ -145,6 +186,43 @@ router.post(
   }
 );
 
+// @route   POST api/posts/removeTag
+// @desc    Remove Tag
+// @access  Private
+router.delete(
+    "/removeTag/:post_id",
+    passport.authenticate("jwt", { session: false }),
+    (req, res) => {
+        // check validation
+        const { errors, isValid } = validatePostInput(req.body);
+        if (!isValid) {
+            // Return any errors with 400 status
+            return res.status(400).json(errors);
+        }
+
+        Post.findOne({ _id: req.params.post_id })
+            .then(post => {
+                //find the tag
+                if(post.tags.includes(req.body.tagName)){
+                    for(var i = 0; i < post.tags.length;i++){
+                        if(post.tags[i] == req.body.tagName)
+                            post.tags.splice(i,1);
+                    }
+                    // Save post
+                    post.save().then(post => res.json(post));
+                    
+                }
+                else{
+                   
+                    errors.post = "This tag does not exist!";
+                    res.status(404).json(errors);
+                }
+
+            })
+            .catch(err => res.status(404).json({ nopostfound: "No post found" }));
+    }
+);
+
 // @route   GET api/posts/view
 // @desc    View Post
 // @access  Public
@@ -156,7 +234,6 @@ router.get("/view/:post_id", (req, res) => {
         errors.post = "There is no content for this post";
         res.status(404).json(errors);
       }
-
       res.json(post);
     })
     .catch(err =>
