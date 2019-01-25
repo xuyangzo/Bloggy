@@ -29,7 +29,6 @@ router.get("/author/:author", (req, res) => {
         );
 });
 
-
 // @route   GET api/search/title
 // @desc    Search Post
 // @access  Public
@@ -48,6 +47,26 @@ router.get("/title/:title", (req, res) => {
             res.status(404).json({ post: "There is no content fot this post" })
         );
 });
+
+// @route   GET api/search/subtitle
+// @desc    Search Post
+// @access  Public
+router.get("/subtitle/:subtitle", (req, res) => {
+    let errors = {};
+    Post.find({title: req.params.subtitle})
+        .then(post => {
+            if (!post) {
+                errors.post = "There is no content for this post";
+                res.status(404).json(errors);
+            }
+
+            res.json(post);
+        })
+        .catch(err =>
+            res.status(404).json({ post: "There is no content fot this post" })
+        );
+});
+
 
 // @route   GET api/search/all
 // @desc    Search Post
