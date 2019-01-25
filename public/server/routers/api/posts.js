@@ -4,6 +4,7 @@ const passport = require("passport");
 const mongoosastic = require('mongoosastic');
 // Load Input Validation
 const validatePostInput = require("../../validation/post.validation.js");
+const validateCommentInput = require("../../validation/comment.validation.js");
 var elasticsearch = require('elasticsearch');
 
 // Load Post and User Model
@@ -54,7 +55,7 @@ router.post(
       User.findOneAndUpdate(
         { _id: req.user.id },
         { $push: { posts: post.id } },
-        { safe: true, upsert: true, new: true },
+        { safe: true, upsert: true, new: true, useFindAndModify: false },
         (err, user) => {
           if (err) return res.status(400).json(err);
           else return res.json(user);
@@ -116,8 +117,175 @@ router.get("/view/:post_id", (req, res) => {
       res.json(post);
     })
     .catch(err =>
-      res.status(404).json({ post: "There is no content fot this post" })
+      res.status(404).json({ post: "There is no content for this post" })
     );
 });
+
+// @route   DELETE api/posts/delete/:post_id
+// @desc    Delete Post
+// @access  Private
+router.delete(
+  "/delete/:post_id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Post.findOneAndDelete(
+      { _id: req.params.post_id },
+      { safe: true, useFindAndModify: false }
+    )
+      .then(post => {
+        if (post) {
+          User.findOneAndUpdate(
+            { _id: post.linked_userid },
+            { $pull: { posts: req.params.post_id } },
+            { safe: true, useFindAndModify: false }
+          )
+            .then(user => res.json(user))
+            .catch(err => res.status(404).json({ user: "No such user found" }));
+        }
+      })
+      .catch(err =>
+        res.status(404).json({ posts: "There is no content for this post" })
+      );
+  }
+);
+
+// @route   POST api/posts/comment/:post_id
+// @desc    Post Comment
+// @access  Private
+router.post(
+  "/comment/:post_id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    // Check Validation
+    const { errors, isValid } = validateCommentInput(req.body);
+    if (!isValid) {
+      // Return any errors with 400 status
+      return res.status(400).json(errors);
+    }
+
+    Post.findOne({ _id: req.params.post_id })
+      .then(post => {
+        const newComment = {
+          text: req.body.text,
+          username: req.user.username,
+          avatar: req.body.avatar,
+          linked_comm_userid: req.user.id
+        };
+
+        // Add to comments array
+        post.comments.unshift(newComment);
+        // Save
+        post.save().then(post => res.json(post));
+      })
+      .catch(err => res.status(404).json({ nopostfound: "No post found" }));
+  }
+);
+
+// @route   DELETE api/posts/comment/delete/:post_id/:comment_id
+// @desc    DELETE Comment
+// @access  Private
+router.delete(
+  "/comment/delete/:post_id/:comment_id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Post.findOneAndUpdate(
+      { _id: req.params.post_id },
+      { $pull: { comments: { _id: req.params.comment_id } } },
+      { safe: true, useFindAndModify: false, multi: true }
+    )
+      .then(post => {
+        res.json(post);
+      })
+      .catch(err => res.status(404).json({ nopostfound: "No post found" }));
+  }
+);
+
+// @route   POST api/posts/like/:post_id
+// @desc    Post Like
+// @access  Private
+router.post(
+  "/like/:post_id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Post.findOne({ _id: req.params.post_id })
+      .then(post => {
+        // If user already liked this post, cancel like
+        if (
+          post.likes.filter(
+            like => like.linked_like_userid.toString() === req.user.id
+          ).length > 0
+        ) {
+          post.likes = post.likes.filter(
+            like => like.linked_like_userid.toString() != req.user.id
+          );
+          // Save
+          post.save().then(post => res.json(post));
+        } else if (
+          post.dislikes.filter(
+            dislike => dislike.linked_dislike_userid.toString() === req.user.id
+          ).length > 0
+        ) {
+          // If user already disliked this post, remove it from dislike
+          // and add it to the likes array
+          post.dislikes = post.dislikes.filter(
+            dislike => dislike.linked_dislike_userid.toString() != req.user.id
+          );
+          // Add user to the likes array
+          post.likes.unshift({ linked_like_userid: req.user.id });
+          post.save().then(post => res.json(post));
+        } else {
+          // Add user to the likes array
+          post.likes.unshift({ linked_like_userid: req.user.id });
+          // Save
+          post.save().then(post => res.json(post));
+        }
+      })
+      .catch(err => res.status(404).json({ nopostfound: "No post found" }));
+  }
+);
+
+// @route   POST api/posts/dislike/:post_id
+// @desc    Post Dislike
+// @access  Private
+router.post(
+  "/dislike/:post_id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Post.findOne({ _id: req.params.post_id })
+      .then(post => {
+        // If user already disliked this post, cancel dislike
+        if (
+          post.dislikes.filter(
+            dislike => dislike.linked_dislike_userid.toString() === req.user.id
+          ).length > 0
+        ) {
+          post.dislikes = post.dislikes.filter(
+            dislike => dislike.linked_dislike_userid.toString() != req.user.id
+          );
+          // Save
+          post.save().then(post => res.json(post));
+        } else if (
+          post.likes.filter(
+            like => like.linked_like_userid.toString() === req.user.id
+          ).length > 0
+        ) {
+          // If user already liked this post, remove it from like
+          // and add it to the likes array
+          post.likes = post.likes.filter(
+            like => like.linked_like_userid.toString() != req.user.id
+          );
+          // Add user to the dislikes array
+          post.dislikes.unshift({ linked_dislike_userid: req.user.id });
+          post.save().then(post => res.json(post));
+        } else {
+          // Add user to the dislikes array
+          post.dislikes.unshift({ linked_dislike_userid: req.user.id });
+          // Save
+          post.save().then(post => res.json(post));
+        }
+      })
+      .catch(err => res.status(404).json({ nopostfound: "No post found" }));
+  }
+);
 
 module.exports = router;

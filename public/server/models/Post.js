@@ -38,7 +38,46 @@ const PostSchema = new Schema({
   },
   sources: {
     type: [String]
-  }
+  },
+  likes: [
+    {
+      linked_like_userid: {
+        type: Schema.Types.ObjectId,
+        ref: "users"
+      }
+    }
+  ],
+  dislikes: [
+    {
+      linked_dislike_userid: {
+        type: Schema.Types.ObjectId,
+        ref: "users"
+      }
+    }
+  ],
+  comments: [
+    {
+      linked_comm_userid: {
+        type: Schema.Types.ObjectId,
+        ref: "users"
+      },
+      text: {
+        type: String,
+        required: true
+      },
+      username: {
+        type: String,
+        default: "Anonymous"
+      },
+      avatar: {
+        type: String
+      },
+      dateTime: {
+        type: Date,
+        default: Date.now
+      }
+    }
+  ]
 });
 
 PostSchema.plugin(mongoosastic, {
