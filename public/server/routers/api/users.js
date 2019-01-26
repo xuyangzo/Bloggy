@@ -145,25 +145,41 @@ router.post(
   "/follow/:followed_user_id",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    User.findOneAndUpdate(
-      { _id: req.params.followed_user_id },
-      { $push: { beingFollowed: req.user.id } },
-      { safe: true, useFindAndModify: false }
-    )
-      .then(user => {
-        if (user) {
-          User.findOneAndUpdate(
-            { _id: req.user.id },
-            { $push: { following: req.params.followed_user_id } },
-            { safe: true, useFindAndModify: false }
-          )
-            .then(current_user => res.json(current_user))
-            .catch(err =>
-              res.status(404).json({ usernotfound: "User not found" })
-            );
-        }
+      var exist = false;
+      User.findOne({ _id: req.params.followed_user_id }).then(user => {
+          // check for user
+          if (!user) {
+              errors.email = "User not found";
+              return res.status(404).json(errors);
+          }
+          if(user.beingFollowed.includes(req.user.id)){
+              errors.email = "This user has already been followed!";
+              return res.status(404).json(errors);
+          }
+          else{
+              console.log("wonima");
+              User.findOneAndUpdate(
+                  { _id: req.params.followed_user_id },
+                  { $push: { beingFollowed: req.user.id } },
+                  { safe: true, useFindAndModify: false }
+              )
+                  .then(user => {
+                      if (user) {
+                          User.findOneAndUpdate(
+                              { _id: req.user.id },
+                              { $push: { following: req.params.followed_user_id } },
+                              { safe: true, useFindAndModify: false }
+                          )
+                              .then(current_user => res.json(current_user))
+                              .catch(err =>
+                                  res.status(404).json({ usernotfound: "User not found" })
+                              );
+                      }
+                  })
+                  .catch(err => res.status(404).json({ usernotfound: "User not found" }));
+          }
       })
-      .catch(err => res.status(404).json({ usernotfound: "User not found" }));
+          .catch(err => res.status(404).json({ usernotfound: "User not found" }));
   }
 );
 
