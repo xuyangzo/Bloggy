@@ -157,7 +157,6 @@ router.post(
               return res.status(404).json(errors);
           }
           else{
-              console.log("wonima");
               User.findOneAndUpdate(
                   { _id: req.params.followed_user_id },
                   { $push: { beingFollowed: req.user.id } },
