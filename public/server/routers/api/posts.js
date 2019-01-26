@@ -83,32 +83,30 @@ router.post(
                     {_id: u}
                 ).then(user => {
                     if(user){
-                       console.log(user);
-                        let mailOptions = {
-                            from: '"Bloggy" <bloggy233@gmail.com>', // sender address
-                            to: user.email, // list of receivers
-                            subject: 'Hello', // Subject line
-                            html: '<b>Hello world?</b>' // html body
-                        };
-                        // send mail with defined transport object
-                        transporter.sendMail(mailOptions, (error, info) => {
-                            if (error) {
-                                return console.log(error);
-                            }
-                            console.log('Message sent: %s', info.messageId);
-                        });
+                      
+                        if(user.subscribe){
+                            let mailOptions = {
+                                from: '"Bloggy" <bloggy233@gmail.com>', // sender address
+                                to: user.email, // list of receivers
+                                subject: 'Notice from Bloggy', // Subject line
+                                html: '<b>Hello world?</b>' // html body
+                            };
+                            // send mail with defined transport object
+                            transporter.sendMail(mailOptions, (error, info) => {
+                                if (error) {
+                                    return console.log(error);
+                                }
+                                console.log('Message sent: %s', info.messageId);
+                            });
+                        }
                     }
                 });
-               
                 
             });
           if (err) return res.status(400).json(err);
           else return res.json(user);
         }
       );
-
-      // send email to followers
-
     });
   }
 );
