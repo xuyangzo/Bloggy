@@ -4,6 +4,10 @@ const passport = require("passport");
 const mongoosastic = require("mongoosastic");
 const uuidv1 = require("uuid/v1");
 
+const nodemailer = require('nodemailer');
+const ejs = require('ejs');
+const fs  = require('fs');
+
 // Load Input Validation
 const validatePostInput = require("../../validation/post.validation.js");
 const validateCommentInput = require("../../validation/comment.validation.js");
@@ -17,6 +21,17 @@ const esClient = new elasticsearch.Client({
   host:
     "https://search-bloggy-iec77mrsmswpriiofnkjh3ggrq.us-west-1.es.amazonaws.com"
 });
+
+let transporter = nodemailer.createTransport({
+    service: 'Gmail', 
+    port: 465, // SMTP 
+    secureConnection: true,
+    auth: {
+        user: 'bloggy233@gmail.com',
+        pass: 'ilovebloggy233',
+    }
+});
+
 
 // @route   GET api/posts/test
 // @desc    Tests users route
@@ -62,10 +77,38 @@ router.post(
         { $push: { posts: post.id } },
         { safe: true, upsert: true, new: true, useFindAndModify: false },
         (err, user) => {
+            
+            user.beingFollowed.forEach(function(u) {
+                User.findOne(
+                    {_id: u}
+                ).then(user => {
+                    if(user){
+                       console.log(user);
+                        let mailOptions = {
+                            from: '"Bloggy" <bloggy233@gmail.com>', // sender address
+                            to: user.email, // list of receivers
+                            subject: 'Hello', // Subject line
+                            html: '<b>Hello world?</b>' // html body
+                        };
+                        // send mail with defined transport object
+                        transporter.sendMail(mailOptions, (error, info) => {
+                            if (error) {
+                                return console.log(error);
+                            }
+                            console.log('Message sent: %s', info.messageId);
+                        });
+                    }
+                });
+               
+                
+            });
           if (err) return res.status(400).json(err);
           else return res.json(user);
         }
       );
+
+      // send email to followers
+
     });
   }
 );
@@ -125,9 +168,6 @@ router.post(
 
     Post.findOne({ _id: req.params.post_id })
       .then(post => {
-        // const newTag = {
-        // tagname = req.body.tagname;
-        // };
         if (post.tags.length == 3) {
           errors.post = "The tag amount reaches the maximum value!";
           res.status(404).json(errors);
@@ -221,7 +261,7 @@ router.delete(
       .catch(err =>
         res.status(404).json({ posts: "There is no content for this post" })
       );
-    client.deleteByQuery({
+    esClient.deleteByQuery({
       index: "postss",
       body: {
         query: {
