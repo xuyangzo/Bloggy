@@ -18,20 +18,6 @@ const esClient = new elasticsearch.Client({
     "https://search-bloggy-iec77mrsmswpriiofnkjh3ggrq.us-west-1.es.amazonaws.com"
 });
 
-// Array.prototype.indexOf = function(val) {
-//     for (var i = 0; i < this.length; i++) {
-//         if (this[i] == val) return i;
-//     }
-//     return -1;
-// };
-//
-// Array.prototype.remove = function(val) {
-//     var index = this.indexOf(val);
-//     if (index > -1) {
-//         this.splice(index, 1);
-//     }
-// };
-
 // @route   GET api/posts/test
 // @desc    Tests users route
 // @access  Public
