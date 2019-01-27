@@ -79,10 +79,10 @@ router.post("/login", (req, res) => {
   }
 
   // check password
-  const username = req.body.username;
+  const email = req.body.email;
   const password = req.body.password;
 
-  User.findOne({ username }).then(user => {
+  User.findOne({ email }).then(user => {
     // check for user
     if (!user) {
       errors.email = "User not found";
@@ -145,40 +145,42 @@ router.post(
   "/follow/:followed_user_id",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-      var exist = false;
-      User.findOne({ _id: req.params.followed_user_id }).then(user => {
-          // check for user
-          if (!user) {
-              errors.email = "User not found";
-              return res.status(404).json(errors);
-          }
-          if(user.beingFollowed.includes(req.user.id)){
-              errors.email = "This user has already been followed!";
-              return res.status(404).json(errors);
-          }
-          else{
-              User.findOneAndUpdate(
-                  { _id: req.params.followed_user_id },
-                  { $push: { beingFollowed: req.user.id } },
+    var exist = false;
+    User.findOne({ _id: req.params.followed_user_id })
+      .then(user => {
+        // check for user
+        if (!user) {
+          errors.email = "User not found";
+          return res.status(404).json(errors);
+        }
+        if (user.beingFollowed.includes(req.user.id)) {
+          errors.email = "This user has already been followed!";
+          return res.status(404).json(errors);
+        } else {
+          User.findOneAndUpdate(
+            { _id: req.params.followed_user_id },
+            { $push: { beingFollowed: req.user.id } },
+            { safe: true, useFindAndModify: false }
+          )
+            .then(user => {
+              if (user) {
+                User.findOneAndUpdate(
+                  { _id: req.user.id },
+                  { $push: { following: req.params.followed_user_id } },
                   { safe: true, useFindAndModify: false }
-              )
-                  .then(user => {
-                      if (user) {
-                          User.findOneAndUpdate(
-                              { _id: req.user.id },
-                              { $push: { following: req.params.followed_user_id } },
-                              { safe: true, useFindAndModify: false }
-                          )
-                              .then(current_user => res.json(current_user))
-                              .catch(err =>
-                                  res.status(404).json({ usernotfound: "User not found" })
-                              );
-                      }
-                  })
-                  .catch(err => res.status(404).json({ usernotfound: "User not found" }));
-          }
+                )
+                  .then(current_user => res.json(current_user))
+                  .catch(err =>
+                    res.status(404).json({ usernotfound: "User not found" })
+                  );
+              }
+            })
+            .catch(err =>
+              res.status(404).json({ usernotfound: "User not found" })
+            );
+        }
       })
-          .catch(err => res.status(404).json({ usernotfound: "User not found" }));
+      .catch(err => res.status(404).json({ usernotfound: "User not found" }));
   }
 );
 
@@ -186,31 +188,30 @@ router.post(
 // @desc    Unfollow another user
 // @access  Private
 router.post(
-    "/unfollow/:followed_user_id",
-    passport.authenticate("jwt", { session: false }),
-    (req, res) => {
-      User.findOneAndUpdate(
-          { _id: req.params.followed_user_id },
-          { $pull: { beingFollowed: req.user.id } },
-          { safe: true, useFindAndModify: false }
-      )
-          .then(user => {
-            if (user) {
-              User.findOneAndUpdate(
-                  { _id: req.user.id },
-                  { $pull: { following: req.params.followed_user_id } },
-                  { safe: true, useFindAndModify: false }
-              )
-                  .then(current_user => res.json(current_user))
-                  .catch(err =>
-                      res.status(404).json({ usernotfound: "User not found" })
-                  );
-            }
-          })
-          .catch(err => res.status(404).json({ usernotfound: "User not found" }));
-    }
+  "/unfollow/:followed_user_id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    User.findOneAndUpdate(
+      { _id: req.params.followed_user_id },
+      { $pull: { beingFollowed: req.user.id } },
+      { safe: true, useFindAndModify: false }
+    )
+      .then(user => {
+        if (user) {
+          User.findOneAndUpdate(
+            { _id: req.user.id },
+            { $pull: { following: req.params.followed_user_id } },
+            { safe: true, useFindAndModify: false }
+          )
+            .then(current_user => res.json(current_user))
+            .catch(err =>
+              res.status(404).json({ usernotfound: "User not found" })
+            );
+        }
+      })
+      .catch(err => res.status(404).json({ usernotfound: "User not found" }));
+  }
 );
-
 
 // @route   POST api/users/subscribe
 // @desc    Subscribe or cancel subscription
