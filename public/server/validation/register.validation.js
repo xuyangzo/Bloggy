@@ -16,6 +16,13 @@ module.exports = function validateRegisterInput(data) {
   if (Validator.isEmpty(data.username)) {
     errors.username = "Username cannot be empty";
   }
+  // validating email
+  if (!Validator.isEmail(data.email)) {
+    errors.email = "Please enter correct email address";
+  }
+  if (Validator.isEmpty(data.email)) {
+    errors.email = "Email cannot be empty";
+  }
   // validating password
   if (!Validator.isLength(data.password, { min: 6, max: 30 })) {
     errors.password = "Password must be between 6 and 30 characters";

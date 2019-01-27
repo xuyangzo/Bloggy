@@ -9,36 +9,38 @@ export default class Navbar extends React.Component {
   render() {
     return (
       <footer>
-        <div class="container">
-          <div class="row">
-            <div class="col-lg-8 col-md-10 mx-auto">
-              <ul class="list-inline text-center">
-                <li class="list-inline-item">
+        <div className="container">
+          <div className="row">
+            <div className="col-lg-8 col-md-10 mx-auto">
+              <ul className="list-inline text-center">
+                <li className="list-inline-item">
                   <a href="#">
-                    <span class="fa-stack fa-lg">
-                      <i class="fas fa-circle fa-stack-2x"></i>
-                      <i class="fab fa-twitter fa-stack-1x fa-inverse"></i>
+                    <span className="fa-stack fa-lg">
+                      <i className="fas fa-circle fa-stack-2x" />
+                      <i className="fab fa-twitter fa-stack-1x fa-inverse" />
                     </span>
                   </a>
                 </li>
-                <li class="list-inline-item">
+                <li className="list-inline-item">
                   <a href="#">
-                    <span class="fa-stack fa-lg">
-                      <i class="fas fa-circle fa-stack-2x"></i>
-                      <i class="fab fa-facebook-f fa-stack-1x fa-inverse"></i>
+                    <span className="fa-stack fa-lg">
+                      <i className="fas fa-circle fa-stack-2x" />
+                      <i className="fab fa-facebook-f fa-stack-1x fa-inverse" />
                     </span>
                   </a>
                 </li>
-                <li class="list-inline-item">
+                <li className="list-inline-item">
                   <a href="#">
-                    <span class="fa-stack fa-lg">
-                      <i class="fas fa-circle fa-stack-2x"></i>
-                      <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                    <span className="fa-stack fa-lg">
+                      <i className="fas fa-circle fa-stack-2x" />
+                      <i className="fab fa-github fa-stack-1x fa-inverse" />
                     </span>
                   </a>
                 </li>
               </ul>
-              <p class="copyright text-muted">Copyright &copy; Your Website 2018</p>
+              <p className="copyright text-muted">
+                Copyright &copy; Your Website 2018
+              </p>
             </div>
           </div>
         </div>
