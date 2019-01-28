@@ -3,9 +3,10 @@ import { Link } from "react-router-dom";
 
 const Header = () => {
   return (
-    <header
+    <header 
+      id="header_image"
       className="masthead"
-      style={{ backgroundImage: "url('./html/img/home-bg.jpg')" }}
+      style={{ backgroundImage: "url('./client/src/image/bkg.jpg')" }}
     >
       <div className="overlay" />
       <div className="container">
