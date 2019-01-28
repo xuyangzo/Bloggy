@@ -6,7 +6,7 @@ const Header = () => {
     <header 
       id="header_image"
       className="masthead"
-      style={{ backgroundImage: "url('./client/src/image/bkg.jpg')" }}
+      style={{ backgroundImage: "url('./client/src/image/about-bg.jpg')" }}
     >
       <div className="overlay" />
       <div className="container">
