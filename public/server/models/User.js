@@ -1,6 +1,9 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
+// SubSchema for comments
+const commentSchema = mongoose.Schema({}, { _id: false });
+
 // Create Schema for single User
 const UserSchema = new Schema({
   username: {
@@ -19,6 +22,36 @@ const UserSchema = new Schema({
   },
   posts: {
     type: [String]
+  },
+  beingFollowed: {
+    type: [String]
+  },
+  following: {
+    type: [String]
+  },
+  comments: [
+    {
+      linked_post_id: {
+        type: String,
+        required: true
+      },
+      linked_comm_id: {
+        type: String,
+        required: true
+      },
+      text: {
+        type: String,
+        required: true
+      },
+      dateTime: {
+        type: Date,
+        default: Date.now
+      }
+    }
+  ],
+  subscribe: {
+    type: Boolean,
+    default: true
   }
 });
 

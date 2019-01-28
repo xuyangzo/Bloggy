@@ -1,5 +1,7 @@
 import React from "react";
 import axios from "axios";
+import "../common/TextFieldGroup";
+import TextFieldGroup from "../common/TextFieldGroup";
 
 export default class Register extends React.Component {
   constructor(props) {
@@ -11,9 +13,6 @@ export default class Register extends React.Component {
       password2: "",
       errors: {}
     };
-
-    this.onChange = this.onChange.bind(this);
-    this.onSubmit = this.onSubmit.bind(this);
   }
 
   onChange = e => {
@@ -31,53 +30,71 @@ export default class Register extends React.Component {
     };
 
     axios
-      .post("http://localhost:8081/api/users/register", newUser)
-      .then(res => console.log(res.data))
-      .catch(err => console.log(err.response.data));
+      .post("/api/users/register", newUser)
+      .then(res => {
+        console.log(res.data);
+        this.props.history.push("/login");
+      })
+      .catch(err => {
+        this.setState({ errors: err.response.data });
+        console.log(err.response.data);
+      });
   };
 
   render() {
+    const { errors } = this.state;
+
     return (
-      <div>
-        <form onSubmit={this.onSubmit}>
-          username:
-          <input
-            type="text"
-            name="username"
-            placeholder="username"
-            value={this.state.username}
-            onChange={this.onChange}
-          />
-          <br />
-          email:
-          <input
-            type="text"
-            name="email"
-            placeholder="email"
-            value={this.state.email}
-            onChange={this.onChange}
-          />
-          <br />
-          password:
-          <input
-            type="text"
-            name="password"
-            placeholder="password"
-            value={this.state.password}
-            onChange={this.onChange}
-          />
-          <br />
-          confirm password:
-          <input
-            type="text"
-            placeholder="confirm password"
-            name="password2"
-            value={this.state.password2}
-            onChange={this.onChange}
-          />
-          <br />
-          <input type="submit" value="submit" />
-        </form>
+      <div className="row mt-5">
+        <div className="col-md-8 m-auto">
+          <h1 className="display-4 text-center title-font">Sign Up</h1>
+          <p className="lead text-center subtitle-font">
+            Sign Up with your Bloggy account
+          </p>
+          <form onSubmit={this.onSubmit}>
+            <TextFieldGroup
+              placeholder="Username"
+              name="username"
+              id="username-field"
+              type="text"
+              value={this.state.username}
+              onChange={this.onChange}
+              error={errors.username}
+            />
+            <TextFieldGroup
+              placeholder="Email"
+              name="email"
+              id="email-field"
+              type="text"
+              value={this.state.email}
+              onChange={this.onChange}
+              error={errors.email}
+            />
+            <TextFieldGroup
+              placeholder="Password"
+              name="password"
+              id="password-field"
+              type="text"
+              value={this.state.password}
+              onChange={this.onChange}
+              error={errors.password}
+            />
+            <TextFieldGroup
+              placeholder="Password2"
+              name="password2"
+              id="password2-field"
+              type="text"
+              value={this.state.password2}
+              onChange={this.onChange}
+              error={errors.password2}
+            />
+            <input
+              className="form-control submit-button"
+              type="submit"
+              value="submit"
+            />
+          </form>
+        </div>
       </div>
     );
   }
