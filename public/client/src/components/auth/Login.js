@@ -1,6 +1,7 @@
 import React from "react";
 import axios from "axios";
 import TextFieldGroup from "../common/TextFieldGroup";
+import setAuthToken from "../utils/setAuthToken";
 
 export default class Login extends React.Component {
   constructor(props) {
@@ -29,6 +30,14 @@ export default class Login extends React.Component {
       .post("/api/users/login", User)
       .then(res => {
         console.log(res.data);
+        // Save to localstorage
+        const { token } = res.data;
+        localStorage.setItem("jwtToken", token);
+        // Set token to Auth header
+        setAuthToken(token);
+        // Set current user
+        location.href = "/dashboard";
+        // this.props.history.push("/dashboard");
       })
       .catch(err => {
         this.setState({ errors: err.response.data });
@@ -60,7 +69,7 @@ export default class Login extends React.Component {
               placeholder="Password"
               name="password"
               id="password-field"
-              type="text"
+              type="password"
               value={this.state.password}
               onChange={this.onChange}
               error={errors.password}
