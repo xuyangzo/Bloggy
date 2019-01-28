@@ -1,0 +1,9 @@
+.submit-button {
+  cursor: pointer;
+  background-color: lightgrey !important;
+  transition: background-color 0.5s ease-in-out;
+  &:hover,
+  &:focus {
+    background-color: lightblue !important;
+  }
+}

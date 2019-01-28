@@ -9,11 +9,10 @@ var client = new elasticsearch.Client({
     log: 'trace'
 });
 
-
-// @route   GET api/search/view
+// @route   GET api/search/author
 // @desc    Search Post
 // @access  Public
-router.get("/view/author/:author", (req, res) => {
+router.get("/author/:author", (req, res) => {
     let errors = {};
     Post.find({author: req.params.author})
         .then(post => {
@@ -29,11 +28,10 @@ router.get("/view/author/:author", (req, res) => {
         );
 });
 
-
-// @route   GET api/search/view
+// @route   GET api/search/title
 // @desc    Search Post
 // @access  Public
-router.get("/view/title/:title", (req, res) => {
+router.get("/title/:title", (req, res) => {
     let errors = {};
     Post.find({title: req.params.title})
         .then(post => {
@@ -49,10 +47,30 @@ router.get("/view/title/:title", (req, res) => {
         );
 });
 
-// @route   GET api/search/view
-// @desc    View Post
+// @route   GET api/search/subtitle
+// @desc    Search Post
 // @access  Public
-router.get("/view/all/:key", (req, res) => {
+router.get("/subtitle/:subtitle", (req, res) => {
+    let errors = {};
+    Post.find({title: req.params.subtitle})
+        .then(post => {
+            if (!post) {
+                errors.post = "There is no content for this post";
+                res.status(404).json(errors);
+            }
+
+            res.json(post);
+        })
+        .catch(err =>
+            res.status(404).json({ post: "There is no content fot this post" })
+        );
+});
+
+
+// @route   GET api/search/all
+// @desc    Search Post
+// @access  Public
+router.get("/all/:keyword", (req, res) => {
     client.search({
         q: req.params.keyword,
         index: 'postss',
