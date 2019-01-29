@@ -4,9 +4,9 @@ const passport = require("passport");
 const mongoosastic = require("mongoosastic");
 const uuidv1 = require("uuid/v1");
 
-const nodemailer = require('nodemailer');
-const ejs = require('ejs');
-const fs  = require('fs');
+const nodemailer = require("nodemailer");
+const ejs = require("ejs");
+const fs = require("fs");
 
 // Load Input Validation
 const validatePostInput = require("../../validation/post.validation.js");
@@ -23,15 +23,14 @@ const esClient = new elasticsearch.Client({
 });
 
 let transporter = nodemailer.createTransport({
-    service: 'Gmail', 
-    port: 465, // SMTP 
-    secureConnection: true,
-    auth: {
-        user: 'bloggy233@gmail.com',
-        pass: 'ilovebloggy233',
-    }
+  service: "Gmail",
+  port: 465, // SMTP
+  secureConnection: true,
+  auth: {
+    user: "bloggy233@gmail.com",
+    pass: "ilovebloggy233"
+  }
 });
-
 
 // @route   GET api/posts/test
 // @desc    Tests users route
@@ -64,10 +63,7 @@ router.post(
     if (req.body.subtitle) postFields.subtitle = req.body.subtitle;
     if (req.body.dateTime) postFields.dateTime = req.body.dateTime;
     if (req.body.text) postFields.text = req.body.text;
-    // sources - split into array
-    if (typeof req.body.sources !== "undefined") {
-      postFields.sources = req.body.sources.split(",");
-    }
+    if (req.body.sources) postFields.sources = req.body.sources;
 
     // save post
     new Post(postFields).save().then(post => {
@@ -77,32 +73,27 @@ router.post(
         { $push: { posts: post.id } },
         { safe: true, upsert: true, new: true, useFindAndModify: false },
         (err, user) => {
-            
-            user.beingFollowed.forEach(function(u) {
-                User.findOne(
-                    {_id: u}
-                ).then(user => {
-                    if(user){
-                      
-                        if(user.subscribe){
-                            let mailOptions = {
-                                from: '"Bloggy" <bloggy233@gmail.com>', // sender address
-                                to: user.email, // list of receivers
-                                subject: 'Notice from Bloggy', // Subject line
-                                html: '<b>Hello world?</b>' // html body
-                            };
-                            // send mail with defined transport object
-                            transporter.sendMail(mailOptions, (error, info) => {
-                                if (error) {
-                                    return console.log(error);
-                                }
-                                console.log('Message sent: %s', info.messageId);
-                            });
-                        }
+          user.beingFollowed.forEach(function(u) {
+            User.findOne({ _id: u }).then(user => {
+              if (user) {
+                if (user.subscribe) {
+                  let mailOptions = {
+                    from: '"Bloggy" <bloggy233@gmail.com>', // sender address
+                    to: user.email, // list of receivers
+                    subject: "Notice from Bloggy", // Subject line
+                    html: "<b>Hello world?</b>" // html body
+                  };
+                  // send mail with defined transport object
+                  transporter.sendMail(mailOptions, (error, info) => {
+                    if (error) {
+                      return console.log(error);
                     }
-                });
-                
+                    console.log("Message sent: %s", info.messageId);
+                  });
+                }
+              }
             });
+          });
           if (err) return res.status(400).json(err);
           else return res.json(user);
         }
@@ -131,10 +122,8 @@ router.post(
     if (req.body.subtitle) postFields.subtitle = req.body.subtitle;
     if (req.body.dateTime) postFields.dateTime = req.body.dateTime;
     if (req.body.text) postFields.text = req.body.text;
-    // sources - split into array
-    if (typeof req.body.sources !== "undefined") {
-      postFields.sources = req.body.sources.split(",");
-    }
+    if (req.body.sources) postFields.sources = req.body.sources;
+    // tags - split into array
     if (typeof req.body.tags !== "undefined") {
       postFields.tags = req.body.tags.split(",");
     }
