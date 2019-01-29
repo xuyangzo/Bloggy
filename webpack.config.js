@@ -1,4 +1,5 @@
 const path = require("path");
+const webpack = require("webpack");
 
 module.exports = {
   entry: "./public/client/src/app.js",
@@ -11,7 +12,7 @@ module.exports = {
     rules: [
       {
         test: /\.js?$/,
-        exclude: /node_modules/,
+        exclude: /node_modules(?!\/quill-image-drop-module|quill-image-resize-module)/,
         loader: "babel-loader"
       },
       {
@@ -21,9 +22,18 @@ module.exports = {
       {
         test: /\.css$/,
         use: ["style-loader", "css-loader"]
+      },
+      {
+        test: /\.(jpeg|jpg|woff|woff2|eot|ttf|svg)(\?.*$|$)/,
+        use: ["file-loader"]
       }
     ]
   },
+  plugins: [
+    new webpack.ProvidePlugin({
+      "window.Quill": "quill"
+    })
+  ],
   devtool: "cheap-module-eval-source-map",
   devServer: {
     port: 8080,
