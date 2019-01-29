@@ -5,6 +5,11 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const keys = require("../../config/keys");
 const passport = require("passport");
+const fs = require("fs");
+const Grid = require("gridfs-stream");
+const mongoose = require("mongoose");
+var multiparty = require('connect-multiparty')();
+
 
 // Load Input Validation
 const validateRegisterInput = require("../../validation/register.validation.js");
@@ -12,6 +17,68 @@ const validateLoginInput = require("../../validation/login.validation.js");
 
 // Load User Model
 const User = require("../../models/User");
+
+// DB Config
+const db = keys.mongoURI;
+
+// Connet to MongoDB
+mongoose
+    .connect(
+        db,
+        { useNewUrlParser: true }
+    )
+    .then(() => {
+        // console.log("MongoDB Connected");
+    })
+    .catch(err => console.log(err));
+
+mongoose.Promise = global.Promise;
+Grid.mongo = mongoose.mongo;
+var gfs;
+var connection = mongoose.connection;
+connection.once('open', () => {
+    gfs = Grid(connection.db, mongoose.mongo);
+    
+    // @route   POST api/users/upload/avatar
+    // @desc    Upload user avatar
+    // @access  Private
+    router.post(
+        "/upload/avatar", multiparty,
+        passport.authenticate("jwt", {session: false}),
+        (req, res) => {
+            var filepath = req.files.filename.path;
+            var filename = req.files.filename.name;
+            var writestream = gfs.createWriteStream({ filename: filename });
+            fs.createReadStream(filepath)
+                .on('end', function() {
+                    res.send('OK');
+                })
+                .on('error', function() {
+                    res.send('ERR');
+                }).pipe(writestream);
+
+            // writestream.on('close', (file) => {
+            //     res.send('Stored File: ' + file.filename);
+            // });
+        }
+    );
+
+    // @route   GET api/users/download/avatar/filename
+    // @desc    Download user avatar
+    // @access  Private
+    router.get('/download/avatar/:filename', function(req, res) {
+        var filename = req.params.filename;
+        console.log(filename);
+        // TODO: set proper mime type + filename, handle errors, etc...
+        gfs
+        // create a read stream from gfs...
+            .createReadStream({ filename: filename })
+            // and pipe it to Express' response
+            .pipe(res);
+    });
+
+
+});
 
 // @route   GET api/users/test
 // @desc    Tests users route
@@ -132,6 +199,8 @@ router.get(
     });
   }
 );
+
+
 
 // @route   GET api/users/public/:user_id
 // @desc    Return user with that user id
