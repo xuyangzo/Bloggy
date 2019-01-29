@@ -9,7 +9,32 @@ const fs = require("fs");
 const Grid = require("gridfs-stream");
 const mongoose = require("mongoose");
 var multiparty = require('connect-multiparty')();
+// var Redis = require("ioredis");
+const redis = require('redis');
+var msg_count = 0;
+const sub = redis.createClient({
+    host : 'redis-10859.c84.us-east-1-2.ec2.cloud.redislabs.com',
+    port: '10859',
+    no_ready_check: true,
+    auth_pass: 'LdDfI0ZyLFrLh5XTVKgpisyXKKFx3ZCz',
+});
 
+const pub = redis.createClient({
+    host : 'redis-10859.c84.us-east-1-2.ec2.cloud.redislabs.com',
+    port: '10859',
+    no_ready_check: true,
+    auth_pass: 'LdDfI0ZyLFrLh5XTVKgpisyXKKFx3ZCz',
+});
+
+//
+//
+sub.once("connect", function() {
+    console.log("redis connected");
+    
+});
+sub.on("error", function (err) {
+    console.log("redis client connection failed",err);
+});
 
 // Load Input Validation
 const validateRegisterInput = require("../../validation/register.validation.js");
