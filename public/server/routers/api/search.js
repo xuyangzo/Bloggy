@@ -76,9 +76,8 @@ router.get("/all/:keyword", (req, res) => {
         index: 'postss',
         size: 999
     }).then(function (body) {
-        var hits = body.hits.hits;
-        for(var i in hits)
-            res.send(i.source.title);
+        var hits = body.hits.hits
+        res.send(hits);
     }, function (error) {
         console.trace(error.message)
     })
