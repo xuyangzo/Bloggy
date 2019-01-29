@@ -1,0 +1,53 @@
+.whole-editor {
+  position: relative;
+
+  .title-icon {
+    font-size: 1.5rem;
+    position: absolute;
+    top: 7px;
+    left: 45%;
+    cursor: pointer;
+  }
+
+  .form-control-overwrite {
+    top: 0;
+    width: 40%;
+    position: absolute;
+    z-index: 2;
+  }
+
+  #subtitle-form {
+    position: absolute;
+    z-index: 1;
+    transition: all 1s cubic-bezier(0.075, 0.82, 0.165, 1);
+  }
+
+  .subtitle-form-animation {
+    transform: translate(120%, 0);
+    z-index: 1;
+  }
+
+  .source {
+    position: relative;
+
+    .form-control-width {
+      width: 90%;
+      float: left;
+    }
+
+    .source-icon {
+      font-size: 1.5rem;
+      float: left;
+      margin: 5px 10px 10px 20px;
+      cursor: pointer;
+    }
+  }
+}
+
+// set min-height of react-quill editor
+.ql-editor {
+  width: 100%;
+  min-height: 600px !important;
+  height: 600px !important;
+  overflow-y: scroll !important;
+}

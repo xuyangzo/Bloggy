@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import "font-awesome/css/font-awesome.min.css";
 
 export default class Navbar extends React.Component {
   constructor(props) {
@@ -16,24 +17,24 @@ export default class Navbar extends React.Component {
                 <li className="list-inline-item">
                   <a href="#">
                     <span className="fa-stack fa-lg">
-                      <i className="fas fa-circle fa-stack-2x" />
-                      <i className="fab fa-twitter fa-stack-1x fa-inverse" />
+                      <i className="fa fa-circle fa-stack-2x" />
+                      <i className="fa fa-twitter fa-stack-1x fa-inverse" />
                     </span>
                   </a>
                 </li>
                 <li className="list-inline-item">
                   <a href="#">
                     <span className="fa-stack fa-lg">
-                      <i className="fas fa-circle fa-stack-2x" />
-                      <i className="fab fa-facebook-f fa-stack-1x fa-inverse" />
+                      <i className="fa fa-circle fa-stack-2x" />
+                      <i className="fa fa-facebook-f fa-stack-1x fa-inverse" />
                     </span>
                   </a>
                 </li>
                 <li className="list-inline-item">
                   <a href="#">
                     <span className="fa-stack fa-lg">
-                      <i className="fas fa-circle fa-stack-2x" />
-                      <i className="fab fa-github fa-stack-1x fa-inverse" />
+                      <i className="fa fa-circle fa-stack-2x" />
+                      <i className="fa fa-github fa-stack-1x fa-inverse" />
                     </span>
                   </a>
                 </li>
