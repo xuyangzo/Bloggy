@@ -77,11 +77,10 @@ router.get("/all/:keyword", (req, res) => {
         size: 999
     }).then(function (body) {
         var hits = body.hits.hits
-        res.send(hits)
+        res.send(hits);
     }, function (error) {
         console.trace(error.message)
     })
 });
-
 
 module.exports = router;
