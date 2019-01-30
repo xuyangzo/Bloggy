@@ -29,6 +29,15 @@ const commentSchema = new Schema({
   dateTime: {
     type: Date,
     default: Date.now
+  },
+  reply_username:{
+    type: String,
+    default: ""
+  },
+  linked_reply_userid:{
+    type: Schema.Types.ObjectId,
+    ref: "users",
+    default: 0
   }
 });
 
