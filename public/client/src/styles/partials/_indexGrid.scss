@@ -1,0 +1,42 @@
+#grid {
+  padding: 10px;
+  -webkit-perspective: 1000px;
+  perspective: 1000px;
+
+  background: rgba(206, 206, 206, 0.568);
+  width: 100%;
+  padding-left: 8%;
+
+  .grid-item {
+    background: white;
+    height: 380px;
+    margin: 0.5rem 0.5rem;
+    display: inline-block;
+    border-radius: 4px;
+    padding: 20px;
+    color: black;
+    width: 30%;
+    background-position: center;
+    background-size: cover;
+    box-sizing: border-box;
+    transition: all 2s cubic-bezier(0.075, 0.82, 0.165, 1);
+    cursor: pointer;
+
+    &:hover {
+      box-shadow: 0px 25px 30px -20px rgba(0, 0, 0, 0.2);
+      transform: scale(1.03);
+    }
+
+    &:nth-child(4n-5) {
+      height: 420px;
+    }
+
+    &:nth-child(2n) {
+      height: 480px;
+    }
+
+    &:nth-child(3n) {
+      height: 440px;
+    }
+  }
+}
