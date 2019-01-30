@@ -312,6 +312,58 @@ router.post(
   }
 );
 
+// @route   POST api/posts/comment/:post_id/:reply_user_id
+// @desc    Post Comment
+// @access  Private
+router.post(
+    "/comment/:post_id/:reply_user_id",
+    passport.authenticate("jwt", { session: false }),
+    (req, res) => {
+        // Check Validation
+        const { errors, isValid } = validateCommentInput(req.body);
+        if (!isValid) {
+            // Return any errors with 400 status
+            return res.status(400).json(errors);
+        }
+
+        Post.findOne({ _id: req.params.post_id })
+            .then(post => {
+                const newComment = {
+                    _id: uuidv1(),
+                    text: req.body.text,
+                    username: req.user.username,
+                    avatar: req.body.avatar,
+                    linked_comm_userid: req.user.id,
+                    dateTime: Date.now(),
+                    reply_username: req.body.reply_username,
+                    linked_reply_userid: reply_user_id
+                };
+
+                // Add to comments array
+                post.comments.unshift(newComment);
+                post.save().then();
+
+                // Add comment to current User
+                const userComment = {
+                    text: req.body.text,
+                    linked_post_id: req.params.post_id,
+                    linked_comm_id: newComment._id,
+                    dateTime: newComment.dateTime
+                };
+                User.findOneAndUpdate(
+                    { _id: req.user.id },
+                    { $push: { comments: userComment } },
+                    { safe: true, useFindAndModify: false }
+                )
+                    .then(user => res.json(user))
+                    .catch(err =>
+                        res.status(404).json({ usernotfound: "User not found" })
+                    );
+            })
+            .catch(err => res.status(404).json({ nopostfound: "No post found" }));
+    }
+);
+
 // @route   DELETE api/posts/comment/delete/:post_id/:comment_id
 // @desc    DELETE Comment
 // @access  Private
