@@ -58,6 +58,7 @@ router.post(
     // get fields
     const postFields = {};
     postFields.linked_userid = req.user.id;
+    postFields.avatart = req.user.avatar;
     postFields.author = req.user.username;
     if (req.body.title) postFields.title = req.body.title;
     if (req.body.subtitle) postFields.subtitle = req.body.subtitle;
@@ -279,7 +280,7 @@ router.post(
           _id: uuidv1(),
           text: req.body.text,
           username: req.user.username,
-          avatar: req.body.avatar,
+          avatar: req.user.avatar,
           linked_comm_userid: req.user.id,
           dateTime: Date.now()
         };
@@ -300,10 +301,12 @@ router.post(
           { $push: { comments: userComment } },
           { safe: true, useFindAndModify: false }
         )
-          .then(user => res.json(user))
+          .then()
           .catch(err =>
             res.status(404).json({ usernotfound: "User not found" })
           );
+
+        res.json(post);
       })
       .catch(err => res.status(404).json({ nopostfound: "No post found" }));
   }

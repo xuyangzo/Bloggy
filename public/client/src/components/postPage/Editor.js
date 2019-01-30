@@ -9,16 +9,19 @@ import "react-quill/dist/quill.snow.css";
 
 import setAuthToken from "../utils/setAuthToken";
 
-export default class Post extends React.Component {
+export default class Editor extends React.Component {
   constructor(props) {
     super(props);
+    const tagList = [""];
     this.state = {
       title: "",
       subtitle: "",
       text: "",
       html: "",
       sources: [],
-      expand: false
+      tags: [],
+      expand: false,
+      errors: {}
     };
   }
 
@@ -29,8 +32,6 @@ export default class Post extends React.Component {
 
   // POST to backend
   onClick = e => {
-    console.log(this.state.html);
-
     const singlePost = {
       title: this.state.title,
       subtitle: this.state.subtitle,
@@ -64,12 +65,41 @@ export default class Post extends React.Component {
   // add source
   addSource = e => {
     if (document.getElementById("source-form").value.trim()) {
-      this.setState(prevState => ({
-        sources: prevState.sources.concat(
+      if (
+        !this.state.sources.includes(
           document.getElementById("source-form").value.trim()
         )
-      }));
+      ) {
+        this.setState(prevState => ({
+          sources: prevState.sources.concat(
+            document.getElementById("source-form").value.trim()
+          ),
+          errors: {}
+        }));
+      } else {
+        // add same source error
+        this.setState({
+          errors: { sameSource: "Cannot add the same source!" }
+        });
+      }
+    } else {
+      // add empty source error
+      this.setState({
+        errors: { emptySource: "Cannot add empty source!" }
+      });
     }
+  };
+
+  // remove source
+  removeSource = source => {
+    this.setState(prevState => {
+      const newSource = prevState.sources.filter(prev_source => {
+        return prev_source !== source;
+      });
+      return {
+        sources: newSource
+      };
+    });
   };
 
   // expand/shrink animation for subtitle
@@ -84,6 +114,7 @@ export default class Post extends React.Component {
       [{ header: [1, 2, 3, 4, 5, 6, false] }],
       [
         { color: [] },
+        { align: ["", "center", "right"] },
         "bold",
         "italic",
         "underline",
@@ -116,7 +147,8 @@ export default class Post extends React.Component {
       "bullet",
       "link",
       "image",
-      "color"
+      "color",
+      "align"
     ];
 
     return (
@@ -154,6 +186,7 @@ export default class Post extends React.Component {
             onChange={this.handleChange}
             modules={modules}
             formats={formats}
+            placeholder="Your legend starts here..."
           />
           <br />
           <div className="source">
@@ -161,8 +194,13 @@ export default class Post extends React.Component {
             <hr />
             {this.state.sources.map(source => {
               return (
-                <div key={source}>
+                <div key={source} className="temp-row">
                   <p>{source}</p>
+                  <i
+                    className="fa fa-times-circle"
+                    id={source}
+                    onClick={() => this.removeSource(source)}
+                  />
                 </div>
               );
             })}
@@ -178,6 +216,8 @@ export default class Post extends React.Component {
               onClick={this.addSource}
             />
           </div>
+          <small className="text-danger">{this.state.errors.sameSource}</small>
+          <small className="text-danger">{this.state.errors.emptySource}</small>
           <br />
           <br />
           <br />

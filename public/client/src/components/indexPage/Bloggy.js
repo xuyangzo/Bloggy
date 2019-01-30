@@ -18,21 +18,15 @@ import Dashboard from "../dashboard/Dashboard";
 // Index Page
 import Index from "./Index";
 
-// About Page
-import About from "../aboutPage/About";
-
 // Post Page
-import Post from "../postPage/Post";
-
-// Contact Page
-import Contact from "../contactPage/Contact";
+import Editor from "../postPage/Editor";
 
 // Check for token
 if (localStorage.jwtToken) {
   // Decode token and get user info and expiration
   const decoded = jwt_decode(localStorage.jwtToken);
   // Check for expire token
-  const currentTime = Date.now() / 3600;
+  const currentTime = Date.now() / 1000;
   if (decoded.exp < currentTime) {
     // Logout user
     localStorage.removeItem("jwtToken");
@@ -56,13 +50,11 @@ export default class Bloggy extends React.Component {
           {localStorage.jwtToken ? <TestNavbar /> : <Navbar />}
           <Switch>
             <Route exact path="/" component={Index} />
-            <Route exact path="/about" component={About} />
             <Route
               exact
               path="/post"
-              component={localStorage.jwtToken ? Post : Unauthorized}
+              component={localStorage.jwtToken ? Editor : Unauthorized}
             />
-            <Route exact path="/contact" component={Contact} />
             <Route exact path="/register" component={Register} />
             <Route exact path="/login" component={Login} />
             <Route
@@ -73,6 +65,8 @@ export default class Bloggy extends React.Component {
             <Route exact path="/view/:post_id" component={View} />
             <Route component={NotFound} />
           </Switch>
+          <br />
+          <br />
           <Footer />
         </div>
       </Router>
