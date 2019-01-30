@@ -30,6 +30,25 @@
   .source {
     position: relative;
 
+    .temp-row {
+      p {
+        float: left;
+      }
+
+      i {
+        float: left;
+        font-size: 1.5rem;
+        cursor: pointer;
+        margin-left: 10px;
+      }
+
+      &:after {
+        content: "";
+        clear: both;
+        display: table;
+      }
+    }
+
     .form-control-width {
       width: 90%;
       float: left;
