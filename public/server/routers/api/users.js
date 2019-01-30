@@ -8,32 +8,31 @@ const passport = require("passport");
 const fs = require("fs");
 const Grid = require("gridfs-stream");
 const mongoose = require("mongoose");
-var multiparty = require('connect-multiparty')();
+var multiparty = require("connect-multiparty")();
 // var Redis = require("ioredis");
-const redis = require('redis');
+const redis = require("redis");
 var msg_count = 0;
 const sub = redis.createClient({
-    host : 'redis-10859.c84.us-east-1-2.ec2.cloud.redislabs.com',
-    port: '10859',
-    no_ready_check: true,
-    auth_pass: 'LdDfI0ZyLFrLh5XTVKgpisyXKKFx3ZCz',
+  host: "redis-10859.c84.us-east-1-2.ec2.cloud.redislabs.com",
+  port: "10859",
+  no_ready_check: true,
+  auth_pass: "LdDfI0ZyLFrLh5XTVKgpisyXKKFx3ZCz"
 });
 
 const pub = redis.createClient({
-    host : 'redis-10859.c84.us-east-1-2.ec2.cloud.redislabs.com',
-    port: '10859',
-    no_ready_check: true,
-    auth_pass: 'LdDfI0ZyLFrLh5XTVKgpisyXKKFx3ZCz',
+  host: "redis-10859.c84.us-east-1-2.ec2.cloud.redislabs.com",
+  port: "10859",
+  no_ready_check: true,
+  auth_pass: "LdDfI0ZyLFrLh5XTVKgpisyXKKFx3ZCz"
 });
 
 //
 //
 sub.once("connect", function() {
-    console.log("redis connected");
-    
+  console.log("redis connected");
 });
-sub.on("error", function (err) {
-    console.log("redis client connection failed",err);
+sub.on("error", function(err) {
+  console.log("redis client connection failed", err);
 });
 
 // Load Input Validation
@@ -48,61 +47,61 @@ const db = keys.mongoURI;
 
 // Connet to MongoDB
 mongoose
-    .connect(
-        db,
-        { useNewUrlParser: true }
-    )
-    .then(() => {
-        // console.log("MongoDB Connected");
-    })
-    .catch(err => console.log(err));
+  .connect(
+    db,
+    { useNewUrlParser: true }
+  )
+  .then(() => {
+    // console.log("MongoDB Connected");
+  })
+  .catch(err => console.log(err));
 
 mongoose.Promise = global.Promise;
 Grid.mongo = mongoose.mongo;
 var gfs;
 var connection = mongoose.connection;
-connection.once('open', () => {
-    gfs = Grid(connection.db, mongoose.mongo);
-    
-    // @route   POST api/users/upload/avatar
-    // @desc    Upload user avatar
-    // @access  Private
-    router.post(
-        "/upload/avatar", multiparty,
-        passport.authenticate("jwt", {session: false}),
-        (req, res) => {
-            var filepath = req.files.filename.path;
-            var filename = req.files.filename.name;
-            var writestream = gfs.createWriteStream({ filename: filename });
-            fs.createReadStream(filepath)
-                .on('end', function() {
-                    res.send('OK');
-                })
-                .on('error', function() {
-                    res.send('ERR');
-                }).pipe(writestream);
+connection.once("open", () => {
+  gfs = Grid(connection.db, mongoose.mongo);
 
-            // writestream.on('close', (file) => {
-            //     res.send('Stored File: ' + file.filename);
-            // });
-        }
-    );
+  // @route   POST api/users/upload/avatar
+  // @desc    Upload user avatar
+  // @access  Private
+  router.post(
+    "/upload/avatar",
+    multiparty,
+    passport.authenticate("jwt", { session: false }),
+    (req, res) => {
+      var filepath = req.files.filename.path;
+      var filename = req.files.filename.name;
+      var writestream = gfs.createWriteStream({ filename: filename });
+      fs.createReadStream(filepath)
+        .on("end", function() {
+          res.send("OK");
+        })
+        .on("error", function() {
+          res.send("ERR");
+        })
+        .pipe(writestream);
 
-    // @route   GET api/users/download/avatar/filename
-    // @desc    Download user avatar
-    // @access  Private
-    router.get('/download/avatar/:filename', function(req, res) {
-        var filename = req.params.filename;
-        console.log(filename);
-        // TODO: set proper mime type + filename, handle errors, etc...
-        gfs
-        // create a read stream from gfs...
-            .createReadStream({ filename: filename })
-            // and pipe it to Express' response
-            .pipe(res);
-    });
+      // writestream.on('close', (file) => {
+      //     res.send('Stored File: ' + file.filename);
+      // });
+    }
+  );
 
-
+  // @route   GET api/users/download/avatar/filename
+  // @desc    Download user avatar
+  // @access  Private
+  router.get("/download/avatar/:filename", function(req, res) {
+    var filename = req.params.filename;
+    console.log(filename);
+    // TODO: set proper mime type + filename, handle errors, etc...
+    gfs
+      // create a read stream from gfs...
+      .createReadStream({ filename: filename })
+      // and pipe it to Express' response
+      .pipe(res);
+  });
 });
 
 // @route   GET api/users/test
@@ -220,12 +219,11 @@ router.get(
     res.json({
       id: req.user.id,
       username: req.user.username,
-      email: req.user.email
+      email: req.user.email,
+      avatar: req.user.avatar
     });
   }
 );
-
-
 
 // @route   GET api/users/public/:user_id
 // @desc    Return user with that user id
