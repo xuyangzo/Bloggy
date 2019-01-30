@@ -15,6 +15,13 @@ export default class Register extends React.Component {
     };
   }
 
+  // if user already logs in, push it to dashboard
+  componentDidMount = () => {
+    if (localStorage.jwtToken) {
+      this.props.history.push("/dashboard");
+    }
+  };
+
   onChange = e => {
     this.setState({ [e.target.name]: e.target.value });
   };

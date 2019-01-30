@@ -8,7 +8,7 @@ import Register from "../auth/Register";
 import Login from "../auth/Login";
 import NotFound from "../common/NotFound";
 import Footer from "../common/Footer";
-import TestNavbar from "../common/TestNavbar";
+import LoginNavbar from "../common/LoginNavbar";
 import View from "../viewPage/View";
 import Unauthorized from "../utils/Unauthorized";
 
@@ -47,7 +47,7 @@ export default class Bloggy extends React.Component {
     return (
       <Router>
         <div>
-          {localStorage.jwtToken ? <TestNavbar /> : <Navbar />}
+          {localStorage.jwtToken ? <LoginNavbar /> : <Navbar />}
           <Switch>
             <Route exact path="/" component={Index} />
             <Route
@@ -65,8 +65,6 @@ export default class Bloggy extends React.Component {
             <Route exact path="/view/:post_id" component={View} />
             <Route component={NotFound} />
           </Switch>
-          <br />
-          <br />
           <Footer />
         </div>
       </Router>

@@ -1,5 +1,7 @@
 import React from "react";
 import Moment from "react-moment";
+import axios from "axios";
+import setAuthToken from "../utils/setAuthToken";
 
 export default class Comment extends React.Component {
   constructor(props) {
@@ -12,6 +14,15 @@ export default class Comment extends React.Component {
 
   componentWillReceiveProps = newProps => {
     this.setState({ allComments: newProps.allComments });
+  };
+
+  onReply = () => {
+    if (localStorage.jwtToken) {
+      setAuthToken(localStorage.jwtToken);
+      // TODO::Reply comments
+    } else {
+      alert("Please login first!");
+    }
   };
 
   render() {
@@ -28,6 +39,9 @@ export default class Comment extends React.Component {
               </div>
               <Moment format="MMMM Do YYYY, hh:mm a">{comment.dateTime}</Moment>
               <p>{comment.text}</p>
+              <button className="btn" onClick={() => this.onReply()}>
+                reply
+              </button>
             </div>
           );
         })}
