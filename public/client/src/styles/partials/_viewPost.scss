@@ -1,0 +1,28 @@
+.comment-button {
+  cursor: pointer;
+  color: palevioletred;
+  background-color: whitesmoke;
+  transition: all 0.5s ease-in-out;
+  &:hover {
+    color: whitesmoke;
+    background-color: palevioletred;
+  }
+}
+
+i {
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.red-thumb {
+  color: palevioletred;
+}
+
+.blue-thumb {
+  color: skyblue;
+}
+
+.hot-width {
+  width: 2rem;
+  display: inline-block;
+}

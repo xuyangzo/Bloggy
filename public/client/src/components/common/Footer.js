@@ -1,6 +1,5 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import "font-awesome/css/font-awesome.min.css";
 
 export default class Navbar extends React.Component {
   constructor(props) {
@@ -9,43 +8,43 @@ export default class Navbar extends React.Component {
 
   render() {
     return (
-      <footer>
-        <div className="container">
-          <div className="row">
-            <div className="col-lg-8 col-md-10 mx-auto">
-              <ul className="list-inline text-center">
-                <li className="list-inline-item">
-                  <a href="#">
-                    <span className="fa-stack fa-lg">
-                      <i className="fa fa-circle fa-stack-2x" />
-                      <i className="fa fa-twitter fa-stack-1x fa-inverse" />
-                    </span>
-                  </a>
-                </li>
-                <li className="list-inline-item">
-                  <a href="#">
-                    <span className="fa-stack fa-lg">
-                      <i className="fa fa-circle fa-stack-2x" />
-                      <i className="fa fa-facebook-f fa-stack-1x fa-inverse" />
-                    </span>
-                  </a>
-                </li>
-                <li className="list-inline-item">
-                  <a href="#">
-                    <span className="fa-stack fa-lg">
-                      <i className="fa fa-circle fa-stack-2x" />
-                      <i className="fa fa-github fa-stack-1x fa-inverse" />
-                    </span>
-                  </a>
-                </li>
-              </ul>
-              <p className="copyright text-muted">
-                Copyright &copy; Your Website 2018
-              </p>
+      <div>
+        <footer className="page-footer font-small pt-4">
+          <div className="container-fluid text-center text-md-left">
+            <div className="row">
+              <div className="col-md-6 ml-5 mt-md-0 mt-3">
+                <h5 className="text-uppercase">Welcome to Bloggy!</h5>
+                <p>
+                  Bloggy is a custom blog engine that allows users to
+                  view/post/edit/comment/like/share/delete their posts
+                </p>
+              </div>
+
+              <hr className="clearfix w-100 d-md-none pb-3" />
+
+              <div className="col-md-3 ml-5 mb-md-0 mb-3">
+                <h5 className="text-uppercase">Links</h5>
+
+                <ul className="list-unstyled">
+                  <li>
+                    <Link to="/register">Register</Link>
+                  </li>
+                  <li>
+                    <Link to="/login">Login</Link>
+                  </li>
+                  <li>
+                    <Link to="/post">Create Post</Link>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div className="footer-copyright text-center py-3">
+              © 2018 Copyright:
+              <Link to="/"> Bloggy Develop Team</Link>
             </div>
           </div>
-        </div>
-      </footer>
+        </footer>
+      </div>
     );
   }
 }

@@ -30,7 +30,7 @@ export default class Navbar extends React.Component {
           </button>
           <div className="collapse navbar-collapse" id="navbarResponsive">
             <ul className="navbar-nav ml-auto">
-              <li>
+              <li className="nav-item">
                 <SearchBar />
               </li>
               <li className="nav-item">
@@ -44,7 +44,6 @@ export default class Navbar extends React.Component {
                   Login
                 </Link>
               </li>
-
             </ul>
           </div>
         </div>
