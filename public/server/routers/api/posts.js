@@ -41,6 +41,19 @@ router.get("/test", (req, res) =>
   })
 );
 
+// @route   GET api/posts/all
+// @desc    Get All Posts
+// @access  Public
+router.get("/all", (req, res) => {
+  Post.find({})
+    .sort({ dateTime: -1 })
+    .limit(3)
+    .then(posts => {
+      res.json(posts);
+    })
+    .catch(err => res.status(404).json({ nopostfound: "No post found" }));
+});
+
 // @route   POST api/posts/create
 // @desc    Create Post
 // @access  Private
@@ -206,7 +219,7 @@ router.delete(
   }
 );
 
-// @route   GET api/posts/view
+// @route   api/posts/view
 // @desc    View Post
 // @access  Public
 router.get("/view/:post_id", (req, res) => {
