@@ -19,12 +19,12 @@ const sub = redis.createClient({
   auth_pass: "LdDfI0ZyLFrLh5XTVKgpisyXKKFx3ZCz"
 });
 
-const pub = redis.createClient({
-  host: "redis-10859.c84.us-east-1-2.ec2.cloud.redislabs.com",
-  port: "10859",
-  no_ready_check: true,
-  auth_pass: "LdDfI0ZyLFrLh5XTVKgpisyXKKFx3ZCz"
-});
+// const pub = redis.createClient({
+//   host: "redis-10859.c84.us-east-1-2.ec2.cloud.redislabs.com",
+//   port: "10859",
+//   no_ready_check: true,
+//   auth_pass: "LdDfI0ZyLFrLh5XTVKgpisyXKKFx3ZCz"
+// });
 
 //
 //

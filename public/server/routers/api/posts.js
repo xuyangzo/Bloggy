@@ -32,6 +32,17 @@ let transporter = nodemailer.createTransport({
   }
 });
 
+
+const redis = require("redis");
+var msg_count = 0;
+const redisClient = redis.createClient({
+    host: "redis-10859.c84.us-east-1-2.ec2.cloud.redislabs.com",
+    port: "10859",
+    no_ready_check: true,
+    auth_pass: "LdDfI0ZyLFrLh5XTVKgpisyXKKFx3ZCz"
+});
+
+
 // @route   GET api/posts/test
 // @desc    Tests users route
 // @access  Public
@@ -68,6 +79,16 @@ router.post(
       return res.status(400).json(errors);
     }
 
+    const cpostFields = {};
+    cpostFields.linked_userid = req.user.id;
+    cpostFieldspostFields.avatart = req.user.avatar;
+    cpostFields.author = req.user.username;
+    if (req.body.title) cpostFields.title = req.body.title;
+    if (req.body.subtitle) cpostFields.subtitle = req.body.subtitle;
+    if (req.body.dateTime) cpostFields.dateTime = req.body.dateTime;
+    if (req.body.sources) cpostFields.sources = req.body.sources;
+
+    cachepost = new CachePost(postFields)
     // get fields
     const postFields = {};
     postFields.linked_userid = req.user.id;
@@ -78,6 +99,7 @@ router.post(
     if (req.body.dateTime) postFields.dateTime = req.body.dateTime;
     if (req.body.text) postFields.text = req.body.text;
     if (req.body.sources) postFields.sources = req.body.sources;
+
 
     // save post
     new Post(postFields).save().then(post => {
