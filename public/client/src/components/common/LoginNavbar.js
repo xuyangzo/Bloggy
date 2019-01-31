@@ -35,7 +35,7 @@ class LoginNavbar extends React.Component {
   };
 
   onImgClick = e => {
-    location.href = "/dashboard";
+    this.props.history.push("/dashboard");
   };
 
   render() {

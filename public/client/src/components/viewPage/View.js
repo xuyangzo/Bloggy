@@ -116,7 +116,10 @@ export default class View extends React.Component {
         <br />
         <br />
         <br />
-        <Comment allComments={this.state.comments} />
+        <Comment
+          allComments={this.state.comments}
+          post_id={this.state.post_id}
+        />
       </div>
     );
   }
