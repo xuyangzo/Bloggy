@@ -30,14 +30,16 @@ const commentSchema = new Schema({
     type: Date,
     default: Date.now
   },
-  reply_username:{
+  reply_username: {
     type: String,
     default: ""
   },
-  linked_reply_userid:{
+  linked_reply_userid: {
     type: Schema.Types.ObjectId,
-    ref: "users",
-    default: 0
+    ref: "users"
+  },
+  linked_reply_commid: {
+    type: String
   }
 });
 
