@@ -47,7 +47,10 @@ export default class Bloggy extends React.Component {
     return (
       <Router>
         <div>
-          {localStorage.jwtToken ? <LoginNavbar /> : <Navbar />}
+          <Route
+            path="/"
+            component={localStorage.jwtToken ? LoginNavbar : Navbar}
+          />
           <Switch>
             <Route exact path="/" component={Index} />
             <Route

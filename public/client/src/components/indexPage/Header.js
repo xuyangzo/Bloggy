@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const Header = () => {
   return (
-    <header 
+    <header
       id="header_image"
       className="masthead"
       style={{ backgroundImage: "url('./client/src/image/about-bg.jpg')" }}
@@ -21,7 +21,7 @@ const Header = () => {
                     type="button"
                     className="btn btn-outline-light btn-block"
                   >
-                    Sign Up
+                    SIGN UP
                   </button>
                 </Link>
                 <Link className="nav-link" to="/login">
@@ -29,7 +29,7 @@ const Header = () => {
                     type="button"
                     className="btn btn-outline-light btn-block"
                   >
-                    Login
+                    LOGIN
                   </button>
                 </Link>
               </div>
