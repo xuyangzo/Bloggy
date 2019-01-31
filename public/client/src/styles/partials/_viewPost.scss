@@ -26,3 +26,167 @@ i {
   width: 2rem;
   display: inline-block;
 }
+
+.clear {
+  clear: both;
+}
+
+.not-reply-comment {
+  margin: 10px 0;
+  padding-top: 5px;
+  padding-bottom: 10px;
+  border-bottom: dotted 1px lightgray;
+
+  .comment-top-half {
+    position: relative;
+
+    img {
+      width: 8%;
+      border-radius: 50%;
+      border: 1px solid lightgray;
+      float: left;
+      cursor: pointer;
+    }
+
+    .username {
+      float: left;
+      margin-left: 2%;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: rgb(28, 184, 184);
+    }
+
+    .dateTime {
+      position: absolute;
+      color: gray;
+      left: 10%;
+      top: 55%;
+      font-size: 0.8rem;
+    }
+
+    &:after {
+      content: "";
+      clear: both;
+      display: table;
+    }
+  }
+
+  .comment-bottom-half {
+    margin-left: 10%;
+    margin-top: 10px;
+    width: 70%;
+    float: left;
+  }
+
+  .comment-form {
+    width: 100%;
+    margin-left: 10%;
+    height: 0;
+    overflow: hidden;
+    transition: height 1s cubic-bezier(0.075, 0.82, 0.165, 1);
+    float: left;
+
+    .comment-form-input {
+      width: 70%;
+      float: left;
+    }
+
+    .comment-form-submit {
+      width: 20%;
+      margin-left: 5%;
+      float: left;
+      color: violet;
+    }
+  }
+
+  .comment-form-appear {
+    height: 50px;
+  }
+
+  .comment-reply-button {
+    float: left;
+    width: 10%;
+    margin-left: 10%;
+    color: palevioletred;
+  }
+}
+
+.reply-comment {
+  padding-top: 5px;
+  margin-left: 10%;
+  margin-bottom: 10px;
+  border-bottom: dotted 1px lightgray;
+
+  .reply-top-half {
+    position: relative;
+
+    img {
+      width: 8%;
+      border-radius: 50%;
+      border: 1px solid lightgray;
+      float: left;
+      cursor: pointer;
+    }
+
+    .reply-username {
+      float: left;
+      margin-left: 2%;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: rgba(119, 30, 236, 0.863);
+    }
+
+    .dateTime {
+      position: absolute;
+      color: gray;
+      left: 10%;
+      top: 55%;
+      font-size: 0.8rem;
+    }
+
+    &:after {
+      content: "";
+      clear: both;
+      display: table;
+    }
+  }
+
+  .reply-bottom-half {
+    margin-left: 10%;
+    width: 60%;
+    float: left;
+    .username {
+      color: rgb(28, 184, 184);
+      cursor: pointer;
+    }
+  }
+
+  .comment-form {
+    width: 100%;
+    height: 0;
+    overflow: hidden;
+    transition: height 1s cubic-bezier(0.075, 0.82, 0.165, 1);
+
+    .comment-form-input {
+      width: 62%;
+      float: left;
+    }
+
+    .comment-form-submit {
+      width: 20%;
+      float: left;
+      color: violet;
+    }
+  }
+
+  .comment-form-appear {
+    height: 50px;
+  }
+
+  .comment-reply-button {
+    float: left;
+    width: 10%;
+    margin-left: 12%;
+    color: palevioletred;
+  }
+}
