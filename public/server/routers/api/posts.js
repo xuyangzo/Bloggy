@@ -367,6 +367,12 @@ router.post(
 
         // Add to comments array
         post.comments.unshift(newComment);
+        post.comments = post.comments.filter(comment => {
+          if (comment._id === req.body.linked_reply_commid) {
+            comment.beingReplied.unshift(newComment._id);
+            return comment;
+          } else return comment;
+        });
         post.save().then();
 
         // Add comment to current User

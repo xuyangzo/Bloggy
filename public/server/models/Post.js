@@ -40,6 +40,9 @@ const commentSchema = new Schema({
   },
   linked_reply_commid: {
     type: String
+  },
+  beingReplied: {
+    type: [String]
   }
 });
 
