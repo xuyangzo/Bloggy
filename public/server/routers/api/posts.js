@@ -249,6 +249,26 @@ router.get("/view/:post_id", (req, res) => {
     );
 });
 
+// @route   api/posts/view
+// @desc    View Post
+// @access  Public
+router.get("/viewtop/:post_id", (req, res) => {
+    let errors = {};
+    
+    Post.findOne({ _id: req.params.post_id })
+        .then(post => {
+            if (!post) {
+                errors.post = "There is no content for this post";
+                res.status(404).json(errors);
+            }
+            res.json(post);
+        })
+        .catch(err =>
+            res.status(404).json({ post: "There is no content for this post" })
+        );
+});
+
+
 // @route   DELETE api/posts/delete/:post_id
 // @desc    Delete Post
 // @access  Private
