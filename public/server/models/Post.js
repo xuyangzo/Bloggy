@@ -71,11 +71,11 @@ const PostSchema = new Schema({
   },
   text: {
     type: String,
-    es_indexed: true,
     required: true
   },
   sources: {
-    type: [String]
+    type: [String],
+    es_indexed: true
   },
   tags: {
     type: [String]
