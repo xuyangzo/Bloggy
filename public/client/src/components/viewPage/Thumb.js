@@ -144,6 +144,7 @@ export default class Thumb extends React.Component {
         <i
           className={classnames("far fa-thumbs-up mr-4", {
             "red-thumb": this.state.isLike,
+            "red-thumb-animation": this.state.isLike,
             fas: this.state.isLike
           })}
           onClick={this.onPostLike}
@@ -154,6 +155,7 @@ export default class Thumb extends React.Component {
         <i
           className={classnames("far fa-thumbs-down ml-4", {
             "blue-thumb": this.state.isDislike,
+            "blue-thumb-animation": this.state.isDislike,
             fas: this.state.isDislike
           })}
           onClick={this.onPostDislike}

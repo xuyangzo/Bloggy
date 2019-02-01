@@ -1,3 +1,23 @@
+@import "./mixin";
+
+/* Google fonts */
+@import url("https://fonts.googleapis.com/css?family=Dancing+Script");
+@import url("https://fonts.googleapis.com/css?family=Amatic+SC");
+.blog-title {
+  font-family: "Dancing Script", cursive !important;
+  font-size: 5rem;
+}
+.blog-author {
+  cursor: pointer;
+  color: violet;
+  font-size: 2rem;
+  font-family: "Amatic SC", cursive !important;
+}
+.blog-date {
+  font-family: "Amatic SC", cursive !important;
+  font-size: 1.5rem;
+}
+
 .comment-button {
   cursor: pointer;
   color: palevioletred;
@@ -14,12 +34,56 @@ i {
   cursor: pointer;
 }
 
+/*
+ * Thumbs
+ */
+@include keyframes(jumpAndFall) {
+  0% {
+    transform: translate(0, 0);
+  }
+  10% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(0, -5px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
 .red-thumb {
   color: palevioletred;
+  transition: transform 1s ease-in-out;
+}
+
+@include keyframes(vibrate) {
+  0% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(-2px, 0);
+  }
+  50% {
+    transform: translate(0, 0);
+  }
+  75% {
+    transform: translate(2px, 0);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+.red-thumb-animation {
+  @include animation("jumpAndFall 0.5s 0s 1 ease-in-out forwards");
 }
 
 .blue-thumb {
   color: skyblue;
+}
+
+.blue-thumb-animation {
+  @include animation("vibrate 0.25s 0s 2 ease-in-out forwards");
 }
 
 .hot-width {
@@ -31,6 +95,9 @@ i {
   clear: both;
 }
 
+/*
+ * Comments that are not replies
+ */
 .not-reply-comment {
   margin: 10px 0;
   padding-top: 5px;
@@ -109,6 +176,27 @@ i {
     margin-left: 10%;
     color: palevioletred;
   }
+
+  .toggle-comment {
+    margin-left: 10%;
+    color: skyblue;
+    cursor: pointer;
+  }
+}
+.not-reply-comment-overwrite {
+  border-bottom: none;
+}
+
+/*
+ * Comments that are replies
+ */
+.reply-container {
+  height: 0;
+  overflow: hidden;
+  transition: height 0.5s ease-in-out;
+}
+.show-comment {
+  height: initial;
 }
 
 .reply-comment {
@@ -189,4 +277,8 @@ i {
     margin-left: 12%;
     color: palevioletred;
   }
+}
+
+.reply-comment-overwrite {
+  border-bottom: none;
 }
