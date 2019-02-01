@@ -81,10 +81,16 @@ export default class View extends React.Component {
     return (
       <div className="container col-md-8 m-auto">
         <div className="container text-center ">
-          <h1>{this.state.title}</h1>
-          <p>{this.state.author}</p>
-          <Moment format="MMMM Do YYYY, hh:mm a">{this.state.dateTime}</Moment>
+          <br />
+          <br />
+          <h1 className="blog-title">{this.state.title}</h1>
+          <p className="blog-author">{this.state.author}</p>
+          <Moment className="blog-date" format="MMMM Do YYYY, hh:mm a">
+            {this.state.dateTime}
+          </Moment>
         </div>
+        <br />
+        <br />
         <div className="container single-post">
           <div dangerouslySetInnerHTML={this.createMarkup()} />
         </div>
