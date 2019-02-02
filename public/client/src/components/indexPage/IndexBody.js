@@ -39,6 +39,7 @@ class Body extends React.Component {
     // load 3 posts a time
     const newPosts = [];
     for (var i = this.state.renderCount; i < this.state.renderCount + 3; i++) {
+      if (this.state.allPosts[i] === undefined) continue;
       const post = this.state.allPosts[i];
       const temp = (
         <div
