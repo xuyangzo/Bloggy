@@ -16,20 +16,12 @@ const Header = () => {
               <h1>Bloggy</h1>
               <span className="subheading">Create your blog today</span>
               <div className="col-lg-6 col-md-7 mx-auto text-center mt-4">
-                <Link className="nav-link" to="/register">
+                <Link className="nav-link" to="/post">
                   <button
                     type="button"
                     className="btn btn-outline-light btn-block"
                   >
-                    SIGN UP
-                  </button>
-                </Link>
-                <Link className="nav-link" to="/login">
-                  <button
-                    type="button"
-                    className="btn btn-outline-light btn-block"
-                  >
-                    LOGIN
+                    CREATE YOUR BLOG
                   </button>
                 </Link>
               </div>

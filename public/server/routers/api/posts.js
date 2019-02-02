@@ -4,9 +4,9 @@ const passport = require("passport");
 const mongoosastic = require("mongoosastic");
 const uuidv1 = require("uuid/v1");
 
-const nodemailer = require('nodemailer');
-const ejs = require('ejs');
-const fs  = require('fs');
+const nodemailer = require("nodemailer");
+const ejs = require("ejs");
+const fs = require("fs");
 
 // Load Input Validation
 const validatePostInput = require("../../validation/post.validation.js");
@@ -23,15 +23,14 @@ const esClient = new elasticsearch.Client({
 });
 
 let transporter = nodemailer.createTransport({
-    service: 'Gmail', 
-    port: 465, // SMTP 
-    secureConnection: true,
-    auth: {
-        user: 'bloggy233@gmail.com',
-        pass: 'ilovebloggy233',
-    }
+  service: "Gmail",
+  port: 465, // SMTP
+  secureConnection: true,
+  auth: {
+    user: "bloggy233@gmail.com",
+    pass: "ilovebloggy233"
+  }
 });
-
 
 // @route   GET api/posts/test
 // @desc    Tests users route
@@ -41,6 +40,31 @@ router.get("/test", (req, res) =>
     msg: "Post Works"
   })
 );
+
+// @route   GET api/posts/all
+// @desc    Get All Posts' ID
+// @access  Public
+router.get("/all", (req, res) => {
+  Post.find({})
+    .sort({ dateTime: -1 })
+    .then(posts => {
+      res.json(posts.map(post => post._id));
+    })
+    .catch(err => res.status(404).json({ nopostfound: "No post found" }));
+});
+
+// @route   GET api/posts/all
+// @desc    Get First 6 posts for Index Page
+// @access  Public
+router.get("/index", (req, res) => {
+  Post.find({})
+    .sort({ dateTime: -1 })
+    .limit(6)
+    .then(posts => {
+      res.json(posts);
+    })
+    .catch(err => res.status(404).json({ nopostfound: "No post found" }));
+});
 
 // @route   POST api/posts/create
 // @desc    Create Post
@@ -59,15 +83,13 @@ router.post(
     // get fields
     const postFields = {};
     postFields.linked_userid = req.user.id;
+    postFields.avatart = req.user.avatar;
     postFields.author = req.user.username;
     if (req.body.title) postFields.title = req.body.title;
     if (req.body.subtitle) postFields.subtitle = req.body.subtitle;
     if (req.body.dateTime) postFields.dateTime = req.body.dateTime;
     if (req.body.text) postFields.text = req.body.text;
-    // sources - split into array
-    if (typeof req.body.sources !== "undefined") {
-      postFields.sources = req.body.sources.split(",");
-    }
+    if (req.body.sources) postFields.sources = req.body.sources;
 
     // save post
     new Post(postFields).save().then(post => {
@@ -77,32 +99,27 @@ router.post(
         { $push: { posts: post.id } },
         { safe: true, upsert: true, new: true, useFindAndModify: false },
         (err, user) => {
-            
-            user.beingFollowed.forEach(function(u) {
-                User.findOne(
-                    {_id: u}
-                ).then(user => {
-                    if(user){
-                      
-                        if(user.subscribe){
-                            let mailOptions = {
-                                from: '"Bloggy" <bloggy233@gmail.com>', // sender address
-                                to: user.email, // list of receivers
-                                subject: 'Notice from Bloggy', // Subject line
-                                html: '<b>Hello world?</b>' // html body
-                            };
-                            // send mail with defined transport object
-                            transporter.sendMail(mailOptions, (error, info) => {
-                                if (error) {
-                                    return console.log(error);
-                                }
-                                console.log('Message sent: %s', info.messageId);
-                            });
-                        }
+          user.beingFollowed.forEach(function(u) {
+            User.findOne({ _id: u }).then(user => {
+              if (user) {
+                if (user.subscribe) {
+                  let mailOptions = {
+                    from: '"Bloggy" <bloggy233@gmail.com>', // sender address
+                    to: user.email, // list of receivers
+                    subject: "Notice from Bloggy", // Subject line
+                    html: "<b>Hello world?</b>" // html body
+                  };
+                  // send mail with defined transport object
+                  transporter.sendMail(mailOptions, (error, info) => {
+                    if (error) {
+                      return console.log(error);
                     }
-                });
-                
+                    console.log("Message sent: %s", info.messageId);
+                  });
+                }
+              }
             });
+          });
           if (err) return res.status(400).json(err);
           else return res.json(user);
         }
@@ -131,10 +148,8 @@ router.post(
     if (req.body.subtitle) postFields.subtitle = req.body.subtitle;
     if (req.body.dateTime) postFields.dateTime = req.body.dateTime;
     if (req.body.text) postFields.text = req.body.text;
-    // sources - split into array
-    if (typeof req.body.sources !== "undefined") {
-      postFields.sources = req.body.sources.split(",");
-    }
+    if (req.body.sources) postFields.sources = req.body.sources;
+    // tags - split into array
     if (typeof req.body.tags !== "undefined") {
       postFields.tags = req.body.tags.split(",");
     }
@@ -216,7 +231,7 @@ router.delete(
   }
 );
 
-// @route   GET api/posts/view
+// @route   api/posts/view
 // @desc    View Post
 // @access  Public
 router.get("/view/:post_id", (req, res) => {
@@ -233,6 +248,26 @@ router.get("/view/:post_id", (req, res) => {
       res.status(404).json({ post: "There is no content for this post" })
     );
 });
+
+// @route   api/posts/view
+// @desc    View Post
+// @access  Public
+router.get("/viewtop/:post_id", (req, res) => {
+    let errors = {};
+    
+    Post.findOne({ _id: req.params.post_id })
+        .then(post => {
+            if (!post) {
+                errors.post = "There is no content for this post";
+                res.status(404).json(errors);
+            }
+            res.json(post);
+        })
+        .catch(err =>
+            res.status(404).json({ post: "There is no content for this post" })
+        );
+});
+
 
 // @route   DELETE api/posts/delete/:post_id
 // @desc    Delete Post
@@ -290,7 +325,7 @@ router.post(
           _id: uuidv1(),
           text: req.body.text,
           username: req.user.username,
-          avatar: req.body.avatar,
+          avatar: req.user.avatar,
           linked_comm_userid: req.user.id,
           dateTime: Date.now()
         };
@@ -311,10 +346,73 @@ router.post(
           { $push: { comments: userComment } },
           { safe: true, useFindAndModify: false }
         )
-          .then(user => res.json(user))
+          .then()
           .catch(err =>
             res.status(404).json({ usernotfound: "User not found" })
           );
+
+        res.json(post);
+      })
+      .catch(err => res.status(404).json({ nopostfound: "No post found" }));
+  }
+);
+
+// @route   POST api/posts/comment/:post_id/:reply_user_id
+// @desc    Post Comment
+// @access  Private
+router.post(
+  "/comment/:post_id/:reply_user_id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    // Check Validation
+    const { errors, isValid } = validateCommentInput(req.body);
+    if (!isValid) {
+      // Return any errors with 400 status
+      return res.status(400).json(errors);
+    }
+
+    Post.findOne({ _id: req.params.post_id })
+      .then(post => {
+        const newComment = {
+          _id: uuidv1(),
+          text: req.body.text,
+          username: req.user.username,
+          avatar: req.user.avatar,
+          linked_comm_userid: req.user.id,
+          dateTime: Date.now(),
+          reply_username: req.body.reply_username,
+          linked_reply_userid: req.params.reply_user_id,
+          linked_reply_commid: req.body.linked_reply_commid
+        };
+
+        // Add to comments array
+        post.comments.unshift(newComment);
+        post.comments = post.comments.filter(comment => {
+          if (comment._id === req.body.linked_reply_commid) {
+            comment.beingReplied.unshift(newComment._id);
+            return comment;
+          } else return comment;
+        });
+        post.save().then();
+
+        // Add comment to current User
+        const userComment = {
+          text: req.body.text,
+          linked_post_id: req.params.post_id,
+          linked_comm_id: newComment._id,
+          dateTime: newComment.dateTime
+        };
+        User.findOneAndUpdate(
+          { _id: req.user.id },
+          { $push: { comments: userComment } },
+          { safe: true, useFindAndModify: false }
+        )
+          .then()
+          .catch(err =>
+            res.status(404).json({ usernotfound: "User not found" })
+          );
+
+        res.json(post);
       })
       .catch(err => res.status(404).json({ nopostfound: "No post found" }));
   }

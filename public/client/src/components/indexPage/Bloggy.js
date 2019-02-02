@@ -8,7 +8,9 @@ import Register from "../auth/Register";
 import Login from "../auth/Login";
 import NotFound from "../common/NotFound";
 import Footer from "../common/Footer";
-import TestNavbar from "../common/TestNavbar";
+import LoginNavbar from "../common/LoginNavbar";
+import View from "../viewPage/View";
+import Unauthorized from "../utils/Unauthorized";
 
 // Dashboard
 import Dashboard from "../dashboard/Dashboard";
@@ -16,16 +18,8 @@ import Dashboard from "../dashboard/Dashboard";
 // Index Page
 import Index from "./Index";
 
-// About Page
-import About from "../aboutPage/About";
-
 // Post Page
-import Post from "../postPage/Post";
-
-// Contact Page
-import Contact from "../contactPage/Contact";
-
-console.log(localStorage.jwtToken);
+import Editor from "../postPage/Editor";
 
 // Check for token
 if (localStorage.jwtToken) {
@@ -53,15 +47,25 @@ export default class Bloggy extends React.Component {
     return (
       <Router>
         <div>
-          {localStorage.jwtToken ? <TestNavbar /> : <Navbar />}
+          <Route
+            path="/"
+            component={localStorage.jwtToken ? LoginNavbar : Navbar}
+          />
           <Switch>
             <Route exact path="/" component={Index} />
-            <Route exact path="/about" component={About} />
-            <Route exact path="/post" component={Post} />
-            <Route exact path="/contact" component={Contact} />
+            <Route
+              exact
+              path="/post"
+              component={localStorage.jwtToken ? Editor : Unauthorized}
+            />
             <Route exact path="/register" component={Register} />
             <Route exact path="/login" component={Login} />
-            <Route exact path="/dashboard" component={Dashboard} />
+            <Route
+              exact
+              path="/dashboard"
+              component={localStorage.jwtToken ? Dashboard : Unauthorized}
+            />
+            <Route exact path="/view/:post_id" component={View} />
             <Route component={NotFound} />
           </Switch>
           <Footer />
