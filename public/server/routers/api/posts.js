@@ -36,12 +36,11 @@ let transporter = nodemailer.createTransport({
 const redis = require("redis");
 var msg_count = 0;
 const redisClient = redis.createClient({
-    host: "redis-10859.c84.us-east-1-2.ec2.cloud.redislabs.com",
-    port: "10859",
-    no_ready_check: true,
-    auth_pass: "LdDfI0ZyLFrLh5XTVKgpisyXKKFx3ZCz"
+  host: "redis-10859.c84.us-east-1-2.ec2.cloud.redislabs.com",
+  port: "10859",
+  no_ready_check: true,
+  auth_pass: "LdDfI0ZyLFrLh5XTVKgpisyXKKFx3ZCz"
 });
-
 
 // @route   GET api/posts/test
 // @desc    Tests users route
@@ -67,28 +66,21 @@ router.get("/all", (req, res) => {
 // @route   GET api/posts/all
 // @desc    Get First 6 posts for Index Page
 // @access  Public
-router.get("/index", (req, res) => {
-    
-    // redisClient.rpop("posts");
-    // console.log("after");
-    redisClient.lrange('posts', 0, -1, function(err, items) {
-        if (err) throw err;
-        // var posts = [];
-        var posts = [];
-        for(var i = items.length-1; i >=0;i--){
-            console.log(' ' + items[i]);
-            posts.push(JSON.parse(items[i]));
-        }
-        
-        res.json(posts);
-    });
-//   Post.find({})
-//     .sort({ dateTime: -1 })
-//     .limit(6)
-//     .then(posts => {
-//       res.json(posts);
-//     })
-//     .catch(err => res.status(404).json({ nopostfound: "No post found" }));
+router.get("/index/:index", (req, res) => {
+  // redisClient.rpop("posts");
+  // console.log("after");
+  const index = parseInt(req.params.index, 10);
+  redisClient.lrange("posts", index, index + 5, function(err, items) {
+    if (err) throw err;
+    // var posts = [];
+    var posts = [];
+    for (var i = items.length - 1; i >= 0; i--) {
+      console.log(" " + items[i]);
+      posts.push(JSON.parse(items[i]));
+    }
+
+    res.json(posts);
+  });
 });
 
 // @route   POST api/posts/create
@@ -115,7 +107,7 @@ router.post(
     if (req.body.subtitle) cpostFields.subtitle = req.body.subtitle;
     cpostFields.dateTime = moment().format();
     if (req.body.sources) cpostFields.sources = req.body.sources;
-    
+
     // get fields
     const postFields = {};
     postFields.linked_userid = req.user.id;
@@ -126,24 +118,23 @@ router.post(
     // if (req.body.dateTime) postFields.dateTime = req.body.dateTime;
     if (req.body.text) postFields.text = req.body.text;
     if (req.body.sources) postFields.sources = req.body.sources;
-   
+
     // save post
     new Post(postFields).save().then(post => {
+      cpostFields._id = post.id;
 
-        cpostFields._id = post.id;
+      var cachepost = new Object(cpostFields);
+      var cp = JSON.stringify(cachepost);
+      console.log(cp);
 
-        var cachepost = new Object(cpostFields);
-        var cp = JSON.stringify(cachepost);
-        console.log(cp);
-
-        redisClient.rpush('posts', cp, redis.print);
-        redisClient.lrange('posts', 0, -1, function(err, items) {
-            if (err) throw err;
-            items.forEach(function(item, i) {
-                console.log(' ' + item);
-            });
-            // redisClient.quit();
+      redisClient.rpush("posts", cp, redis.print);
+      redisClient.lrange("posts", 0, -1, function(err, items) {
+        if (err) throw err;
+        items.forEach(function(item, i) {
+          console.log(" " + item);
         });
+        // redisClient.quit();
+      });
       // update User Model
       User.findOneAndUpdate(
         { _id: req.user.id },
@@ -287,6 +278,24 @@ router.delete(
 // @access  Public
 router.get("/view/:post_id", (req, res) => {
   let errors = {};
+  Post.findOne({ _id: req.params.post_id }).then(post => {
+    if (!post) {
+      errors.post = "There is no content for this post";
+      res.status(404).json(errors);
+    }
+    res.json(post);
+  });
+  // .catch(err =>
+  //   // res.status(404).json({ post: "There is no content for this post" })
+  // );
+});
+
+// @route   api/posts/view
+// @desc    View Post
+// @access  Public
+router.get("/viewtop/:post_id", (req, res) => {
+  let errors = {};
+
   Post.findOne({ _id: req.params.post_id })
     .then(post => {
       if (!post) {
@@ -295,30 +304,10 @@ router.get("/view/:post_id", (req, res) => {
       }
       res.json(post);
     })
-    // .catch(err =>
-    //   // res.status(404).json({ post: "There is no content for this post" })
-    // );
+    .catch(err =>
+      res.status(404).json({ post: "There is no content for this post" })
+    );
 });
-
-// @route   api/posts/view
-// @desc    View Post
-// @access  Public
-router.get("/viewtop/:post_id", (req, res) => {
-    let errors = {};
-    
-    Post.findOne({ _id: req.params.post_id })
-        .then(post => {
-            if (!post) {
-                errors.post = "There is no content for this post";
-                res.status(404).json(errors);
-            }
-            res.json(post);
-        })
-        .catch(err =>
-            res.status(404).json({ post: "There is no content for this post" })
-        );
-});
-
 
 // @route   DELETE api/posts/delete/:post_id
 // @desc    Delete Post
