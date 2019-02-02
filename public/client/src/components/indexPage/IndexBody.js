@@ -10,16 +10,17 @@ class Body extends React.Component {
     this.state = {
       allPosts: [],
       onClickPost: props.onClickPost,
-      allRenderedPosts: [],
       renderCount: 0,
       canLoad: true
     };
-    // retrieve post info from database
+    // retrieve first 6 posts info from database
     axios
-      .get("/api/posts/index")
+      .get("/api/posts/index/0")
       .then(res => {
+        console.log(res.data);
         this.setState(prevState => ({
-          allPosts: prevState.allPosts.concat(res.data)
+          allPosts: prevState.allPosts.concat(res.data),
+          renderCount: 6
         }));
       })
       .catch(err => console.log(err.response.data));
@@ -34,31 +35,21 @@ class Body extends React.Component {
     //   return;
     // }
 
-    console.log("load more!");
+    // retrieve following 6 posts info from database
+    axios
+      .get("/api/posts/index/" + this.state.renderCount)
+      .then(res => {
+        if (!res.data || !!res.data) {
+          this.setState({ canLoad: false });
+        }
+        this.setState(prevState => ({
+          allPosts: prevState.allPosts.concat(res.data),
+          renderCount: prevState.renderCount + 6
+        }));
+      })
+      .catch(err => console.log(err.response.data));
 
-    // load 3 posts a time
-    const newPosts = [];
-    for (var i = this.state.renderCount; i < this.state.renderCount + 3; i++) {
-      if (this.state.allPosts[i] === undefined) continue;
-      const post = this.state.allPosts[i];
-      const temp = (
-        <div
-          className="grid-item"
-          key={post._id}
-          onClick={() => this.state.onClickPost(post._id)}
-        >
-          <h3>{post.title}</h3>
-          <h4>{post.subtitle}</h4>
-          <p>{post.author}</p>
-          <Moment format="MMMM Do YYYY, hh:mm a">{post.dateTime}</Moment>
-        </div>
-      );
-      newPosts.push(temp);
-    }
-    this.setState(prevState => ({
-      allRenderedPosts: prevState.allRenderedPosts.concat(newPosts),
-      renderCount: prevState.renderCount + 3
-    }));
+    console.log("load more!");
   };
 
   render() {
@@ -71,25 +62,41 @@ class Body extends React.Component {
       <div id="grid">
         <br />
         <div className="col-lg-12 col-md-10 mx-auto">
-          <Masonry
-            elementType="div"
-            options={masonryOptions}
-            disableImagesLoaded={false}
-            updateOnEachImageLoad={false}
+          <InfiniteScroll
+            pageStart={0}
+            loadMore={this.loadFunc}
+            hasMore={this.state.canLoad}
+            loader={
+              <div className="loader" key={0}>
+                Loading ...
+              </div>
+            }
           >
-            <InfiniteScroll
-              pageStart={0}
-              loadMore={this.loadFunc}
-              hasMore={this.state.canLoad}
-              loader={
-                <div className="loader" key={0}>
-                  Loading ...
-                </div>
-              }
+            <Masonry
+              elementType="div"
+              options={masonryOptions}
+              disableImagesLoaded={false}
+              updateOnEachImageLoad={false}
             >
-              {this.state.allRenderedPosts}
-            </InfiniteScroll>
-          </Masonry>
+              {this.state.allPosts.map(post => {
+                const temp = (
+                  <div
+                    className="grid-item"
+                    key={post._id}
+                    onClick={() => this.state.onClickPost(post._id)}
+                  >
+                    <h3>{post.title}</h3>
+                    <h4>{post.subtitle}</h4>
+                    <p>{post.author}</p>
+                    <Moment format="MMMM Do YYYY, hh:mm a">
+                      {post.dateTime}
+                    </Moment>
+                  </div>
+                );
+                return temp;
+              })}
+            </Masonry>
+          </InfiniteScroll>
         </div>
         <br />
         <br />
