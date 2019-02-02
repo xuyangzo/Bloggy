@@ -322,4 +322,5 @@ router.post(
   }
 );
 
+router.get("/view/:user_id",)
 module.exports = router;

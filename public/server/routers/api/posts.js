@@ -71,10 +71,11 @@ router.get("/index", (req, res) => {
     
     // redisClient.rpop("posts");
     // console.log("after");
-    redisClient.lrange('posts', 0, -1, function(err, items) {
+    redisClient.lrange('posts', 0, 5, function(err, items) {
         if (err) throw err;
         // var posts = [];
         var posts = [];
+        
         for(var i = items.length-1; i >=0;i--){
             console.log(' ' + items[i]);
             posts.push(JSON.parse(items[i]));
@@ -104,12 +105,10 @@ router.post(
       // Return any errors with 400 status
       return res.status(400).json(errors);
     }
-    console.log("start-datetime");
-    console.log(req.body.dateTime);
-    console.log("end-datetime");
+    
     const cpostFields = {};
     cpostFields.linked_userid = req.user.id;
-    cpostFields.avatart = req.user.avatar;
+    cpostFields.avatar = req.user.avatar;
     cpostFields.author = req.user.username;
     if (req.body.title) cpostFields.title = req.body.title;
     if (req.body.subtitle) cpostFields.subtitle = req.body.subtitle;
@@ -119,7 +118,7 @@ router.post(
     // get fields
     const postFields = {};
     postFields.linked_userid = req.user.id;
-    postFields.avatart = req.user.avatar;
+    postFields.avatar = req.user.avatar;
     postFields.author = req.user.username;
     if (req.body.title) postFields.title = req.body.title;
     if (req.body.subtitle) postFields.subtitle = req.body.subtitle;
@@ -204,6 +203,18 @@ router.post(
     if (typeof req.body.tags !== "undefined") {
       postFields.tags = req.body.tags.split(",");
     }
+
+      // // get fields
+      // const postFields = {};
+      // if (req.body.title) postFields.title = req.body.title;
+      // if (req.body.subtitle) postFields.subtitle = req.body.subtitle;
+      // if (req.body.dateTime) postFields.dateTime = req.body.dateTime;
+      // if (req.body.text) postFields.text = req.body.text;
+      // if (req.body.sources) postFields.sources = req.body.sources;
+      // // tags - split into array
+      // if (typeof req.body.tags !== "undefined") {
+      //     postFields.tags = req.body.tags.split(",");
+      // }
 
     // update post
     Post.findOneAndUpdate(
