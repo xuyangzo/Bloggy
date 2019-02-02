@@ -29,6 +29,20 @@ const commentSchema = new Schema({
   dateTime: {
     type: Date,
     default: Date.now
+  },
+  reply_username: {
+    type: String,
+    default: ""
+  },
+  linked_reply_userid: {
+    type: Schema.Types.ObjectId,
+    ref: "users"
+  },
+  linked_reply_commid: {
+    type: String
+  },
+  beingReplied: {
+    type: [String]
   }
 });
 
@@ -60,11 +74,11 @@ const PostSchema = new Schema({
   },
   text: {
     type: String,
-    es_indexed: true,
     required: true
   },
   sources: {
-    type: [String]
+    type: [String],
+    es_indexed: true
   },
   tags: {
     type: [String]

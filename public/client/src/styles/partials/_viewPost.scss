@@ -1,0 +1,284 @@
+@import "./mixin";
+
+/* Google fonts */
+@import url("https://fonts.googleapis.com/css?family=Dancing+Script");
+@import url("https://fonts.googleapis.com/css?family=Amatic+SC");
+.blog-title {
+  font-family: "Dancing Script", cursive !important;
+  font-size: 5rem;
+}
+.blog-author {
+  cursor: pointer;
+  color: violet;
+  font-size: 2rem;
+  font-family: "Amatic SC", cursive !important;
+}
+.blog-date {
+  font-family: "Amatic SC", cursive !important;
+  font-size: 1.5rem;
+}
+
+.comment-button {
+  cursor: pointer;
+  color: palevioletred;
+  background-color: whitesmoke;
+  transition: all 0.5s ease-in-out;
+  &:hover {
+    color: whitesmoke;
+    background-color: palevioletred;
+  }
+}
+
+i {
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+/*
+ * Thumbs
+ */
+@include keyframes(jumpAndFall) {
+  0% {
+    transform: translate(0, 0);
+  }
+  10% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(0, -5px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+.red-thumb {
+  color: palevioletred;
+  transition: transform 1s ease-in-out;
+}
+
+@include keyframes(vibrate) {
+  0% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(-2px, 0);
+  }
+  50% {
+    transform: translate(0, 0);
+  }
+  75% {
+    transform: translate(2px, 0);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+.red-thumb-animation {
+  @include animation("jumpAndFall 0.5s 0s 1 ease-in-out forwards");
+}
+
+.blue-thumb {
+  color: skyblue;
+}
+
+.blue-thumb-animation {
+  @include animation("vibrate 0.25s 0s 2 ease-in-out forwards");
+}
+
+.hot-width {
+  width: 2rem;
+  display: inline-block;
+}
+
+.clear {
+  clear: both;
+}
+
+/*
+ * Comments that are not replies
+ */
+.not-reply-comment {
+  margin: 10px 0;
+  padding-top: 5px;
+  padding-bottom: 10px;
+  border-bottom: dotted 1px lightgray;
+
+  .comment-top-half {
+    position: relative;
+
+    img {
+      width: 8%;
+      border-radius: 50%;
+      border: 1px solid lightgray;
+      float: left;
+      cursor: pointer;
+    }
+
+    .username {
+      float: left;
+      margin-left: 2%;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: rgb(28, 184, 184);
+    }
+
+    .dateTime {
+      position: absolute;
+      color: gray;
+      left: 10%;
+      top: 55%;
+      font-size: 0.8rem;
+    }
+
+    &:after {
+      content: "";
+      clear: both;
+      display: table;
+    }
+  }
+
+  .comment-bottom-half {
+    margin-left: 10%;
+    margin-top: 10px;
+    width: 70%;
+    float: left;
+  }
+
+  .comment-form {
+    width: 100%;
+    margin-left: 10%;
+    height: 0;
+    overflow: hidden;
+    transition: height 1s cubic-bezier(0.075, 0.82, 0.165, 1);
+    float: left;
+
+    .comment-form-input {
+      width: 70%;
+      float: left;
+    }
+
+    .comment-form-submit {
+      width: 20%;
+      margin-left: 5%;
+      float: left;
+      color: violet;
+    }
+  }
+
+  .comment-form-appear {
+    height: 50px;
+  }
+
+  .comment-reply-button {
+    float: left;
+    width: 10%;
+    margin-left: 10%;
+    color: palevioletred;
+  }
+
+  .toggle-comment {
+    margin-left: 10%;
+    color: skyblue;
+    cursor: pointer;
+  }
+}
+.not-reply-comment-overwrite {
+  border-bottom: none;
+}
+
+/*
+ * Comments that are replies
+ */
+.reply-container {
+  height: 0;
+  overflow: hidden;
+  transition: height 0.5s ease-in-out;
+}
+.show-comment {
+  height: initial;
+}
+
+.reply-comment {
+  padding-top: 5px;
+  margin-left: 10%;
+  margin-bottom: 10px;
+  border-bottom: dotted 1px lightgray;
+
+  .reply-top-half {
+    position: relative;
+
+    img {
+      width: 8%;
+      border-radius: 50%;
+      border: 1px solid lightgray;
+      float: left;
+      cursor: pointer;
+    }
+
+    .reply-username {
+      float: left;
+      margin-left: 2%;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: rgba(119, 30, 236, 0.863);
+    }
+
+    .dateTime {
+      position: absolute;
+      color: gray;
+      left: 10%;
+      top: 55%;
+      font-size: 0.8rem;
+    }
+
+    &:after {
+      content: "";
+      clear: both;
+      display: table;
+    }
+  }
+
+  .reply-bottom-half {
+    margin-left: 10%;
+    width: 60%;
+    float: left;
+    .username {
+      color: rgb(28, 184, 184);
+      cursor: pointer;
+    }
+  }
+
+  .comment-form {
+    width: 100%;
+    height: 0;
+    overflow: hidden;
+    transition: height 1s cubic-bezier(0.075, 0.82, 0.165, 1);
+
+    .comment-form-input {
+      width: 62%;
+      float: left;
+    }
+
+    .comment-form-submit {
+      width: 20%;
+      float: left;
+      color: violet;
+    }
+  }
+
+  .comment-form-appear {
+    height: 50px;
+  }
+
+  .comment-reply-button {
+    float: left;
+    width: 10%;
+    margin-left: 12%;
+    color: palevioletred;
+  }
+}
+
+.reply-comment-overwrite {
+  border-bottom: none;
+}

@@ -5,3 +5,4 @@ public/bundle.js
 yarn.lock
 package-lock.json
 bloggy.code-workspace
+public/server/config/keys.js

@@ -9,8 +9,8 @@ const searches = require("./routers/api/search");
 const app = express();
 
 // Body parser middleware
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
+app.use(bodyParser.json({ extended: true, limit: "50mb" }));
 
 // CORS support
 app.use((req, res, next) => {
