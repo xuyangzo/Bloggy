@@ -20,6 +20,7 @@
     "start-concurrent": "concurrently \"yarn run dev-server\" \"yarn run serve-backend\""
   },
   "dependencies": {
+    "animate.css": "^3.7.0",
     "axios": "^0.18.0",
     "babel-cli": "^6.26.0",
     "babel-core": "7.0.0-bridge.0",
