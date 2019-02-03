@@ -322,5 +322,19 @@ router.post(
   }
 );
 
-router.get("/view/:user_id",)
+// @route   GET api/users/view/:user_id
+// @desc    View user
+// @access  Private
+router.get(
+    "/view/:user_id",
+    passport.authenticate("jwt", { session: false }),
+    (req, res) => {
+      User.findOne(
+          { _id: req.user.id },
+      )
+          .then(user => res.json(user))
+          .catch(err => res.status(404).json({ usernotfound: "User not found" }));
+    }
+);
+
 module.exports = router;
