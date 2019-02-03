@@ -9,7 +9,7 @@ export default class Navbar extends React.Component {
   render() {
     return (
       <nav
-        className="navbar navbar-expand-lg navbar-light fixed-top"
+        className="navbar navbar-expand-md navbar-light fixed-top navbar-light bg-light"
         id="mainNav"
       >
         <div className="container">
@@ -25,8 +25,7 @@ export default class Navbar extends React.Component {
             aria-expanded="false"
             aria-label="Toggle navigation"
           >
-            Menu
-            <i className="fas fa-bars" />
+            <span class="navbar-toggler-icon"></span>
           </button>
           <div className="collapse navbar-collapse" id="navbarResponsive">
             <ul className="navbar-nav ml-auto">

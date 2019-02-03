@@ -36,7 +36,7 @@ export default class Navbar extends React.Component {
         });
     }
     onClick = search => {
-        
+
         const searchType = search;
         const keyword = this.state.inputValue;
         axios
@@ -51,7 +51,7 @@ export default class Navbar extends React.Component {
     };
 
     onKeyPressed = e => {
-        if(e.keyCode === 13){
+        if (e.keyCode === 13) {
             const searchType = "all";
             const keyword = this.state.inputValue;
             axios
@@ -70,7 +70,7 @@ export default class Navbar extends React.Component {
                 });
         }
     };
-    
+
 
 }
 
