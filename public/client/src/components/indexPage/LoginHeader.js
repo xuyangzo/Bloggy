@@ -1,6 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
+import "animate.css";
+
 const Header = () => {
   return (
     <header
@@ -12,7 +14,7 @@ const Header = () => {
       <div className="container">
         <div className="row">
           <div className="col-lg-8 col-md-10 mx-auto">
-            <div className="site-heading">
+            <div className="site-heading animated fadeIn">
               <h1>Bloggy</h1>
               <span className="subheading">Create your blog today</span>
               <div className="col-lg-6 col-md-7 mx-auto text-center mt-4">
