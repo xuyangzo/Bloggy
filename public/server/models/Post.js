@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const mongoosastic = require("mongoosastic");
 var elasticsearch = require("elasticsearch");
-
+const moment = require("moment");
 const esClient = new elasticsearch.Client({
   host:
     "https://search-bloggy-iec77mrsmswpriiofnkjh3ggrq.us-west-1.es.amazonaws.com"
@@ -70,7 +70,7 @@ const PostSchema = new Schema({
   dateTime: {
     type: Date,
     es_indexed: true,
-    default: Date.now
+    default: moment().format()
   },
   text: {
     type: String,
