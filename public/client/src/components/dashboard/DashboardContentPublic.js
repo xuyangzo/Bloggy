@@ -1,8 +1,9 @@
 import React from "react";
-import Masonry from "react-masonry-component";
 import axios from "axios";
 import Moment from "react-moment";
 import InfiniteScroll from "react-infinite-scroller";
+import "animate.css";
+
 
 export default class DashboardContent extends React.Component {
     constructor(props) {
@@ -15,12 +16,14 @@ export default class DashboardContent extends React.Component {
             canLoad: true
         };
 
-        // retrieve post info from database
+        // retrieve first 6 posts info from database
         axios
-            .get("/api/posts/index")
+            .get("/api/posts/index/0")
             .then(res => {
+                console.log(res.data);
                 this.setState(prevState => ({
-                    allPosts: prevState.allPosts.concat(res.data)
+                    allPosts: prevState.allPosts.concat(res.data),
+                    renderCount: 6
                 }));
             })
             .catch(err => console.log(err.response.data));
@@ -29,59 +32,22 @@ export default class DashboardContent extends React.Component {
     loadFunc = () => {
         // if load before state initialize
         if (this.state.allPosts.length === 0) return;
-        // if run out of posts
-        // if (this.state.renderCount === 12) {
-        //   this.setState({ canLoad: false });
-        //   return;
-        // }
+
+        // retrieve following 6 posts info from database
+        axios
+            .get("/api/posts/index/" + this.state.renderCount)
+            .then(res => {
+                if (!res.data || !!res.data) {
+                    this.setState({ canLoad: false });
+                }
+                this.setState(prevState => ({
+                    allPosts: prevState.allPosts.concat(res.data),
+                    renderCount: prevState.renderCount + 6
+                }));
+            })
+            .catch(err => console.log(err.response.data));
 
         console.log("load more!");
-
-        // load 3 posts a time
-        const newPosts = [];
-        for (var i = this.state.renderCount; i < this.state.renderCount + 3; i++) {
-            const post = this.state.allPosts[i];
-            const temp = (
-                <div className="col-md-12 featured-responsive" key={post._id}
-                    onClick={() => this.state.onClickPost(post._id)} style={{ cursor: "pointer" }}>
-                    <div className="featured-place-wrap">
-
-                        <div className="featured-title-box post-preview">
-                            <div className="row mb-2">
-                                <div className="col-auto">
-                                    <img alt="Kazz Yokomizo"
-                                        src="https://miro.medium.com/fit/c/80/80/1*h8bl3llMMWGkoA242LHcDw.png"
-                                        class="rounded-circle" height="100%"
-                                    />
-                                </div>
-                                <div className="col-auto">
-                                    <ul>
-                                        <li>
-                                            <h5 className="custom">{post.author}</h5>
-                                        </li>
-                                        <li>
-                                            <p><Moment className="custom" format="MMMM Do YYYY, hh:mm a">{post.dateTime}</Moment></p>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <img src="https://cdn-images-1.medium.com/max/2000/1*GEwEeymxbjn7weKXGjq48Q.png"
-                                className="img-fluid" alt="#" />
-                            <h3 className="custom post-title">{post.title}</h3>
-                            <h4 className="custom post-subtitle">{post.subtitle}</h4>
-                            <div className="bottom-icons">
-                                <span className="fa fa-bookmark custom" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            );
-            newPosts.push(temp);
-        }
-        this.setState(prevState => ({
-            allRenderedPosts: prevState.allRenderedPosts.concat(newPosts),
-            renderCount: prevState.renderCount + 3
-        }));
     };
 
     render() {
@@ -151,7 +117,44 @@ export default class DashboardContent extends React.Component {
                                 </div>
                             }
                         >
-                            {this.state.allRenderedPosts}
+                            {this.state.allPosts.map(post => {
+                                const temp = (
+                                    <div className="col-md-12 featured-responsive" key={post._id}
+                                        onClick={() => this.state.onClickPost(post._id)} style={{ cursor: "pointer" }}>
+                                        <div className="featured-place-wrap">
+
+                                            <div className="featured-title-box post-preview">
+                                                <div className="row mb-2">
+                                                    <div className="col-auto">
+                                                        <img alt="Kazz Yokomizo"
+                                                            src="https://miro.medium.com/fit/c/80/80/1*h8bl3llMMWGkoA242LHcDw.png"
+                                                            class="rounded-circle" height="100%"
+                                                        />
+                                                    </div>
+                                                    <div className="col-auto">
+                                                        <ul>
+                                                            <li>
+                                                                <h5 className="custom">{post.author}</h5>
+                                                            </li>
+                                                            <li>
+                                                                <p><Moment className="custom" format="MMMM Do YYYY, hh:mm a">{post.dateTime}</Moment></p>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <img src="https://cdn-images-1.medium.com/max/2000/1*GEwEeymxbjn7weKXGjq48Q.png"
+                                                    className="img-fluid" alt="#" />
+                                                <h3 className="custom post-title">{post.title}</h3>
+                                                <h4 className="custom post-subtitle">{post.subtitle}</h4>
+                                                <div className="bottom-icons">
+                                                    <span className="fa fa-bookmark custom" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                                return temp;
+                            })}
                         </InfiniteScroll>
                     </div>
 
