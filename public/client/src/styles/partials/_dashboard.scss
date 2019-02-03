@@ -1,0 +1,146 @@
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 800;
+  font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #212529;
+  -webkit-transition: all 0.2s;
+  transition: all 0.2s;
+  &:focus,
+  &:hover {
+    color: #0085a1;
+  }
+}
+
+.post-preview > {
+  .post-title {
+    font-size: 30px;
+    margin-top: 30px;
+    margin-bottom: 10px;
+  }
+  .post-subtitle {
+    font-weight: 300;
+    margin: 0 0 10px;
+  }
+  .post-meta {
+    font-size: 18px;
+    font-style: italic;
+    margin-top: 0;
+    color: #868e96;
+    > a {
+      text-decoration: none;
+      color: #212529;
+      &:focus,
+      &:hover {
+        text-decoration: underline;
+        color: #0085a1;
+      }
+    }
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .post-preview > a > .post-title {
+    font-size: 36px;
+  }
+}
+
+// Featured Wrap
+
+.featured-place-wrap {
+  background: #ECF0F1;
+  -webkit-box-shadow: 0px 3px 40px 0 #ECF0F1;
+  box-shadow: 0px 3px 40px 0 #ECF0F1;
+  margin: 30px 0 30px;
+  -webkit-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  transition: all 0.5s ease;
+  position: relative;
+  &:hover {
+    -webkit-transform: translateY(-2px);
+    -ms-transform: translateY(-2px);
+    transform: translateY(-2px);
+    -webkit-box-shadow: 0px 3px 40px 0 #0085a1;
+    box-shadow: 0px 3px 40px 0 #0085a1;
+    background-color: #0085a1;
+  }
+  &:hover .custom {
+    color: white;
+  }
+}
+
+
+.featured-title-box {
+  color: black;
+  padding: 22px 20px;
+  h3 {
+    -o-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    margin-bottom: 5px;
+  }
+  p {
+    display: inline-block;
+    margin: 0;
+  }
+  ul {
+    padding: 0;
+    margin: 10px 0 0;
+    li {
+      list-style: none;
+      line-height: 2;
+      span {
+        padding: 7px 8px 0 0;
+      }
+      p {
+        color: #737882;
+        font-style: italic;
+        margin: 0;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .featured-title-box {
+    padding: 22px 14px;
+  }
+}
+
+@media (max-width: 320px) {
+  .featured-title-box p {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 320px) {
+  .featured-title-box span {
+    padding: 0 4px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .featured-title-box ul li span {
+    padding: 0 4px 0 0;
+  }
+}
+
+@media (max-width: 320px) {
+  .featured-title-box ul li span {
+    font-size: 12px;
+    padding: 0 2px 0 0;
+  }
+}
+
+.bottom-icons {
+  padding: 15px 0 0;
+  span {
+    float: right;
+    padding: 0 0 0 12px;
+  }
+}
