@@ -37,7 +37,7 @@ export default class Comment extends React.Component {
           } else {
             // if the comment is not a reply
             this.setState(prevState => ({
-              commentsNotReply: prevState.commentsNotReply.concat(comment)
+              commentsNotReply: [...prevState.commentsNotReply, comment]
             }));
           }
         });
@@ -112,7 +112,7 @@ export default class Comment extends React.Component {
             } else {
               // if the comment is not a reply
               this.setState(prevState => ({
-                commentsNotReply: prevState.commentsNotReply.concat(comment)
+                commentsNotReply: [...prevState.commentsNotReply, comment]
               }));
             }
           });
@@ -202,83 +202,86 @@ export default class Comment extends React.Component {
                   )
                 })}
               >
-                {comment.beingReplied.map((reply, i) => {
-                  const reply_temp = this.state.commentsIsReply.filter(
-                    comment => {
-                      if (comment._id === reply) return comment;
-                    }
-                  );
-                  const reply_comment = reply_temp[0];
-                  // if reply command id matchs this comment's id
-                  return (
-                    <div
-                      className={classnames("container reply-comment", {
-                        "reply-comment-overwrite":
-                          i + 1 === comment.beingReplied.length
-                      })}
-                      key={reply_comment._id}
-                    >
-                      <div className="reply-top-half">
-                        <img src={reply_comment.avatar} />
-                        <p className="reply-username">
-                          {reply_comment.username}
-                        </p>
-                        <Moment
-                          className="dateTime"
-                          format="YYYY-MM-DD, hh:mm a"
-                        >
-                          {reply_comment.dateTime}
-                        </Moment>
-                      </div>
-                      <div className="reply-bottom-half pt-1">
-                        <p>
-                          Reply{" "}
-                          <span className="username">
-                            @{reply_comment.reply_username}
-                          </span>
-                          <br />
-                          {reply_comment.text}
-                        </p>
-                      </div>
-                      <p
-                        className="btn comment-reply-button"
-                        onClick={() => this.addToAppear(reply_comment._id)}
+                {comment.beingReplied
+                  .slice(0)
+                  .reverse()
+                  .map((reply, i) => {
+                    const reply_temp = this.state.commentsIsReply.filter(
+                      comment => {
+                        if (comment._id === reply) return comment;
+                      }
+                    );
+                    const reply_comment = reply_temp[0];
+                    // if reply command id matchs this comment's id
+                    return (
+                      <div
+                        className={classnames("container reply-comment", {
+                          "reply-comment-overwrite":
+                            i + 1 === comment.beingReplied.length
+                        })}
+                        key={reply_comment._id}
                       >
-                        reply
-                      </p>
-                      <div>
-                        <form
-                          className={classnames("comment-form", {
-                            "comment-form-appear": this.state.commentFormAppear.includes(
-                              reply_comment._id
-                            )
-                          })}
-                          onSubmit={e =>
-                            this.onReply(
-                              e,
-                              reply_comment.username,
-                              reply_comment.linked_comm_userid,
-                              comment._id
-                            )
-                          }
+                        <div className="reply-top-half">
+                          <img src={reply_comment.avatar} />
+                          <p className="reply-username">
+                            {reply_comment.username}
+                          </p>
+                          <Moment
+                            className="dateTime"
+                            format="YYYY-MM-DD, hh:mm a"
+                          >
+                            {reply_comment.dateTime}
+                          </Moment>
+                        </div>
+                        <div className="reply-bottom-half pt-1">
+                          <p>
+                            Reply{" "}
+                            <span className="username">
+                              @{reply_comment.reply_username}
+                            </span>
+                            <br />
+                            {reply_comment.text}
+                          </p>
+                        </div>
+                        <p
+                          className="btn comment-reply-button"
+                          onClick={() => this.addToAppear(reply_comment._id)}
                         >
-                          <input
-                            className="form-control comment-form-input"
-                            type="text"
-                            name="reply"
-                            placeholder="reply..."
-                          />
-                          <input
-                            type="submit"
-                            className="btn comment-form-submit"
-                            value="comment"
-                          />
-                        </form>
+                          reply
+                        </p>
+                        <div>
+                          <form
+                            className={classnames("comment-form", {
+                              "comment-form-appear": this.state.commentFormAppear.includes(
+                                reply_comment._id
+                              )
+                            })}
+                            onSubmit={e =>
+                              this.onReply(
+                                e,
+                                reply_comment.username,
+                                reply_comment.linked_comm_userid,
+                                comment._id
+                              )
+                            }
+                          >
+                            <input
+                              className="form-control comment-form-input"
+                              type="text"
+                              name="reply"
+                              placeholder="reply..."
+                            />
+                            <input
+                              type="submit"
+                              className="btn comment-form-submit"
+                              value="comment"
+                            />
+                          </form>
+                        </div>
+                        <div className="clear" />
                       </div>
-                      <div className="clear" />
-                    </div>
-                  );
-                })}
+                    );
+                  })}
               </div>
             </div>
           );
