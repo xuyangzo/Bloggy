@@ -65,6 +65,7 @@ export default class View extends React.Component {
         .post("/api/posts/comment/" + this.state.post_id, singleComment)
         .then(res => {
           this.setState({ comments: res.data.comments });
+          document.getElementById("comment").value = "";
         })
         .catch(err => {
           this.setState({ errors: err.response.data });
@@ -109,6 +110,7 @@ export default class View extends React.Component {
               placeholder="Leave any comments here..."
               rows="5"
               name="comment"
+              id="comment"
               onChange={this.onChangeComment}
             />
           </div>
