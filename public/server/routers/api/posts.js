@@ -70,15 +70,20 @@ router.get("/index/:index", (req, res) => {
     // redisClient.rpop("posts");
     // console.log("after");
     const index = parseInt(req.params.index, 10);
-    redisClient.lrange("posts", index, index + 5, function(err, items) {
+    redisClient.lrange("posts", -6-index, -1-index, function(err, items) {
         if (err) throw err;
         // var posts = [];
         var posts = [];
-        for (var i = items.length - 1; i >= 0; i--) {
+        for (var i = items.length -1; i >= 0; i--) {
             console.log(" " + items[i]);
             posts.push(JSON.parse(items[i]));
         }
-
+            // items.forEach(function(item, i) {
+            //     console.log(' ' + item);
+            //     posts.push(JSON.parse(items[i]));
+            // });
+            // client.quit();
+       
         res.json(posts);
     });
 });
