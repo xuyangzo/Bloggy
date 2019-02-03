@@ -11,9 +11,9 @@ export default class Navbar extends React.Component {
         return <div className="input-group">
             <input type="text" className="form-control" onKeyDown={this.onKeyPressed} aria-label="Text input with dropdown button" value={this.state.inputValue} onChange={evt => this.updateInputValue(evt)} />
             <div className="input-group-append">
-              <button className="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" />
+              <button className="btn btn-outline-secondary " type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >Search </button>
               <div className="dropdown-menu">
-                <a className="dropdown-item" onClick={() => this.onClick("author")} href="#">
+                {/* <a className="dropdown-item" onClick={() => this.onClick("author")} href="#">
                   Search by Author
                 </a>
                 <a className="dropdown-item" href="#" onClick={() => this.onClick("title")}>
@@ -25,7 +25,7 @@ export default class Navbar extends React.Component {
                 <div role="separator" class="dropdown-divider" />
                 <a className="dropdown-item" href="#" onClick={() => this.onClick("all")}>
                   Search All
-                </a>
+                </a> */}
               </div>
             </div>
           </div>;
@@ -58,6 +58,11 @@ export default class Navbar extends React.Component {
                 .get(`/api/search/${searchType}/${keyword}`)
                 .then(res => {
                     console.log(res.data);
+                    for (let index = 0; index < res.data.length; index++) {
+                        const element = res.data[index];
+                        console.log(element._source.title);
+                        return (<div>element._source.title</div>)
+                    }
                 })
                 .catch(err => {
                     this.setState({ errors: err.response.data });
