@@ -63,7 +63,7 @@ router.get("/all", (req, res) => {
         .catch(err => res.status(404).json({ nopostfound: "No post found" }));
 });
 
-// @route   GET api/posts/all
+// @route   GET api/posts/index/:index
 // @desc    Get First 6 posts for Index Page
 // @access  Public
 router.get("/index/:index", (req, res) => {
@@ -75,15 +75,9 @@ router.get("/index/:index", (req, res) => {
         // var posts = [];
         var posts = [];
         for (var i = items.length -1; i >= 0; i--) {
-            console.log(" " + items[i]);
+            // console.log(" " + items[i]);
             posts.push(JSON.parse(items[i]));
         }
-            // items.forEach(function(item, i) {
-            //     console.log(' ' + item);
-            //     posts.push(JSON.parse(items[i]));
-            // });
-            // client.quit();
-       
         res.json(posts);
     });
 });
@@ -130,16 +124,9 @@ router.post(
 
             var cachepost = new Object(cpostFields);
             var cp = JSON.stringify(cachepost);
-            console.log(cp);
+            // console.log(cp);
 
             redisClient.rpush("posts", cp, redis.print);
-            redisClient.lrange("posts", 0, -1, function(err, items) {
-                if (err) throw err;
-                items.forEach(function(item, i) {
-                    console.log(" " + item);
-                });
-                // redisClient.quit();
-            });
             // update User Model
             User.findOneAndUpdate(
                 { _id: req.user.id },
