@@ -282,3 +282,21 @@ i {
 .reply-comment-overwrite {
   border-bottom: none;
 }
+
+/* Pagination */
+.pagination-overwrite {
+  display: flex;
+  justify-content: center;
+}
+
+.page-link {
+  color: skyblue;
+  &:hover {
+    color: palevioletred;
+  }
+}
+
+.selected {
+  font-weight: bold;
+  color: palevioletred;
+}
