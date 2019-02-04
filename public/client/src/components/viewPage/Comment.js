@@ -3,6 +3,7 @@ import Moment from "react-moment";
 import axios from "axios";
 import setAuthToken from "../utils/setAuthToken";
 import classnames from "classnames";
+import scrollToElement from "scroll-to-element";
 
 export default class Comment extends React.Component {
   constructor(props) {
@@ -15,7 +16,9 @@ export default class Comment extends React.Component {
       commentsIsReply: [],
       commentFormAppear: [],
       reRenderSignal: 0.0,
-      displayComments: []
+      displayComments: [],
+      pageNumber: 1,
+      totalPageNumber: 0
     };
   }
 
@@ -36,13 +39,48 @@ export default class Comment extends React.Component {
             }));
           } else {
             // if the comment is not a reply
-            this.setState(prevState => ({
-              commentsNotReply: [...prevState.commentsNotReply, comment]
-            }));
+            this.setState(
+              prevState => ({
+                commentsNotReply: [...prevState.commentsNotReply, comment]
+              }),
+              () => {
+                // set total page number
+                this.setState(prevState => ({
+                  totalPageNumber:
+                    Math.floor(prevState.commentsNotReply.length / 10) + 1
+                }));
+              }
+            );
           }
         });
       }
     );
+  };
+
+  // switch page number
+  onChangePage = pageNumber => {
+    this.setState({ pageNumber });
+    scrollToElement("#post-comment-form", {
+      offset: 0,
+      ease: "linear",
+      duration: 100
+    });
+  };
+  onBackPage = () => {
+    this.setState(prevState => ({ pageNumber: prevState.pageNumber - 1 }));
+    scrollToElement("#post-comment-form", {
+      offset: 0,
+      ease: "linear",
+      duration: 100
+    });
+  };
+  onForwardPage = () => {
+    this.setState(prevState => ({ pageNumber: prevState.pageNumber + 1 }));
+    scrollToElement("#post-comment-form", {
+      offset: 0,
+      ease: "linear",
+      duration: 100
+    });
   };
 
   // toggle comments
@@ -79,6 +117,7 @@ export default class Comment extends React.Component {
     }
   };
 
+  // reply comments
   onReply = (e, username, userid, commid) => {
     e.preventDefault();
 
@@ -118,7 +157,12 @@ export default class Comment extends React.Component {
           });
           // update toggle comments
           this.setState(prevState => ({
-            displayComments: [commid, ...prevState.displayComments]
+            commentFormAppear: prevState.commentFormAppear.filter(comment => {
+              if (comment !== commid) return comment;
+            }),
+            displayComments: [commid, ...prevState.displayComments],
+            totalPageNumber:
+              Math.floor(prevState.commentsNotReply.length / 10) + 1
           }));
         })
         .catch(err => {
@@ -129,17 +173,44 @@ export default class Comment extends React.Component {
     }
   };
 
+  // construct pagination
+  constructPagination = () => {
+    var pagination = [];
+    for (let i = 1; i < this.state.totalPageNumber + 1; i++) {
+      const currentPage = (
+        <li className="page-item" key={i}>
+          <p
+            className={classnames("page-link", {
+              selected: this.state.pageNumber === i
+            })}
+            onClick={() => this.onChangePage(i)}
+          >
+            {i}
+          </p>
+        </li>
+      );
+      pagination.push(currentPage);
+    }
+    return pagination;
+  };
+
   render() {
     return (
-      <div>
-        <p>POPULAR COMMENTS</p>
+      <div id="comment-section">
+        <p>COMMENTS</p>
         <hr />
         {this.state.commentsNotReply.map((comment, i) => {
+          if (
+            i >= this.state.pageNumber * 10 ||
+            i < (this.state.pageNumber - 1) * 10
+          )
+            return "";
           return (
             <div
               className={classnames("container not-reply-comment", {
                 "not-reply-comment-overwrite":
-                  i + 1 === this.state.commentsNotReply.length
+                  i + 1 === this.state.commentsNotReply.length ||
+                  i + 1 === this.state.pageNumber * 10
               })}
               key={comment._id}
             >
@@ -286,6 +357,49 @@ export default class Comment extends React.Component {
             </div>
           );
         })}
+        <div className="container text-center">
+          <ul className="pagination text-center pagination-overwrite">
+            {this.state.pageNumber === 1 ? (
+              <li className="page-item invisible">
+                <p className="page-link" href="#" aria-label="Previous">
+                  <span aria-hidden="true">&laquo;</span>
+                  <span className="sr-only skyblue">Previous</span>
+                </p>
+              </li>
+            ) : (
+              <li className="page-item">
+                <p
+                  className="page-link"
+                  aria-label="Previous"
+                  onClick={this.onBackPage}
+                >
+                  <span aria-hidden="true">&laquo;</span>
+                  <span className="sr-only skyblue">Previous</span>
+                </p>
+              </li>
+            )}
+            {this.constructPagination()}
+            {this.state.pageNumber === this.state.totalPageNumber ? (
+              <li className="page-item invisible">
+                <p className="page-link" href="#" aria-label="Next">
+                  <span aria-hidden="true">&raquo;</span>
+                  <span className="sr-only">Next</span>
+                </p>
+              </li>
+            ) : (
+              <li className="page-item">
+                <p
+                  className="page-link"
+                  aria-label="Next"
+                  onClick={this.onForwardPage}
+                >
+                  <span aria-hidden="true">&raquo;</span>
+                  <span className="sr-only">Next</span>
+                </p>
+              </li>
+            )}
+          </ul>
+        </div>
       </div>
     );
   }
