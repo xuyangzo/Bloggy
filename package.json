@@ -69,6 +69,7 @@
     "react-router-dom": "^4.3.1",
     "redis": "^2.8.0",
     "sass-loader": "^7.1.0",
+    "scroll-to-element": "^2.0.2",
     "style-loader": "^0.23.1",
     "uuid": "^3.3.2",
     "validator": "^10.11.0",
