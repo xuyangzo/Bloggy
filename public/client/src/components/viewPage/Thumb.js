@@ -11,6 +11,7 @@ export default class Thumb extends React.Component {
       post_id: props.post_id,
       likes: props.likes,
       dislikes: props.dislikes,
+      hotness: props.likes.length - props.dislikes.length,
       isLike: false,
       isDislike: false
     };
@@ -44,44 +45,33 @@ export default class Thumb extends React.Component {
       likes: newProps.likes,
       dislikes: newProps.dislikes,
       isLike,
-      isDislike
+      isDislike,
+      hotness: newProps.likes.length - newProps.dislikes.length
     });
   };
 
   onPostLike = () => {
+    let hotCount = 0;
+    if (this.state.isLike) hotCount = -1;
+    else if (this.state.isDislike) hotCount = 2;
+    else hotCount = 1;
+
+    // set thumb at front-end
+    this.setState(prevState => ({
+      isLike: !prevState.isLike,
+      isDislike: false,
+      hotness: prevState.hotness + hotCount
+    }));
+
+    // send request to back-end
     if (localStorage.jwtToken) {
       setAuthToken(localStorage.jwtToken);
       axios
         .post("/api/posts/like/" + this.state.post_id)
         .then(res => {
-          // decode jwt_token
-          let userid;
-          if (localStorage.jwtToken) {
-            userid = jwt_decode(localStorage.jwtToken).id;
-          }
-          // check if user already likes
-          var isLike = false;
-          var isDislike = false;
-          for (var i = 0; i < res.data.likes.length; i++) {
-            if (res.data.likes[i].linked_like_userid === userid) {
-              isLike = true;
-              break;
-            }
-          }
-          // check if user already dislike
-          if (!isLike) {
-            for (var i = 0; i < res.data.dislikes.length; i++) {
-              if (res.data.dislikes[i].linked_dislike_userid === userid) {
-                isDislike = true;
-                break;
-              }
-            }
-          }
           this.setState({
             likes: res.data.likes,
-            dislikes: res.data.dislikes,
-            isLike,
-            isDislike
+            dislikes: res.data.dislikes
           });
         })
         .catch(err => {
@@ -94,39 +84,27 @@ export default class Thumb extends React.Component {
   };
 
   onPostDislike = () => {
+    let hotCount = 0;
+    if (this.state.isLike) hotCount = -2;
+    else if (this.state.isDislike) hotCount = 1;
+    else hotCount = -1;
+
+    // set thumb at front-end
+    this.setState(prevState => ({
+      isLike: false,
+      isDislike: !prevState.isDislike,
+      hotness: prevState.hotness + hotCount
+    }));
+
+    // send request to back-end
     if (localStorage.jwtToken) {
       setAuthToken(localStorage.jwtToken);
       axios
         .post("/api/posts/dislike/" + this.state.post_id)
         .then(res => {
-          // decode jwt_token
-          let userid;
-          if (localStorage.jwtToken) {
-            userid = jwt_decode(localStorage.jwtToken).id;
-          }
-          // check if user already likes
-          var isLike = false;
-          var isDislike = false;
-          for (var i = 0; i < res.data.likes.length; i++) {
-            if (res.data.likes[i].linked_like_userid === userid) {
-              isLike = true;
-              break;
-            }
-          }
-          // check if user already dislike
-          if (!isLike) {
-            for (var i = 0; i < res.data.dislikes.length; i++) {
-              if (res.data.dislikes[i].linked_dislike_userid === userid) {
-                isDislike = true;
-                break;
-              }
-            }
-          }
           this.setState({
             likes: res.data.likes,
-            dislikes: res.data.dislikes,
-            isLike,
-            isDislike
+            dislikes: res.data.dislikes
           });
         })
         .catch(err => {
@@ -149,9 +127,7 @@ export default class Thumb extends React.Component {
           })}
           onClick={this.onPostLike}
         />
-        <span className="hot-width">
-          {this.state.likes.length - this.state.dislikes.length}
-        </span>
+        <span className="hot-width">{this.state.hotness}</span>
         <i
           className={classnames("far fa-thumbs-down ml-4", {
             "blue-thumb": this.state.isDislike,

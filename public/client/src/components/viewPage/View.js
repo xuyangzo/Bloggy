@@ -102,7 +102,7 @@ export default class View extends React.Component {
           likes={this.state.likes}
         />
         <hr />
-        <form onSubmit={this.onPostComment}>
+        <form onSubmit={this.onPostComment} id="post-comment-form">
           <div className="form-group">
             <p>LEAVE COMMENTS</p>
             <textarea
