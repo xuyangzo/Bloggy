@@ -1,3 +1,7 @@
+/* Google Fonts */
+@import url("https://fonts.googleapis.com/css?family=Dancing+Script");
+@import url("https://fonts.googleapis.com/css?family=Dosis");
+
 #grid {
   padding: 10px;
   -webkit-perspective: 1000px;
@@ -9,7 +13,7 @@
 
   .grid-item {
     background: white;
-    height: 380px;
+    height: 410px;
     margin: 0.5rem 0.5rem;
     display: inline-block;
     border-radius: 4px;
@@ -21,6 +25,9 @@
     box-sizing: border-box;
     transition: all 2s cubic-bezier(0.075, 0.82, 0.165, 1);
     cursor: pointer;
+    background: url("/client/src/image/grid-bg1.jpg");
+    background-size: 100% 100%;
+    padding: 3%;
 
     &:hover {
       box-shadow: 0px 25px 30px -20px rgba(0, 0, 0, 0.2);
@@ -28,7 +35,7 @@
     }
 
     &:nth-child(4n-5) {
-      height: 420px;
+      height: 430px;
     }
 
     &:nth-child(2n) {
@@ -36,7 +43,20 @@
     }
 
     &:nth-child(3n) {
-      height: 440px;
+      height: 450px;
+    }
+
+    .grid-title {
+      font-family: "Dancing Script", cursive;
+    }
+
+    .grid-subtitle {
+      font-family: "Dancing Script", cursive;
+    }
+
+    .grid-author,
+    .grid-time {
+      font-family: "Dosis", sans-serif;
     }
   }
 }

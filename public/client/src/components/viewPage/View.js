@@ -2,6 +2,7 @@ import React from "react";
 import axios from "axios";
 import Moment from "react-moment";
 import setAuthToken from "../utils/setAuthToken";
+import jwt_decode from "jwt-decode";
 
 import Comment from "./Comment";
 import Thumb from "./Thumb";
@@ -51,6 +52,23 @@ export default class View extends React.Component {
 
   createMarkup = () => {
     return { __html: this.state.text };
+  };
+
+  // push to dashboard
+  onGotoDashboard = userid => {
+    // verify if the profile matches current user
+    if (localStorage.jwtToken) {
+      const token = jwt_decode(localStorage.jwtToken);
+      if (token.id === userid) {
+        this.props.history.push(`/dashboard`);
+      } else {
+        this.props.history.push(`/profile/${userid}`);
+      }
+    } else {
+      // if the user does not log in
+      // directly forward to dashboard with public router
+      this.props.history.push(`/profile/${userid}`);
+    }
   };
 
   onPostComment = e => {
@@ -127,6 +145,7 @@ export default class View extends React.Component {
         <Comment
           allComments={this.state.comments}
           post_id={this.state.post_id}
+          onGotoDashboard={this.onGotoDashboard}
         />
       </div>
     );
