@@ -199,6 +199,14 @@ export default class Comment extends React.Component {
       <div id="comment-section">
         <p>COMMENTS</p>
         <hr />
+        {this.state.commentsNotReply.length === 0 ? (
+          <div>
+            <p className="pale">No comments yet!</p>
+            <p className="pale">Be the first one to comment!</p>
+          </div>
+        ) : (
+          ""
+        )}
         {this.state.commentsNotReply.map((comment, i) => {
           if (
             i >= this.state.pageNumber * 10 ||
@@ -405,7 +413,8 @@ export default class Comment extends React.Component {
               </li>
             )}
             {this.constructPagination()}
-            {this.state.pageNumber === this.state.totalPageNumber ? (
+            {this.state.pageNumber === this.state.totalPageNumber ||
+            this.state.totalPageNumber === 0 ? (
               <li className="page-item invisible">
                 <p className="page-link" href="#" aria-label="Next">
                   <span aria-hidden="true">&raquo;</span>

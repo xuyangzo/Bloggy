@@ -7,14 +7,41 @@
   font-family: "Dancing Script", cursive !important;
   font-size: 5rem;
 }
-.blog-author {
-  cursor: pointer;
-  color: violet;
-  font-size: 2rem;
-  font-family: "Amatic SC", cursive !important;
+.blog-author-intro {
+  width: 80%;
+  padding: 1%;
+  position: relative;
+
+  .blog-author {
+    cursor: pointer;
+    color: violet;
+    font-family: "Dancing Script", cursive !important;
+    font-size: 2rem;
+    float: left;
+  }
+
+  .author-img {
+    border-radius: 50%;
+    float: left;
+    width: 6rem;
+    cursor: pointer;
+    border: 1px solid rgba(77, 75, 75, 0.671);
+  }
+
+  .author-description {
+    position: absolute;
+    left: 7.5rem;
+    top: 55px;
+  }
+
+  &:after {
+    content: "";
+    clear: both;
+    display: table;
+  }
 }
 .blog-date {
-  font-family: "Amatic SC", cursive !important;
+  font-family: "Dancing Script", cursive !important;
   font-size: 1.5rem;
 }
 
@@ -299,4 +326,8 @@ i {
 .selected {
   font-weight: bold;
   color: palevioletred;
+}
+
+.pale {
+  color: palevioletred !important;
 }
