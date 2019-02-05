@@ -215,8 +215,20 @@ export default class Comment extends React.Component {
               key={comment._id}
             >
               <div className="comment-top-half">
-                <img src={comment.avatar} />
-                <p className="username">{comment.username}</p>
+                <img
+                  src={comment.avatar}
+                  onClick={() =>
+                    this.props.onGotoDashboard(comment.linked_comm_userid)
+                  }
+                />
+                <p
+                  className="username"
+                  onClick={() =>
+                    this.props.onGotoDashboard(comment.linked_comm_userid)
+                  }
+                >
+                  {comment.username}
+                </p>
                 <Moment className="dateTime" format="YYYY-MM-DD, hh:mm a">
                   {comment.dateTime}
                 </Moment>
@@ -293,8 +305,22 @@ export default class Comment extends React.Component {
                         key={reply_comment._id}
                       >
                         <div className="reply-top-half">
-                          <img src={reply_comment.avatar} />
-                          <p className="reply-username">
+                          <img
+                            src={reply_comment.avatar}
+                            onClick={() =>
+                              this.props.onGotoDashboard(
+                                reply_comment.linked_comm_userid
+                              )
+                            }
+                          />
+                          <p
+                            className="reply-username"
+                            onClick={() =>
+                              this.props.onGotoDashboard(
+                                reply_comment.linked_comm_userid
+                              )
+                            }
+                          >
                             {reply_comment.username}
                           </p>
                           <Moment
