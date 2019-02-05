@@ -111,7 +111,7 @@ router.post(
     // get fields
     const postFields = {};
     postFields.linked_userid = req.user.id;
-    postFields.avatart = req.user.avatar;
+    postFields.avatar = req.user.avatar;
     postFields.author = req.user.username;
     if (req.body.title) postFields.title = req.body.title;
     if (req.body.subtitle) postFields.subtitle = req.body.subtitle;
