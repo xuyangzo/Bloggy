@@ -78,6 +78,11 @@ export default class View extends React.Component {
     }
   };
 
+  // push to index
+  onGotoIndex = () => {
+    this.props.history.push("/");
+  };
+
   onPostComment = e => {
     e.preventDefault();
 
@@ -128,6 +133,7 @@ export default class View extends React.Component {
           dislikes={this.state.dislikes}
           likes={this.state.likes}
           onGotoDashboard={this.onGotoDashboard}
+          onGotoIndex={this.onGotoIndex}
         />
         <hr />
         <form onSubmit={this.onPostComment} id="post-comment-form">
