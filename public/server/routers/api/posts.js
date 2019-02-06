@@ -42,6 +42,7 @@ const redisClient = redis.createClient({
   auth_pass: "LdDfI0ZyLFrLh5XTVKgpisyXKKFx3ZCz"
 });
 
+
 // @route   GET api/posts/test
 // @desc    Tests users route
 // @access  Public
@@ -87,79 +88,80 @@ router.get("/index/:index", (req, res) => {
 // @desc    Create Post
 // @access  Private
 router.post(
-  "/create",
-  passport.authenticate("jwt", { session: false }),
-  (req, res) => {
-    // check validation
-    const { errors, isValid } = validatePostInput(req.body);
-    if (!isValid) {
-      // Return any errors with 400 status
-      return res.status(400).json(errors);
-    }
-    console.log("start-datetime");
-    console.log(req.body.dateTime);
-    console.log("end-datetime");
-    const cpostFields = {};
-    cpostFields.linked_userid = req.user.id;
-    cpostFields.avatart = req.user.avatar;
-    cpostFields.author = req.user.username;
-    if (req.body.title) cpostFields.title = req.body.title;
-    if (req.body.subtitle) cpostFields.subtitle = req.body.subtitle;
-    cpostFields.dateTime = moment().format();
-    if (req.body.sources) cpostFields.sources = req.body.sources;
-
-    // get fields
-    const postFields = {};
-    postFields.linked_userid = req.user.id;
-    postFields.avatart = req.user.avatar;
-    postFields.author = req.user.username;
-    if (req.body.title) postFields.title = req.body.title;
-    if (req.body.subtitle) postFields.subtitle = req.body.subtitle;
-    // if (req.body.dateTime) postFields.dateTime = req.body.dateTime;
-    if (req.body.text) postFields.text = req.body.text;
-    if (req.body.sources) postFields.sources = req.body.sources;
-
-    // save post
-    new Post(postFields).save().then(post => {
-      cpostFields._id = post.id;
-
-      var cachepost = new Object(cpostFields);
-      var cp = JSON.stringify(cachepost);
-      // console.log(cp);
-
-      redisClient.rpush("posts", cp, redis.print);
-      // update User Model
-      User.findOneAndUpdate(
-        { _id: req.user.id },
-        { $push: { posts: post.id } },
-        { safe: true, upsert: true, new: true, useFindAndModify: false },
-        (err, user) => {
-          user.beingFollowed.forEach(function(u) {
-            User.findOne({ _id: u }).then(user => {
-              if (user) {
-                if (user.subscribe) {
-                  let mailOptions = {
-                    from: '"Bloggy" <bloggy233@gmail.com>', // sender address
-                    to: user.email, // list of receivers
-                    subject: "Notice from Bloggy", // Subject line
-                    html: "<b>Hello world?</b>" // html body
-                  };
-                  // send mail with defined transport object
-                  transporter.sendMail(mailOptions, (error, info) => {
-                    if (error) {
-                      return console.log(error);
-                    }
-                    console.log("Message sent: %s", info.messageId);
-                  });
-                }
-              }
-            });
-          });
-          if (err) return res.status(400).json(err);
-          else return res.json(post);
+    "/create",
+    passport.authenticate("jwt", { session: false }),
+    (req, res) => {
+        // check validation
+        const { errors, isValid } = validatePostInput(req.body);
+        if (!isValid) {
+            // Return any errors with 400 status
+            return res.status(400).json(errors);
         }
-      );
-    });
+        console.log("start-datetime");
+        console.log(req.body.dateTime);
+        console.log("end-datetime");
+        const cpostFields = {};
+        cpostFields.linked_userid = req.user.id;
+        cpostFields.avatar = req.user.avatar;
+        cpostFields.author = req.user.username;
+        if (req.body.title) cpostFields.title = req.body.title;
+        if (req.body.subtitle) cpostFields.subtitle = req.body.subtitle;
+        cpostFields.dateTime = moment().format();
+        if (req.body.sources) cpostFields.sources = req.body.sources;
+
+        // get fields
+        const postFields = {};
+        postFields.linked_userid = req.user.id;
+        postFields.avatar = req.user.avatar;
+        postFields.author = req.user.username;
+        if (req.body.title) postFields.title = req.body.title;
+        if (req.body.subtitle) postFields.subtitle = req.body.subtitle;
+        // if (req.body.dateTime) postFields.dateTime = req.body.dateTime;
+        if (req.body.text) postFields.text = req.body.text;
+        if (req.body.sources) postFields.sources = req.body.sources;
+
+        // save post
+        new Post(postFields).save().then(post => {
+            cpostFields._id = post.id;
+
+            var cachepost = new Object(cpostFields);
+            var cp = JSON.stringify(cachepost);
+            // console.log(cp);
+
+            redisClient.rpush("posts", cp, redis.print);
+            // update User Model
+            User.findOneAndUpdate(
+                { _id: req.user.id },
+                { $push: { posts: post.id } },
+                { safe: true, upsert: true, new: true, useFindAndModify: false },
+                (err, user) => {
+                    user.beingFollowed.forEach(function(u) {
+                        User.findOne({ _id: u }).then(user => {
+                            if (user) {
+                                if (user.subscribe) {
+                                    let mailOptions = {
+                                        from: '"Bloggy" <bloggy233@gmail.com>', // sender address
+                                        to: user.email, // list of receivers
+                                        subject: "Notice from Bloggy", // Subject line
+                                        html: "<b>Hello world?</b>" // html body
+                                    };
+                                    // send mail with defined transport object
+                                    transporter.sendMail(mailOptions, (error, info) => {
+                                        if (error) {
+                                            return console.log(error);
+                                        }
+                                        console.log("Message sent: %s", info.messageId);
+                                    });
+                                }
+                            }
+                        });
+                    });
+                    if (err) return res.status(400).json(err);
+                    else return res.json(post);
+                }
+            );
+        });
+
   }
 );
 
@@ -238,33 +240,33 @@ router.post(
 // @desc    Remove Tag
 // @access  Private
 router.delete(
-  "/removeTag/:post_id",
-  passport.authenticate("jwt", { session: false }),
-  (req, res) => {
-    // check validation
-    const { errors, isValid } = validatePostInput(req.body);
-    if (!isValid) {
-      // Return any errors with 400 status
-      return res.status(400).json(errors);
-    }
-
-    Post.findOne({ _id: req.params.post_id })
-      .then(post => {
-        //find the tag
-        if (post.tags.includes(req.body.tagName)) {
-          for (var i = 0; i < post.tags.length; i++) {
-            if (post.tags[i] == req.body.tagName) post.tags.splice(i, 1);
-          }
-          // Save post
-          post.save().then(post => res.json(post));
-        } else {
-          errors.post = "This tag does not exist!";
-          res.status(404).json(errors);
+    "/removeTag/:post_id",
+    passport.authenticate("jwt", { session: false }),
+    (req, res) => {
+        // check validation
+        const {errors, isValid} = validatePostInput(req.body);
+        if (!isValid) {
+            // Return any errors with 400 status
+            return res.status(400).json(errors);
         }
-      })
-      .catch(err => res.status(404).json({ nopostfound: "No post found" }));
-  }
-);
+        Post.findOne({_id: req.params.post_id})
+            .then(post => {
+                //find the tag
+                if (post.tags.includes(req.body.tagName)) {
+                    for (var i = 0; i < post.tags.length; i++) {
+                        if (post.tags[i] == req.body.tagName) post.tags.splice(i, 1);
+                    }
+                    // Save post
+                    post.save().then(post => res.json(post));
+                } else {
+                    errors.post = "This tag does not exist!";
+                    res.status(404).json(errors);
+                }
+            })
+            .catch(err => res.status(404).json({nopostfound: "No post found"}));
+    }
+    );
+
 
 // @route   api/posts/view
 // @desc    View Post
@@ -306,9 +308,21 @@ router.get("/viewtop/:post_id", (req, res) => {
 // @desc    Delete Post
 // @access  Private
 router.delete(
-  "/delete/:post_id",
-  passport.authenticate("jwt", { session: false }),
-  (req, res) => {
+    "/delete/:post_id",
+    passport.authenticate("jwt", { session: false }),
+    (req, res) => {
+        redisClient.lrange("posts", 0, -1, function(err, items) {
+            if (err) throw err;
+            // var posts = [];
+            var posts = [];
+            items.forEach(function(item, i) {
+                // console.log(' ' + item);
+                if(item.indexOf(req.params.post_id) >= 0){
+                    redisClient.lrem("posts", -1, item);
+                    // console.log("delete success!!!");
+                }
+            });
+        });
     Post.findOneAndDelete(
       { _id: req.params.post_id },
       { safe: true, useFindAndModify: false }
