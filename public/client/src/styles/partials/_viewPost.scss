@@ -220,10 +220,10 @@ i {
 .reply-container {
   height: 0;
   overflow: hidden;
-  transition: height 0.5s ease-in-out;
+  transition: height 1s ease-in-out;
 }
 .show-comment {
-  height: initial;
+  height: auto;
 }
 
 .reply-comment {

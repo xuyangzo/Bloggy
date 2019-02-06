@@ -14,13 +14,15 @@ export default class Editor extends React.Component {
     super(props);
     const tagList = [""];
     this.state = {
-      title: "",
-      subtitle: "",
-      text: "",
-      html: "",
-      sources: [],
+      title: this.props.location.title ? this.props.location.title : "",
+      subtitle: this.props.location.subtitle
+        ? this.props.location.subtitle
+        : "",
+      text: this.props.location.text ? this.props.location.text : "",
+      html: this.props.location.text ? this.props.location.text : "",
+      sources: this.props.location.sources ? this.props.location.sources : [],
       tags: [],
-      expand: false,
+      expand: this.props.location.subtitle,
       errors: {}
     };
   }
@@ -160,6 +162,7 @@ export default class Editor extends React.Component {
             className="form-control form-control-overwrite"
             placeholder="Title"
             name="title"
+            value={this.state.title}
             onChange={this.onChange}
           />
           <i
@@ -176,6 +179,7 @@ export default class Editor extends React.Component {
             id="subtitle-form"
             placeholder="Subtitle"
             name="subtitle"
+            value={this.state.subtitle}
             onChange={this.onChange}
           />
           <br />

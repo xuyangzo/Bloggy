@@ -7,12 +7,15 @@ import ViewHeader from "./ViewHeader";
 import Comment from "./Comment";
 import Thumb from "./Thumb";
 import LoginModal from "../common/LoginModal";
+import Loader from "../utils/Loader";
 
 export default class View extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      shouldRender: false,
       post_id: props.match.params.post_id,
+      userid: "",
       title: "",
       subtitle: "",
       text: "",
@@ -30,6 +33,7 @@ export default class View extends React.Component {
       .get("/api/posts/view/" + this.state.post_id)
       .then(res => {
         this.setState({
+          shouldRender: true,
           userid: res.data.linked_userid,
           title: res.data.title,
           subtitle: res.data.subtitle,
@@ -83,6 +87,17 @@ export default class View extends React.Component {
     this.props.history.push("/");
   };
 
+  // push to edit
+  onGotoEdit = () => {
+    this.props.history.push({
+      pathname: `/edit/${this.state.post_id}`,
+      title: this.state.title,
+      subtitle: this.state.subtitle,
+      text: this.state.text,
+      sources: this.state.sources
+    });
+  };
+
   onPostComment = e => {
     e.preventDefault();
 
@@ -109,6 +124,20 @@ export default class View extends React.Component {
   };
 
   render() {
+    if (!this.state.shouldRender) {
+      return (
+        <div className="container col-md-8 m-auto">
+          <Loader />
+          <ViewHeader
+            title={this.state.title}
+            userid={this.state.userid}
+            dateTime={this.state.dateTime}
+            author={this.state.author}
+            onGotoDashboard={this.onGotoDashboard}
+          />
+        </div>
+      );
+    }
     return (
       <div className="container col-md-8 m-auto">
         <LoginModal
@@ -128,12 +157,21 @@ export default class View extends React.Component {
           <div dangerouslySetInnerHTML={this.createMarkup()} />
         </div>
         <br />
+        SOURCES
+        {this.state.sources &&
+          this.state.sources.map(source => {
+            return <div key={source}>{source}</div>;
+          })}
+        <br />
+        <br />
         <Thumb
           post_id={this.state.post_id}
           dislikes={this.state.dislikes}
           likes={this.state.likes}
           onGotoDashboard={this.onGotoDashboard}
           onGotoIndex={this.onGotoIndex}
+          onGotoEdit={this.onGotoEdit}
+          user_id={this.state.userid}
         />
         <hr />
         <form onSubmit={this.onPostComment} id="post-comment-form">
