@@ -331,3 +331,17 @@ i {
 .pale {
   color: palevioletred !important;
 }
+
+/* view bar */
+.row {
+  .view-bar {
+    float: left;
+    cursor: pointer;
+  }
+
+  &:after {
+    content: "";
+    clear: both;
+    display: table;
+  }
+}
