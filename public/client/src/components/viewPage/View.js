@@ -6,6 +6,7 @@ import jwt_decode from "jwt-decode";
 import ViewHeader from "./ViewHeader";
 import Comment from "./Comment";
 import Thumb from "./Thumb";
+import LoginModal from "../common/LoginModal";
 
 export default class View extends React.Component {
   constructor(props) {
@@ -38,7 +39,8 @@ export default class View extends React.Component {
           dateTime: res.data.dateTime,
           comments: res.data.comments,
           likes: res.data.likes,
-          dislikes: res.data.dislikes
+          dislikes: res.data.dislikes,
+          loginModal: false
         });
       })
       .catch(err => {
@@ -53,6 +55,10 @@ export default class View extends React.Component {
 
   createMarkup = () => {
     return { __html: this.state.text };
+  };
+
+  clearModal = () => {
+    this.setState({ loginModal: false });
   };
 
   // push to dashboard
@@ -93,13 +99,17 @@ export default class View extends React.Component {
     } else {
       // if there is no auth token
       // user need to login first
-      alert("Need to login first");
+      this.setState({ loginModal: true });
     }
   };
 
   render() {
     return (
       <div className="container col-md-8 m-auto">
+        <LoginModal
+          modalIsOpen={this.state.loginModal}
+          clearModal={this.clearModal}
+        />
         <ViewHeader
           title={this.state.title}
           userid={this.state.userid}
@@ -117,6 +127,7 @@ export default class View extends React.Component {
           post_id={this.state.post_id}
           dislikes={this.state.dislikes}
           likes={this.state.likes}
+          onGotoDashboard={this.onGotoDashboard}
         />
         <hr />
         <form onSubmit={this.onPostComment} id="post-comment-form">
