@@ -1,9 +1,11 @@
 import React from "react";
 import Moment from "react-moment";
 import axios from "axios";
-import setAuthToken from "../utils/setAuthToken";
 import classnames from "classnames";
 import scrollToElement from "scroll-to-element";
+
+import LoginModal from "../common/LoginModal";
+import setAuthToken from "../utils/setAuthToken";
 
 export default class Comment extends React.Component {
   constructor(props) {
@@ -18,7 +20,8 @@ export default class Comment extends React.Component {
       reRenderSignal: 0.0,
       displayComments: [],
       pageNumber: 1,
-      totalPageNumber: 0
+      totalPageNumber: 0,
+      loginModal: false
     };
   }
 
@@ -169,8 +172,13 @@ export default class Comment extends React.Component {
           console.log(err.response.data);
         });
     } else {
-      alert("Please login first!");
+      this.setState({ loginModal: true });
     }
+  };
+
+  // cleat modal
+  clearModal = () => {
+    this.setState({ loginModal: false });
   };
 
   // construct pagination
@@ -197,6 +205,10 @@ export default class Comment extends React.Component {
   render() {
     return (
       <div id="comment-section">
+        <LoginModal
+          modalIsOpen={this.state.loginModal}
+          clearModal={this.clearModal}
+        />
         <p>COMMENTS</p>
         <hr />
         {this.state.commentsNotReply.length === 0 ? (

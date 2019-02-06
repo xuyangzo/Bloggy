@@ -2,7 +2,10 @@ import React from "react";
 import axios from "axios";
 import classnames from "classnames";
 import jwt_decode from "jwt-decode";
+
 import setAuthToken from "../utils/setAuthToken";
+import LoginModal from "../common/LoginModal";
+import DeleteModal from "../common/DeleteModal";
 
 export default class Thumb extends React.Component {
   constructor(props) {
@@ -13,7 +16,9 @@ export default class Thumb extends React.Component {
       dislikes: props.dislikes,
       hotness: props.likes.length - props.dislikes.length,
       isLike: false,
-      isDislike: false
+      isDislike: false,
+      loginModal: false,
+      deleteModal: false
     };
   }
 
@@ -51,20 +56,20 @@ export default class Thumb extends React.Component {
   };
 
   onPostLike = () => {
-    let hotCount = 0;
-    if (this.state.isLike) hotCount = -1;
-    else if (this.state.isDislike) hotCount = 2;
-    else hotCount = 1;
-
-    // set thumb at front-end
-    this.setState(prevState => ({
-      isLike: !prevState.isLike,
-      isDislike: false,
-      hotness: prevState.hotness + hotCount
-    }));
-
-    // send request to back-end
     if (localStorage.jwtToken) {
+      // set thumb at front-end
+      let hotCount = 0;
+      if (this.state.isLike) hotCount = -1;
+      else if (this.state.isDislike) hotCount = 2;
+      else hotCount = 1;
+
+      this.setState(prevState => ({
+        isLike: !prevState.isLike,
+        isDislike: false,
+        hotness: prevState.hotness + hotCount
+      }));
+
+      // send request to back-end
       setAuthToken(localStorage.jwtToken);
       axios
         .post("/api/posts/like/" + this.state.post_id)
@@ -79,25 +84,25 @@ export default class Thumb extends React.Component {
         });
     } else {
       // if user not logged in
-      alert("Please log in first!");
+      this.setState({ loginModal: true });
     }
   };
 
   onPostDislike = () => {
-    let hotCount = 0;
-    if (this.state.isLike) hotCount = -2;
-    else if (this.state.isDislike) hotCount = 1;
-    else hotCount = -1;
-
-    // set thumb at front-end
-    this.setState(prevState => ({
-      isLike: false,
-      isDislike: !prevState.isDislike,
-      hotness: prevState.hotness + hotCount
-    }));
-
-    // send request to back-end
     if (localStorage.jwtToken) {
+      // set thumb at front-end
+      let hotCount = 0;
+      if (this.state.isLike) hotCount = -2;
+      else if (this.state.isDislike) hotCount = 1;
+      else hotCount = -1;
+
+      this.setState(prevState => ({
+        isLike: false,
+        isDislike: !prevState.isDislike,
+        hotness: prevState.hotness + hotCount
+      }));
+
+      // send request to back-end
       setAuthToken(localStorage.jwtToken);
       axios
         .post("/api/posts/dislike/" + this.state.post_id)
@@ -112,30 +117,66 @@ export default class Thumb extends React.Component {
         });
     } else {
       // if user not logged in
-      alert("Please log in first!");
+      this.setState({ loginModal: true });
     }
+  };
+
+  // clear login modal
+  clearModal = () => {
+    this.setState({ loginModal: false, deleteModal: false });
+  };
+
+  // Delete Post
+  onDeletePost = () => {
+    this.setState({ deleteModal: true });
   };
 
   render() {
     return (
       <div className="text-center">
-        <i
-          className={classnames("far fa-thumbs-up mr-4", {
-            "red-thumb": this.state.isLike,
-            "red-thumb-animation": this.state.isLike,
-            fas: this.state.isLike
-          })}
-          onClick={this.onPostLike}
+        <LoginModal
+          modalIsOpen={this.state.loginModal}
+          clearModal={this.clearModal}
         />
-        <span className="hot-width">{this.state.hotness}</span>
-        <i
-          className={classnames("far fa-thumbs-down ml-4", {
-            "blue-thumb": this.state.isDislike,
-            "blue-thumb-animation": this.state.isDislike,
-            fas: this.state.isDislike
-          })}
-          onClick={this.onPostDislike}
+        <DeleteModal
+          modalIsOpen={this.state.deleteModal}
+          clearModal={this.clearModal}
+          post_id={this.state.post_id}
         />
+        <div class="row">
+          <div className="view-bar ml-5">
+            <i class="fab fa-hotjar" style={{ color: "red" }} />{" "}
+            <span className="hot-width">{this.state.hotness} </span>
+            <i class="fas fa-grip-lines-vertical ml-3 mr-3" />
+          </div>
+          <div className="view-bar" onClick={this.onPostLike}>
+            <i
+              className={classnames("far fa-thumbs-up ml-2 mr-2", {
+                "red-thumb": this.state.isLike,
+                "red-thumb-animation": this.state.isLike,
+                fas: this.state.isLike
+              })}
+            />
+            Like <i class="fas fa-grip-lines-vertical ml-3 mr-3" />
+          </div>
+          <div className="view-bar" onClick={this.onPostDislike}>
+            <i
+              className={classnames("far fa-thumbs-down ml-2 mr-2", {
+                "blue-thumb": this.state.isDislike,
+                "blue-thumb-animation": this.state.isDislike,
+                fas: this.state.isDislike
+              })}
+            />
+            Dislike <i class="fas fa-grip-lines-vertical ml-3 mr-3" />
+          </div>{" "}
+          <div className="view-bar" onClick={this.onDeletePost}>
+            <i
+              class="fas fa-trash-alt mr-2"
+              style={{ color: "rgb(189, 202, 5)" }}
+            />
+            Delete <i class="fas fa-grip-lines-vertical ml-3 mr-3" />
+          </div>
+        </div>
       </div>
     );
   }
