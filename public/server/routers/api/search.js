@@ -73,6 +73,7 @@ router.get("/subtitle/:subtitle", (req, res) => {
 // @access  Public
 router.get("/all/:keyword", (req, res) => {
     client.search({
+        //keyword
         q: req.params.keyword,
         index: 'postss',
         size: 999
