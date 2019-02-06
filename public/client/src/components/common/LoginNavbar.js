@@ -32,7 +32,7 @@ class LoginNavbar extends React.Component {
   onClick = e => {
     e.preventDefault();
     localStorage.removeItem("jwtToken");
-    location.href = "/";
+    window.location.reload();
   };
 
   onImgClick = e => {
