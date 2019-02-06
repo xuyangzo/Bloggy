@@ -142,6 +142,7 @@ export default class Thumb extends React.Component {
           modalIsOpen={this.state.deleteModal}
           clearModal={this.clearModal}
           post_id={this.state.post_id}
+          onGotoIndex={this.props.onGotoIndex}
         />
         <div class="row">
           <div className="view-bar ml-5">

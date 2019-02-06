@@ -2,6 +2,8 @@ import React from "react";
 import Modal from "react-modal";
 import axios from "axios";
 
+import setAuthToken from "../utils/setAuthToken";
+
 export default class DeleteModal extends React.Component {
   constructor(props) {
     super(props);
@@ -9,7 +11,8 @@ export default class DeleteModal extends React.Component {
     this.state = {
       modalIsOpen: props.modalIsOpen,
       clearModal: props.clearModal,
-      post_id: props.post_id
+      post_id: props.post_id,
+      onGotoIndex: props.onGotoIndex
     };
   }
 
@@ -41,7 +44,7 @@ export default class DeleteModal extends React.Component {
       .delete(`/api/posts/delete/${this.state.post_id}`)
       .then(res => {
         console.log(res.data);
-        location.href = "/dashboard";
+        this.state.onGotoIndex();
       })
       .catch(err => console.log(err.response.data));
   };
