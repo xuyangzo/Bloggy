@@ -15,14 +15,13 @@ class Body extends React.Component {
       renderCount: 0,
       canLoad: true
     };
-    // retrieve first 6 posts info from database
+    // retrieve first 3 posts info from database
     axios
       .get("/api/posts/index/0")
       .then(res => {
-        console.log(res.data);
         this.setState(prevState => ({
           allPosts: prevState.allPosts.concat(res.data),
-          renderCount: 6
+          renderCount: 3
         }));
       })
       .catch(err => console.log(err.response.data));
@@ -32,21 +31,20 @@ class Body extends React.Component {
     // if load before state initialize
     if (this.state.allPosts.length === 0) return;
 
-    // retrieve following 6 posts info from database
+    // retrieve following 3 posts info from database
     axios
       .get("/api/posts/index/" + this.state.renderCount)
       .then(res => {
-        if (!res.data || !!res.data) {
+        if (res.data.length === 0) {
           this.setState({ canLoad: false });
+          return;
         }
         this.setState(prevState => ({
           allPosts: prevState.allPosts.concat(res.data),
-          renderCount: prevState.renderCount + 6
+          renderCount: prevState.renderCount + 3
         }));
       })
       .catch(err => console.log(err.response.data));
-
-    console.log("load more!");
   };
 
   render() {
@@ -82,10 +80,13 @@ class Body extends React.Component {
                     key={post._id}
                     onClick={() => this.state.onClickPost(post._id)}
                   >
-                    <h3>{post.title}</h3>
-                    <h4>{post.subtitle}</h4>
-                    <p>{post.author}</p>
-                    <Moment format="MMMM Do YYYY, hh:mm a">
+                    <h1 className="grid-title">{post.title}</h1>
+                    <h4 className="grid-subtitle">{post.subtitle}</h4>
+                    <p className="grid-author">{post.author}</p>
+                    <Moment
+                      className="grid-time"
+                      format="MMMM Do YYYY, hh:mm a"
+                    >
                       {post.dateTime}
                     </Moment>
                   </div>

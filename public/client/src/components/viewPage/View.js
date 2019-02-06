@@ -1,8 +1,9 @@
 import React from "react";
 import axios from "axios";
-import Moment from "react-moment";
 import setAuthToken from "../utils/setAuthToken";
+import jwt_decode from "jwt-decode";
 
+import ViewHeader from "./ViewHeader";
 import Comment from "./Comment";
 import Thumb from "./Thumb";
 
@@ -28,6 +29,7 @@ export default class View extends React.Component {
       .get("/api/posts/view/" + this.state.post_id)
       .then(res => {
         this.setState({
+          userid: res.data.linked_userid,
           title: res.data.title,
           subtitle: res.data.subtitle,
           text: res.data.text,
@@ -51,6 +53,23 @@ export default class View extends React.Component {
 
   createMarkup = () => {
     return { __html: this.state.text };
+  };
+
+  // push to dashboard
+  onGotoDashboard = userid => {
+    // verify if the profile matches current user
+    if (localStorage.jwtToken) {
+      const token = jwt_decode(localStorage.jwtToken);
+      if (token.id === userid) {
+        this.props.history.push(`/dashboard`);
+      } else {
+        this.props.history.push(`/profile/${userid}`);
+      }
+    } else {
+      // if the user does not log in
+      // directly forward to dashboard with public router
+      this.props.history.push(`/profile/${userid}`);
+    }
   };
 
   onPostComment = e => {
@@ -81,16 +100,14 @@ export default class View extends React.Component {
   render() {
     return (
       <div className="container col-md-8 m-auto">
-        <div className="container text-center ">
-          <br />
-          <br />
-          <h1 className="blog-title">{this.state.title}</h1>
-          <p className="blog-author">{this.state.author}</p>
-          <Moment className="blog-date" format="MMMM Do YYYY, hh:mm a">
-            {this.state.dateTime}
-          </Moment>
-        </div>
-        <br />
+        <ViewHeader
+          title={this.state.title}
+          userid={this.state.userid}
+          dateTime={this.state.dateTime}
+          author={this.state.author}
+          onGotoDashboard={this.onGotoDashboard}
+        />
+        <hr style={{ width: "70%", marginLeft: "30px" }} />
         <br />
         <div className="container single-post">
           <div dangerouslySetInnerHTML={this.createMarkup()} />
@@ -127,6 +144,7 @@ export default class View extends React.Component {
         <Comment
           allComments={this.state.comments}
           post_id={this.state.post_id}
+          onGotoDashboard={this.onGotoDashboard}
         />
       </div>
     );

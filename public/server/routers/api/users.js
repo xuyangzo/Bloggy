@@ -225,10 +225,14 @@ router.get(
   }
 );
 
-// @route   GET api/users/public/:user_id
+// @route   GET api/users/:user_id
 // @desc    Return user with that user id
 // @access  Public
-// TODO
+router.get("/:user_id", (req, res) => {
+  User.findOne({ _id: req.params.user_id })
+    .then(user => res.json(user))
+    .catch(err => res.status(404).json({ usernotfound: "User not found" }));
+});
 
 // @route   POST api/users/follow/:followed_user_id
 // @desc    Follow another user
@@ -326,15 +330,13 @@ router.post(
 // @desc    View user
 // @access  Private
 router.get(
-    "/view/:user_id",
-    passport.authenticate("jwt", { session: false }),
-    (req, res) => {
-      User.findOne(
-          { _id: req.user.id },
-      )
-          .then(user => res.json(user))
-          .catch(err => res.status(404).json({ usernotfound: "User not found" }));
-    }
+  "/view/:user_id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    User.findOne({ _id: req.user.id })
+      .then(user => res.json(user))
+      .catch(err => res.status(404).json({ usernotfound: "User not found" }));
+  }
 );
 
 module.exports = router;

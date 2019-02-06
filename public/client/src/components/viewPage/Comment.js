@@ -199,6 +199,14 @@ export default class Comment extends React.Component {
       <div id="comment-section">
         <p>COMMENTS</p>
         <hr />
+        {this.state.commentsNotReply.length === 0 ? (
+          <div>
+            <p className="pale">No comments yet!</p>
+            <p className="pale">Be the first one to comment!</p>
+          </div>
+        ) : (
+          ""
+        )}
         {this.state.commentsNotReply.map((comment, i) => {
           if (
             i >= this.state.pageNumber * 10 ||
@@ -215,8 +223,20 @@ export default class Comment extends React.Component {
               key={comment._id}
             >
               <div className="comment-top-half">
-                <img src={comment.avatar} />
-                <p className="username">{comment.username}</p>
+                <img
+                  src={comment.avatar}
+                  onClick={() =>
+                    this.props.onGotoDashboard(comment.linked_comm_userid)
+                  }
+                />
+                <p
+                  className="username"
+                  onClick={() =>
+                    this.props.onGotoDashboard(comment.linked_comm_userid)
+                  }
+                >
+                  {comment.username}
+                </p>
                 <Moment className="dateTime" format="YYYY-MM-DD, hh:mm a">
                   {comment.dateTime}
                 </Moment>
@@ -293,8 +313,22 @@ export default class Comment extends React.Component {
                         key={reply_comment._id}
                       >
                         <div className="reply-top-half">
-                          <img src={reply_comment.avatar} />
-                          <p className="reply-username">
+                          <img
+                            src={reply_comment.avatar}
+                            onClick={() =>
+                              this.props.onGotoDashboard(
+                                reply_comment.linked_comm_userid
+                              )
+                            }
+                          />
+                          <p
+                            className="reply-username"
+                            onClick={() =>
+                              this.props.onGotoDashboard(
+                                reply_comment.linked_comm_userid
+                              )
+                            }
+                          >
                             {reply_comment.username}
                           </p>
                           <Moment
@@ -379,7 +413,8 @@ export default class Comment extends React.Component {
               </li>
             )}
             {this.constructPagination()}
-            {this.state.pageNumber === this.state.totalPageNumber ? (
+            {this.state.pageNumber === this.state.totalPageNumber ||
+            this.state.totalPageNumber === 0 ? (
               <li className="page-item invisible">
                 <p className="page-link" href="#" aria-label="Next">
                   <span aria-hidden="true">&raquo;</span>
