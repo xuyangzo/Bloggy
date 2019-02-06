@@ -124,22 +124,9 @@ export default class View extends React.Component {
   };
 
   render() {
-    if (!this.state.shouldRender) {
-      return (
-        <div className="container col-md-8 m-auto">
-          <Loader />
-          <ViewHeader
-            title={this.state.title}
-            userid={this.state.userid}
-            dateTime={this.state.dateTime}
-            author={this.state.author}
-            onGotoDashboard={this.onGotoDashboard}
-          />
-        </div>
-      );
-    }
     return (
       <div className="container col-md-8 m-auto">
+        {this.state.shouldRender && <Loader />}
         <LoginModal
           modalIsOpen={this.state.loginModal}
           clearModal={this.clearModal}
@@ -173,26 +160,30 @@ export default class View extends React.Component {
           onGotoEdit={this.onGotoEdit}
           user_id={this.state.userid}
         />
-        <hr />
-        <form onSubmit={this.onPostComment} id="post-comment-form">
-          <div className="form-group">
-            <p>LEAVE COMMENTS</p>
-            <textarea
-              className="form-control"
-              placeholder="Leave any comments here..."
-              rows="5"
-              name="comment"
-              id="comment"
-              onChange={this.onChangeComment}
-            />
+        {this.state.shouldRender && (
+          <div>
+            <hr />
+            <form onSubmit={this.onPostComment} id="post-comment-form">
+              <div className="form-group">
+                <p>LEAVE COMMENTS</p>
+                <textarea
+                  className="form-control"
+                  placeholder="Leave any comments here..."
+                  rows="5"
+                  name="comment"
+                  id="comment"
+                  onChange={this.onChangeComment}
+                />
+              </div>
+              <input
+                type="submit"
+                name="submit"
+                value="COMMENT"
+                className="form-control comment-button"
+              />
+            </form>
           </div>
-          <input
-            type="submit"
-            name="submit"
-            value="COMMENT"
-            className="form-control comment-button"
-          />
-        </form>
+        )}
         <br />
         <br />
         <br />
@@ -200,6 +191,7 @@ export default class View extends React.Component {
           allComments={this.state.comments}
           post_id={this.state.post_id}
           onGotoDashboard={this.onGotoDashboard}
+          shouldRender={this.state.shouldRender}
         />
       </div>
     );
