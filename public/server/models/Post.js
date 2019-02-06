@@ -67,6 +67,9 @@ const PostSchema = new Schema({
     es_indexed: true,
     default: "Anonymous"
   },
+  avatar: {
+    type: String
+  },
   dateTime: {
     type: Date,
     es_indexed: true,
