@@ -42,6 +42,7 @@ const redisClient = redis.createClient({
     auth_pass: "LdDfI0ZyLFrLh5XTVKgpisyXKKFx3ZCz"
 });
 
+
 // @route   GET api/posts/test
 // @desc    Tests users route
 // @access  Public
@@ -100,7 +101,7 @@ router.post(
         console.log("end-datetime");
         const cpostFields = {};
         cpostFields.linked_userid = req.user.id;
-        cpostFields.avatart = req.user.avatar;
+        cpostFields.avatar = req.user.avatar;
         cpostFields.author = req.user.username;
         if (req.body.title) cpostFields.title = req.body.title;
         if (req.body.subtitle) cpostFields.subtitle = req.body.subtitle;
@@ -110,7 +111,7 @@ router.post(
         // get fields
         const postFields = {};
         postFields.linked_userid = req.user.id;
-        postFields.avatart = req.user.avatar;
+        postFields.avatar = req.user.avatar;
         postFields.author = req.user.username;
         if (req.body.title) postFields.title = req.body.title;
         if (req.body.subtitle) postFields.subtitle = req.body.subtitle;
@@ -246,7 +247,6 @@ router.delete(
             // Return any errors with 400 status
             return res.status(400).json(errors);
         }
-
         Post.findOne({ _id: req.params.post_id })
             .then(post => {
                 //find the tag
@@ -308,6 +308,18 @@ router.delete(
     "/delete/:post_id",
     passport.authenticate("jwt", { session: false }),
     (req, res) => {
+        redisClient.lrange("posts", 0, -1, function(err, items) {
+            if (err) throw err;
+            // var posts = [];
+            var posts = [];
+            items.forEach(function(item, i) {
+                // console.log(' ' + item);
+                if(item.indexOf(req.params.post_id) >= 0){
+                    redisClient.lrem("posts", -1, item);
+                    // console.log("delete success!!!");
+                }
+            });
+        });
         Post.findOneAndDelete(
             { _id: req.params.post_id },
             { safe: true, useFindAndModify: false }
