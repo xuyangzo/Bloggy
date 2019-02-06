@@ -62,6 +62,7 @@ router.get("/subtitle/:subtitle", (req, res) => {
             res.json(post);
         })
         .catch(err =>
+
             res.status(404).json({ post: "There is no content fot this post" })
         );
 });

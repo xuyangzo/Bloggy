@@ -42,7 +42,6 @@ const redisClient = redis.createClient({
   auth_pass: "LdDfI0ZyLFrLh5XTVKgpisyXKKFx3ZCz"
 });
 
-
 // @route   GET api/posts/test
 // @desc    Tests users route
 // @access  Public
@@ -97,9 +96,6 @@ router.post(
             // Return any errors with 400 status
             return res.status(400).json(errors);
         }
-        console.log("start-datetime");
-        console.log(req.body.dateTime);
-        console.log("end-datetime");
         const cpostFields = {};
         cpostFields.linked_userid = req.user.id;
         cpostFields.avatar = req.user.avatar;
@@ -272,17 +268,18 @@ router.delete(
 // @desc    View Post
 // @access  Public
 router.get("/view/:post_id", (req, res) => {
-  let errors = {};
-  Post.findOne({ _id: req.params.post_id }).then(post => {
-    if (!post) {
-      errors.post = "There is no content for this post";
-      res.status(404).json(errors);
-    }
-    res.json(post);
-  });
-  // .catch(err =>
-  //   // res.status(404).json({ post: "There is no content for this post" })
-  // );
+    let errors = {};
+    Post.findOne({_id: req.params.post_id}).then(post => {
+        if (!post) {
+            errors.post = "There is no content for this post";
+            res.status(404).json(errors);
+        }
+        res.json(post);
+    })
+        // .catch(err =>
+        //     res.status(404).json({ post: "There is no content for this post" })
+        // );
+
 });
 
 // @route   api/posts/view
