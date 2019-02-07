@@ -49,6 +49,13 @@ const UserSchema = new Schema({
       }
     }
   ],
+  favorites: [
+    {
+      linked_post_id: {
+        type: String
+      }
+    }
+  ],
   subscribe: {
     type: Boolean,
     default: true
