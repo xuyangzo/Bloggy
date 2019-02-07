@@ -5,11 +5,18 @@ import SearchBar from "./SearchBar";
 export default class Navbar extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      
+      unpin: false
+    };
   }
-
+  handleOnUnpin = e => {
+    this.setState({ unpin: true });
+    console.log("unpin");
+  }
   render() {
     return (
-      <Headroom>
+      <Headroom onUnpin={this.handleOnUnpin}>
         <nav
           className="navbar navbar-expand-md navbar-light bg-light"
           id="mainNav"
@@ -32,7 +39,7 @@ export default class Navbar extends React.Component {
             <div className="collapse navbar-collapse" id="navbarResponsive">
               <ul className="navbar-nav ml-auto">
                 <li className="nav-item">
-                  <SearchBar />
+                  <SearchBar initial={this.state.unpin} />
                 </li>
                 <li className="nav-item">
                   <Link className="nav-link" to="/register">

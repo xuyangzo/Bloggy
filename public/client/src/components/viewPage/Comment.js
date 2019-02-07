@@ -21,7 +21,8 @@ export default class Comment extends React.Component {
       displayComments: [],
       pageNumber: 1,
       totalPageNumber: 0,
-      loginModal: false
+      loginModal: false,
+      shouldRender: props.shouldRender
     };
   }
 
@@ -30,7 +31,8 @@ export default class Comment extends React.Component {
       {
         allComments: newProps.allComments,
         commentsIsReply: [],
-        commentsNotReply: []
+        commentsNotReply: [],
+        shouldRender: newProps.shouldRender
       },
       () => {
         // update reply/noreply status
@@ -203,6 +205,9 @@ export default class Comment extends React.Component {
   };
 
   render() {
+    if (!this.state.shouldRender) {
+      return <div />;
+    }
     return (
       <div id="comment-section">
         <LoginModal

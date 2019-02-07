@@ -58,6 +58,11 @@ export default class Bloggy extends React.Component {
               path="/post"
               component={localStorage.jwtToken ? Editor : Unauthorized}
             />
+            <Route
+              exact
+              path="/edit/:post_id"
+              component={localStorage.jwtToken ? Editor : Unauthorized}
+            />
             <Route exact path="/register" component={Register} />
             <Route exact path="/login" component={Login} />
             <Route

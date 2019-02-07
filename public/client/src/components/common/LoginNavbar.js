@@ -10,7 +10,8 @@ class LoginNavbar extends React.Component {
     super(props);
 
     this.state = {
-      avatar: ""
+      avatar: "",
+      unpin : false
     };
   }
 
@@ -38,7 +39,13 @@ class LoginNavbar extends React.Component {
   onImgClick = e => {
     this.props.history.push("/dashboard");
   };
+  handleOnPin = e => {
 
+  }
+  handleOnUnpin = e =>{
+    this.setState({unpin:true});
+    console.log("unpin");
+  }
   render() {
     return (
       <Headroom
@@ -48,6 +55,8 @@ class LoginNavbar extends React.Component {
           OTransition: "all .5s ease-in-out",
           transition: "all .5s ease-in-out"
         }}
+        onPin={this.handleOnPin}
+        onUnpin={this.handleOnUnpin}
       >
         <nav
           className="navbar navbar-expand-md navbar-light bg-light"
@@ -71,7 +80,7 @@ class LoginNavbar extends React.Component {
 
             <div className="collapse navbar-collapse" id="navbarResponsive">
               <div class="ml-auto">
-                <SearchBar />
+                <SearchBar initial={this.state.unpin}/>
               </div>
               <ul className="navbar-nav ml-auto">
                 {/* <li className="nav-item mr-auto">
