@@ -3,6 +3,7 @@ import axios from "axios";
 import Moment from "react-moment";
 
 export default class ViewHeader extends React.Component {
+  
   constructor(props) {
     super(props);
     this.state = {
