@@ -102,6 +102,14 @@ const PostSchema = new Schema({
       }
     }
   ],
+  favorite: [
+    {
+      linked_favor_userid: {
+        type: Schema.Types.ObjectId,
+        ref: "users"
+      }
+    }
+  ],
 
   comments: [commentSchema]
 });
