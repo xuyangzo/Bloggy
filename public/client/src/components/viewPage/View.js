@@ -24,8 +24,38 @@ export default class View extends React.Component {
       dislikes: []
     };
   }
+  componentWillReceiveProps = newProps => {
+    // console.log(newProps.match.params.post_id);
+    this.setState(prev=>({
+      ...prev,
+      post_id: newProps.match.params.post_id
+    }), () => {
+        axios
+          .get("/api/posts/view/" + this.state.post_id)
+          .then(res => {
+            this.setState({
+              userid: res.data.linked_userid,
+              title: res.data.title,
+              subtitle: res.data.subtitle,
+              text: res.data.text,
+              author: res.data.author,
+              sources: res.data.sources,
+              dateTime: res.data.dateTime,
+              comments: res.data.comments,
+              likes: res.data.likes,
+              dislikes: res.data.dislikes,
+              loginModal: false
+            });
+          })
+          .catch(err => {
+            this.setState({ errors: err.response.data });
+            console.log(err.response.data);
+          });
+    });
 
+  }
   componentDidMount = () => {
+    // console.log(this.state.post_id);
     axios
       .get("/api/posts/view/" + this.state.post_id)
       .then(res => {
