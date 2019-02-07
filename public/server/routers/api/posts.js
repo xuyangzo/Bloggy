@@ -42,7 +42,6 @@ const redisClient = redis.createClient({
   auth_pass: "LdDfI0ZyLFrLh5XTVKgpisyXKKFx3ZCz"
 });
 
-
 // @route   GET api/posts/test
 // @desc    Tests users route
 // @access  Public
@@ -68,9 +67,6 @@ router.get("/all", (req, res) => {
 // @desc    Get First 6 posts for Index Page
 // @access  Public
 router.get("/index/:index", (req, res) => {
-  // redisClient.rpop("posts");
-  // console.log("after");
-  // console.log(req.params.index);
   const index = parseInt(req.params.index, 10);
   redisClient.lrange("posts", -3 - index, -1 - index, function(err, items) {
     if (err) throw err;
@@ -97,9 +93,7 @@ router.post(
             // Return any errors with 400 status
             return res.status(400).json(errors);
         }
-        console.log("start-datetime");
-        console.log(req.body.dateTime);
-        console.log("end-datetime");
+        //create cache fields for redis
         const cpostFields = {};
         cpostFields.linked_userid = req.user.id;
         cpostFields.avatar = req.user.avatar;
@@ -178,6 +172,15 @@ router.post(
       // Return any errors with 400 status
       return res.status(400).json(errors);
     }
+    //create cache fields for redis
+    const cpostFields = {};
+    cpostFields.linked_userid = req.user.id;
+    cpostFields.avatar = req.user.avatar;
+    cpostFields.author = req.user.username;
+    if (req.body.title) cpostFields.title = req.body.title;
+    if (req.body.subtitle) cpostFields.subtitle = req.body.subtitle;
+    cpostFields.dateTime = moment().format();
+    if (req.body.sources) cpostFields.sources = req.body.sources;
 
     // get fields
     const postFields = {};
@@ -190,7 +193,25 @@ router.post(
     if (typeof req.body.tags !== "undefined") {
       postFields.tags = req.body.tags.split(",");
     }
-
+    //update redis
+      redisClient.lrange("posts", 0, -1, function(err, items) {
+          if (err) throw err;
+          // var posts = [];
+          var posts = [];
+          //find the one to be changed in cache list
+          items.forEach(function(item, i) {
+              // console.log(' ' + item);
+              if(item.indexOf(req.params.post_id) >= 0){
+                  redisClient.lrem("posts", -1, item);
+                  cpostFields._id = req.params.post_id;
+                  var cachepost = new Object(cpostFields);
+                  var cp = JSON.stringify(cachepost);
+                  // console.log(cp);
+                  redisClient.rpush("posts", cp, redis.print);
+                  // console.log("add success!!!");
+              }
+          });
+      });
     // update post
     Post.findOneAndUpdate(
       { _id: req.params.post_id },
@@ -272,17 +293,18 @@ router.delete(
 // @desc    View Post
 // @access  Public
 router.get("/view/:post_id", (req, res) => {
-  let errors = {};
-  Post.findOne({ _id: req.params.post_id }).then(post => {
-    if (!post) {
-      errors.post = "There is no content for this post";
-      res.status(404).json(errors);
-    }
-    res.json(post);
-  });
-  // .catch(err =>
-  //   // res.status(404).json({ post: "There is no content for this post" })
-  // );
+    let errors = {};
+    Post.findOne({_id: req.params.post_id}).then(post => {
+        if (!post) {
+            errors.post = "There is no content for this post";
+            res.status(404).json(errors);
+        }
+        res.json(post);
+    })
+        // .catch(err =>
+        //     res.status(404).json({ post: "There is no content for this post" })
+        // );
+
 });
 
 // @route   api/posts/view
