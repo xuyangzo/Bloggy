@@ -94,7 +94,8 @@ export default class View extends React.Component {
       title: this.state.title,
       subtitle: this.state.subtitle,
       text: this.state.text,
-      sources: this.state.sources
+      sources: this.state.sources,
+      isEdit: true
     });
   };
 
