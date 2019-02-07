@@ -339,6 +339,13 @@ i {
     cursor: pointer;
   }
 
+  .division-bar {
+    float: left;
+    i {
+      cursor: auto;
+    }
+  }
+
   &:after {
     content: "";
     clear: both;

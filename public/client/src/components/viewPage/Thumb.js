@@ -20,7 +20,8 @@ export default class Thumb extends React.Component {
       isDislike: false,
       loginModal: false,
       deleteModal: false,
-      showDeleteEdit: false
+      showDeleteEdit: false,
+      isFavor: false
     };
   }
 
@@ -55,7 +56,8 @@ export default class Thumb extends React.Component {
         dislikes: newProps.dislikes,
         isLike,
         isDislike,
-        hotness: newProps.likes.length - newProps.dislikes.length
+        hotness: newProps.likes.length - newProps.dislikes.length,
+        isFavor: newProps.isFavor
       },
       () => {
         // check if userid matches userid of userid of posts
@@ -146,6 +148,28 @@ export default class Thumb extends React.Component {
     this.setState({ deleteModal: true });
   };
 
+  // Add Favorite
+  onPostFavor = () => {
+    if (localStorage.jwtToken) {
+      // set thumb at front-end
+      this.setState(prevState => ({ isFavor: !prevState.isFavor }));
+
+      // send request to backend
+      setAuthToken(localStorage.jwtToken);
+      axios
+        .post(`/api/posts/favorite/${this.state.post_id}`)
+        .then(res => {
+          console.log("Add to favorite successfully!");
+        })
+        .catch(err => {
+          console.log(err.response.data);
+        });
+    } else {
+      // if user not logged in
+      this.setState({ loginModal: true });
+    }
+  };
+
   render() {
     return (
       <div className="text-center">
@@ -163,6 +187,8 @@ export default class Thumb extends React.Component {
           <div className="view-bar ml-5">
             <i className="fab fa-hotjar" style={{ color: "red" }} />{" "}
             <span className="hot-width">{this.state.hotness} </span>
+          </div>
+          <div className="division-bar">
             <i className="fas fa-grip-lines-vertical ml-3 mr-3" />
           </div>
           <div className="view-bar" onClick={this.onPostLike}>
@@ -173,7 +199,10 @@ export default class Thumb extends React.Component {
                 fas: this.state.isLike
               })}
             />
-            Like <i className="fas fa-grip-lines-vertical ml-3 mr-3" />
+            Like
+          </div>
+          <div className="division-bar">
+            <i className="fas fa-grip-lines-vertical ml-3 mr-3" />
           </div>
           <div className="view-bar" onClick={this.onPostDislike}>
             <i
@@ -183,29 +212,48 @@ export default class Thumb extends React.Component {
                 fas: this.state.isDislike
               })}
             />
-            Dislike <i className="fas fa-grip-lines-vertical ml-3 mr-3" />
+            Dislike
           </div>{" "}
+          <div className="division-bar">
+            <i className="fas fa-grip-lines-vertical ml-3 mr-3" />
+          </div>
           <div className="view-bar" onClick={this.onPostFavor}>
-            <i className="far fa-heart mr-2" />
-            Favorite <i className="fas fa-grip-lines-vertical ml-3 mr-3" />
+            <i
+              className={classnames("far fa-heart mr-2 animated", {
+                pale: this.state.isFavor,
+                fas: this.state.isFavor,
+                rubberBand: this.state.isFavor
+              })}
+            />
+            Favorite
           </div>{" "}
+          <div className="division-bar">
+            <i className="fas fa-grip-lines-vertical ml-3 mr-3" />
+          </div>
           <div className="view-bar" onClick={this.onForward}>
             <i
               className="fas fa-share-square mr-2"
               style={{ color: "orange" }}
             />
             Forward{" "}
+          </div>{" "}
+          <div className="division-bar">
             {this.state.showDeleteEdit && (
               <i className="fas fa-grip-lines-vertical ml-3 mr-3" />
             )}
-          </div>{" "}
+          </div>
           {this.state.showDeleteEdit && (
-            <div className="view-bar" onClick={this.onDeletePost}>
-              <i
-                className="fas fa-trash-alt mr-2"
-                style={{ color: "rgb(189, 202, 5)" }}
-              />
-              Delete <i className="fas fa-grip-lines-vertical ml-3 mr-3" />
+            <div className="delete-bar">
+              <div className="view-bar" onClick={this.onDeletePost}>
+                <i
+                  className="fas fa-trash-alt mr-2"
+                  style={{ color: "rgb(189, 202, 5)" }}
+                />
+                Delete
+              </div>
+              <div className="division-bar">
+                <i className="fas fa-grip-lines-vertical ml-3 mr-3" />
+              </div>
             </div>
           )}
           {this.state.showDeleteEdit && (

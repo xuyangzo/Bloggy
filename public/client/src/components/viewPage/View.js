@@ -23,6 +23,7 @@ export default class View extends React.Component {
       sources: "",
       dateTime: "",
       mycomment: "",
+      favorite: "",
       likes: [],
       dislikes: []
     };
@@ -32,6 +33,8 @@ export default class View extends React.Component {
     axios
       .get("/api/posts/view/" + this.state.post_id)
       .then(res => {
+        // get current userid
+        const userid = jwt_decode(localStorage.jwtToken).id;
         this.setState({
           shouldRender: true,
           userid: res.data.linked_userid,
@@ -44,6 +47,9 @@ export default class View extends React.Component {
           comments: res.data.comments,
           likes: res.data.likes,
           dislikes: res.data.dislikes,
+          favorite:
+            res.data.favorite.filter(favor => favor._id.toString() === userid)
+              .length > 0,
           loginModal: false
         });
       })
@@ -160,6 +166,7 @@ export default class View extends React.Component {
           onGotoIndex={this.onGotoIndex}
           onGotoEdit={this.onGotoEdit}
           user_id={this.state.userid}
+          isFavor={this.state.favorite}
         />
         {this.state.shouldRender && (
           <div>
