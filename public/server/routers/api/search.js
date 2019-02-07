@@ -62,6 +62,7 @@ router.get("/subtitle/:subtitle", (req, res) => {
             res.json(post);
         })
         .catch(err =>
+
             res.status(404).json({ post: "There is no content fot this post" })
         );
 });
@@ -72,6 +73,7 @@ router.get("/subtitle/:subtitle", (req, res) => {
 // @access  Public
 router.get("/all/:keyword", (req, res) => {
     client.search({
+        //keyword
         q: req.params.keyword,
         index: 'postss',
         size: 999
