@@ -4,6 +4,7 @@ import jwt_decode from "jwt-decode";
 import setAuthToken from "../utils/setAuthToken";
 import Unauthorized from "../utils/Unauthorized";
 import Navbar from "../common/Navbar";
+import SearchBar from "../common/SearchBar"
 
 export default class Search extends React.Component {
     constructor(props){
@@ -12,7 +13,7 @@ export default class Search extends React.Component {
     render(){
         return (
           <div>
-            zuwazidongxi
+            <SearchBar />
           </div>
         )
     }
