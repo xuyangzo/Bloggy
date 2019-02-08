@@ -216,12 +216,9 @@ router.get(
   "/current",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    res.json({
-      id: req.user.id,
-      username: req.user.username,
-      email: req.user.email,
-      avatar: req.user.avatar
-    });
+    User.findOne({ _id: req.user.id })
+      .then(user => res.json(user))
+      .catch(err => res.status(404).json({ usernotfound: "User not found" }));
   }
 );
 
