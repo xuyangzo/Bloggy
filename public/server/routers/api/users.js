@@ -123,7 +123,22 @@ router.post("/upload/avatar",
           function(error, result) {
             res.json(result);
             console.log(result, error);
-          });
+            var new_avatar = result.url;
+            console.log(new_avatar);
+              User.findOneAndUpdate(
+                  { _id: req.user.id },
+                  {$set: {avatar: new_avatar}},
+                  // { $set: postFields },
+                  { new: true, useFindAndModify: false }
+              )
+                  .then(post => res.json(post))
+                  .catch(err => res.status(400).json(err));
+
+
+          }
+      );
+
+
     }
 
 );
@@ -253,6 +268,7 @@ router.get("/:user_id", (req, res) => {
     .then(user => res.json(user))
     .catch(err => res.status(404).json({ usernotfound: "User not found" }));
 });
+
 
 // @route   POST api/users/follow/:followed_user_id
 // @desc    Follow another user
