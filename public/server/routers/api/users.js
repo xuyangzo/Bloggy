@@ -8,6 +8,7 @@ const passport = require("passport");
 const fs = require("fs");
 const Grid = require("gridfs-stream");
 const mongoose = require("mongoose");
+const cloudinary = require("cloudinary");
 var multiparty = require("connect-multiparty")();
 // var Redis = require("ioredis");
 const redis = require("redis");
@@ -60,50 +61,72 @@ mongoose.Promise = global.Promise;
 Grid.mongo = mongoose.mongo;
 var gfs;
 var connection = mongoose.connection;
-connection.once("open", () => {
-  gfs = Grid(connection.db, mongoose.mongo);
+// connection.once("open", () => {
+//   gfs = Grid(connection.db, mongoose.mongo);
+//
+//   // @route   POST api/users/upload/avatar
+//   // @desc    Upload user avatar
+//   // @access  Private
+//   router.post(
+//     "/upload/avatar",
+//     multiparty,
+//     passport.authenticate("jwt", { session: false }),
+//     (req, res) => {
+//       var filepath = req.files.filename.path;
+//       var filename = req.files.filename.name;
+//       var writestream = gfs.createWriteStream({ filename: filename });
+//       fs.createReadStream(filepath)
+//         .on("end", function() {
+//           res.send("OK");
+//         })
+//         .on("error", function() {
+//           res.send("ERR");
+//         })
+//         .pipe(writestream);
+//
+//       // writestream.on('close', (file) => {
+//       //     res.send('Stored File: ' + file.filename);
+//       // });
+//     }
+//   );
+//
+//   // @route   GET api/users/download/avatar/filename
+//   // @desc    Download user avatar
+//   // @access  Private
+//   router.get("/download/avatar/:filename", function(req, res) {
+//     var filename = req.params.filename;
+//     console.log(filename);
+//     // TODO: set proper mime type + filename, handle errors, etc...
+//     gfs
+//       // create a read stream from gfs...
+//       .createReadStream({ filename: filename })
+//       // and pipe it to Express' response
+//       .pipe(res);
+//   });
+// });
+//
+cloudinary.config({
+  cloud_name: 'bloggy-image',
+  api_key: '359384838787325',
+  api_secret: 'VRiy697bEl6zg_531OXARm_9YB8'
+});
 
-  // @route   POST api/users/upload/avatar
-  // @desc    Upload user avatar
-  // @access  Private
-  router.post(
-    "/upload/avatar",
+router.post("/upload/avatar",
     multiparty,
     passport.authenticate("jwt", { session: false }),
     (req, res) => {
+      // console.log(req.files);
       var filepath = req.files.filename.path;
+      console.log(filepath);
       var filename = req.files.filename.name;
-      var writestream = gfs.createWriteStream({ filename: filename });
-      fs.createReadStream(filepath)
-        .on("end", function() {
-          res.send("OK");
-        })
-        .on("error", function() {
-          res.send("ERR");
-        })
-        .pipe(writestream);
-
-      // writestream.on('close', (file) => {
-      //     res.send('Stored File: ' + file.filename);
-      // });
+      cloudinary.v2.uploader.upload(filepath,
+          function(error, result) {
+            res.json(result);
+            console.log(result, error);
+          });
     }
-  );
 
-  // @route   GET api/users/download/avatar/filename
-  // @desc    Download user avatar
-  // @access  Private
-  router.get("/download/avatar/:filename", function(req, res) {
-    var filename = req.params.filename;
-    console.log(filename);
-    // TODO: set proper mime type + filename, handle errors, etc...
-    gfs
-      // create a read stream from gfs...
-      .createReadStream({ filename: filename })
-      // and pipe it to Express' response
-      .pipe(res);
-  });
-});
-
+);
 // @route   GET api/users/test
 // @desc    Tests users route
 // @access  Public

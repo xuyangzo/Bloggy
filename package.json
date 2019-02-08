@@ -29,6 +29,7 @@
     "body-parser": "^1.18.3",
     "bootstrap": "^4.2.1",
     "classnames": "^2.2.6",
+    "cloudinary": "^1.13.2",
     "concurrently": "^4.1.0",
     "connect-multiparty": "^2.2.0",
     "css-loader": "^2.0.1",
