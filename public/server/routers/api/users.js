@@ -61,50 +61,7 @@ mongoose.Promise = global.Promise;
 Grid.mongo = mongoose.mongo;
 var gfs;
 var connection = mongoose.connection;
-// connection.once("open", () => {
-//   gfs = Grid(connection.db, mongoose.mongo);
-//
-//   // @route   POST api/users/upload/avatar
-//   // @desc    Upload user avatar
-//   // @access  Private
-//   router.post(
-//     "/upload/avatar",
-//     multiparty,
-//     passport.authenticate("jwt", { session: false }),
-//     (req, res) => {
-//       var filepath = req.files.filename.path;
-//       var filename = req.files.filename.name;
-//       var writestream = gfs.createWriteStream({ filename: filename });
-//       fs.createReadStream(filepath)
-//         .on("end", function() {
-//           res.send("OK");
-//         })
-//         .on("error", function() {
-//           res.send("ERR");
-//         })
-//         .pipe(writestream);
-//
-//       // writestream.on('close', (file) => {
-//       //     res.send('Stored File: ' + file.filename);
-//       // });
-//     }
-//   );
-//
-//   // @route   GET api/users/download/avatar/filename
-//   // @desc    Download user avatar
-//   // @access  Private
-//   router.get("/download/avatar/:filename", function(req, res) {
-//     var filename = req.params.filename;
-//     console.log(filename);
-//     // TODO: set proper mime type + filename, handle errors, etc...
-//     gfs
-//       // create a read stream from gfs...
-//       .createReadStream({ filename: filename })
-//       // and pipe it to Express' response
-//       .pipe(res);
-//   });
-// });
-//
+
 cloudinary.config({
   cloud_name: 'bloggy-image',
   api_key: '359384838787325',
@@ -118,27 +75,29 @@ router.post("/upload/avatar",
       // console.log(req.files);
       var filepath = req.files.filename.path;
       console.log(filepath);
-      var filename = req.files.filename.name;
-      cloudinary.v2.uploader.upload(filepath,
-          function(error, result) {
-            res.json(result);
+
+      cloudinary.v2.uploader.destroy(req.user.id,
+          function(error, result){
             console.log(result, error);
-            var new_avatar = result.url;
-            console.log(new_avatar);
-              User.findOneAndUpdate(
-                  { _id: req.user.id },
-                  {$set: {avatar: new_avatar}},
-                  // { $set: postFields },
-                  { new: true, useFindAndModify: false }
-              )
-                  .then(post => res.json(post))
-                  .catch(err => res.status(400).json(err));
-
-
-          }
-      );
-
-
+              var filename = req.files.filename.name;
+              cloudinary.v2.uploader.upload(filepath,
+                  {public_id: req.user.id},
+                  function(error, result) {
+                      res.json(result);
+                      console.log(result, error);
+                      var new_avatar = result.url;
+                      console.log(new_avatar);
+                      User.findOneAndUpdate(
+                          { _id: req.user.id },
+                          {$set: {avatar: new_avatar}},
+                          // { $set: postFields },
+                          { new: true, useFindAndModify: false }
+                      )
+                          .then(post => res.json(post))
+                          .catch(err => res.status(400).json(err));
+                  }
+              );
+      });
     }
 
 );
