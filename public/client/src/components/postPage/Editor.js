@@ -14,6 +14,10 @@ export default class Editor extends React.Component {
     super(props);
     const tagList = [""];
     this.state = {
+      isEdit: this.props.location.isEdit || false,
+      post_id: this.props.match.params.post_id
+        ? this.props.match.params.post_id
+        : "",
       title: this.props.location.title ? this.props.location.title : "",
       subtitle: this.props.location.subtitle
         ? this.props.location.subtitle
@@ -25,6 +29,7 @@ export default class Editor extends React.Component {
       expand: this.props.location.subtitle,
       errors: {}
     };
+    console.log(this.state);
   }
 
   // set HTML content
@@ -41,21 +46,42 @@ export default class Editor extends React.Component {
       sources: this.state.sources
     };
 
-    if (localStorage.jwtToken) {
-      setAuthToken(localStorage.jwtToken);
-      axios
-        .post("/api/posts/create", singlePost)
-        .then(res => {
-          console.log(res.data);
-          location.href = "/view/" + res.data._id;
-        })
-        .catch(err => {
-          this.setState({ errors: err.response.data });
-          console.log(err.response.data);
-        });
+    // if Edit
+    if (this.state.isEdit) {
+      if (localStorage.jwtToken) {
+        setAuthToken(localStorage.jwtToken);
+        axios
+          .post(`/api/posts/edit/${this.state.post_id}`, singlePost)
+          .then(res => {
+            console.log(res.data);
+            this.props.history.push(`/view/${res.data._id}`);
+          })
+          .catch(err => {
+            this.setState({ errors: err.response.data });
+            console.log(err.response.data);
+          });
+      } else {
+        alert("Login expires");
+        location.href = "/login";
+      }
     } else {
-      alert("Login expires");
-      location.href = "/login";
+      // if not Edit but Create
+      if (localStorage.jwtToken) {
+        setAuthToken(localStorage.jwtToken);
+        axios
+          .post("/api/posts/create", singlePost)
+          .then(res => {
+            console.log(res.data);
+            this.props.history.push(`/view/${res.data._id}`);
+          })
+          .catch(err => {
+            this.setState({ errors: err.response.data });
+            console.log(err.response.data);
+          });
+      } else {
+        alert("Login expires");
+        location.href = "/login";
+      }
     }
   };
 
