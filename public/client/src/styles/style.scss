@@ -13,3 +13,9 @@
 @import "./partials/indexGrid";
 @import "./partials/modal";
 @import "./partials/loader";
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
