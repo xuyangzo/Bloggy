@@ -18,28 +18,29 @@ var elasticsearch = require("elasticsearch");
 const Post = require("../../models/Post");
 const User = require("../../models/User");
 
+require("dotenv").config();
+
 const esClient = new elasticsearch.Client({
-  host:
-    "https://search-bloggy-iec77mrsmswpriiofnkjh3ggrq.us-west-1.es.amazonaws.com"
+  host: process.env.ELASTICSEARCH_HOST
 });
 
 let transporter = nodemailer.createTransport({
-  service: "Gmail",
+  service: process.env.MAIL_SERVICE_TYPE,
   port: 465, // SMTP
   secureConnection: true,
   auth: {
-    user: "bloggy233@gmail.com",
-    pass: "ilovebloggy233"
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASSWORD
   }
 });
 
 const redis = require("redis");
 var msg_count = 0;
 const redisClient = redis.createClient({
-  host: "redis-10859.c84.us-east-1-2.ec2.cloud.redislabs.com",
-  port: "10859",
+  host: process.env.REDIS_HOST,
+  port: process.env.REDIS_PORT,
   no_ready_check: true,
-  auth_pass: "LdDfI0ZyLFrLh5XTVKgpisyXKKFx3ZCz"
+  auth_pass: process.env.REDIS_AUTH_PASSWORD
 });
 
 // @route   GET api/posts/test
