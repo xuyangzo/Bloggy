@@ -117,7 +117,7 @@ class LoginNavbar extends React.Component {
         onPin={this.handleOnPin}
         onUnpin={this.handleOnUnpin}
       >
-        <nav className="navbar navbar-expand-md bg-light" id="mainNav">
+        <nav className="navbar navbar-expand-md transparent" id="mainNav">
           <div className="container">
             <Link className="navbar-brand" to="/">
               Bloggy
