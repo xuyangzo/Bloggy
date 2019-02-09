@@ -3,7 +3,9 @@ const router = express.Router();
 const gravatar = require("gravatar");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const keys = require("../../config/keys");
+
+require("dotenv").config();
+
 const passport = require("passport");
 const fs = require("fs");
 const Grid = require("gridfs-stream");
@@ -44,14 +46,11 @@ const validateLoginInput = require("../../validation/login.validation.js");
 const User = require("../../models/User");
 
 // DB Config
-const db = keys.mongoURI;
+const db = process.env.MONGO_URI;
 
 // Connet to MongoDB
 mongoose
-  .connect(
-    db,
-    { useNewUrlParser: true }
-  )
+  .connect(db, { useNewUrlParser: true })
   .then(() => {
     // console.log("MongoDB Connected");
   })
@@ -63,43 +62,43 @@ var gfs;
 var connection = mongoose.connection;
 
 cloudinary.config({
-  cloud_name: 'bloggy-image',
-  api_key: '359384838787325',
-  api_secret: 'VRiy697bEl6zg_531OXARm_9YB8'
+  cloud_name: "bloggy-image",
+  api_key: "359384838787325",
+  api_secret: "VRiy697bEl6zg_531OXARm_9YB8"
 });
 
-router.post("/upload/avatar",
-    multiparty,
-    passport.authenticate("jwt", { session: false }),
-    (req, res) => {
-      // console.log(req.files);
-      var filepath = req.files.filename.path;
-      console.log(filepath);
+router.post(
+  "/upload/avatar",
+  multiparty,
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    // console.log(req.files);
+    var filepath = req.files.filename.path;
+    console.log(filepath);
 
-      cloudinary.v2.uploader.destroy(req.user.id,
-          function(error, result){
-            console.log(result, error);
-              var filename = req.files.filename.name;
-              cloudinary.v2.uploader.upload(filepath,
-                  {public_id: req.user.id},
-                  function(error, result) {
-                      res.json(result);
-                      console.log(result, error);
-                      var new_avatar = result.url;
-                      console.log(new_avatar);
-                      User.findOneAndUpdate(
-                          { _id: req.user.id },
-                          {$set: {avatar: new_avatar}},
-                          // { $set: postFields },
-                          { new: true, useFindAndModify: false }
-                      )
-                          .then(post => res.json(post))
-                          .catch(err => res.status(400).json(err));
-                  }
-              );
-      });
-    }
-
+    cloudinary.v2.uploader.destroy(req.user.id, function(error, result) {
+      console.log(result, error);
+      var filename = req.files.filename.name;
+      cloudinary.v2.uploader.upload(
+        filepath,
+        { public_id: req.user.id },
+        function(error, result) {
+          res.json(result);
+          console.log(result, error);
+          var new_avatar = result.url;
+          console.log(new_avatar);
+          User.findOneAndUpdate(
+            { _id: req.user.id },
+            { $set: { avatar: new_avatar } },
+            // { $set: postFields },
+            { new: true, useFindAndModify: false }
+          )
+            .then(post => res.json(post))
+            .catch(err => res.status(400).json(err));
+        }
+      );
+    });
+  }
 );
 // @route   GET api/users/test
 // @desc    Tests users route
@@ -189,7 +188,7 @@ router.post("/login", (req, res) => {
         // Sign Token
         jwt.sign(
           payload,
-          keys.secretOrKey,
+          process.env.SECRET_OR_KEY,
           { expiresIn: 3600 },
           (err, token) => {
             res.json({
@@ -227,7 +226,6 @@ router.get("/:user_id", (req, res) => {
     .then(user => res.json(user))
     .catch(err => res.status(404).json({ usernotfound: "User not found" }));
 });
-
 
 // @route   POST api/users/follow/:followed_user_id
 // @desc    Follow another user
