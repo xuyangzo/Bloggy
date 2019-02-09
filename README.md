@@ -8,10 +8,10 @@ Bloggy is a Blog Engine powered by various web technologes including but not lim
 - Complete search filter and global search with autocompletion
 - For more details please refer to the documentation below
 
-### Preparation
+## Preparation
 
-Bloggy requires predefined `.env` file to start building
-Below is one example of the `.env` file
+Bloggy requires predefined `.env` file to start building<br/>
+Below is one example of the `.env` file<br/>
 You need to modify the `.example.env` file based on this and rename it to `.env`
 
 ```
@@ -27,17 +27,17 @@ ELASTICSEARCH_HOST=https://search-bloggy-xxxx.xxxx.xxx.amazonaws.com
 ELASTICSEARCH_LOG=trace
 ```
 
-`MONGO_URI` refers to `SRV Connection String` if you are using [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
-`SECRET_OR_KEY` specifies the key type for [passport.js](http://www.passportjs.org/)
-`MAIL_SERVICE_TYPE` specifies the mailbox type you want to use
-`MAIL_USER` and `MAIL_PASSWORD` are your regular mailbox account info
-`REDIS_HOST` refers to your Redis host
-`REDIS_PORT` specifies which port you want to use for Redis
-`REDIS_AUTH_PASSWORD` is your password for Redis
-`ELASTICSEARCH_HOST` refers to your Elasticsearch host
-`ELASTICSEARCH_LOG` specifies your Elasticsearch log type
+`MONGO_URI` refers to `SRV Connection String` if you are using [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)<br/>
+`SECRET_OR_KEY` specifies the key type for [passport.js](http://www.passportjs.org/)<br/>
+`MAIL_SERVICE_TYPE` specifies the mailbox type you want to use<br/>
+`MAIL_USER` and `MAIL_PASSWORD` are your regular mailbox account info<br/>
+`REDIS_HOST` refers to your Redis host<br/>
+`REDIS_PORT` specifies which port you want to use for Redis<br/>
+`REDIS_AUTH_PASSWORD` is your password for Redis<br/>
+`ELASTICSEARCH_HOST` refers to your Elasticsearch host<br/>
+`ELASTICSEARCH_LOG` specifies your Elasticsearch log type<br/>
 
-### Installation
+## Installation
 
 Bloggy requires [Node.js](https://nodejs.org/) v4+ to run.
 For npm user:
@@ -56,7 +56,7 @@ $ yarn install
 $ yarn run start-concurrent
 ```
 
-### Debug
+## Debug
 
 If your React/Node server fails to start with the following error message
 
@@ -65,13 +65,13 @@ events.js:167
        throw er; // Unhandled 'error' event
 ```
 
-Please check your port `8080` (where React runs) and `8081` (where Node runs)
+Please check your port `8080` (where React runs) and `8081` (where Node runs)<br/>
 And make sure there is no other app running on the same port(s)
 
-### Dependencies
+## Dependencies
 
-Bloggy uses a number of open source libraries to work properly.
-Below are all the key dependencies/technologies in this project.
+Bloggy uses a number of open source libraries to work properly.<br/>
+Below are all the key dependencies/technologies in this project.<br/>
 For all dependencies, please refer to `package.json`
 
 | Dependency                | Description                                                                                                               |
@@ -99,7 +99,7 @@ For all dependencies, please refer to `package.json`
 | [redis]                   | An open source (BSD licensed), in-memory data structure store, used as a database, cache and message broker               |
 | [webpack]                 | A static module bundler for modern JavaScript applications                                                                |
 
-### Development Team
+## Development Team
 
 - `Xuyang Zou (Lynch)`: Team Leader, CS major junior at USC
 - `Hao Chen`:
