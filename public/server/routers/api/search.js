@@ -76,9 +76,20 @@ router.get("/all/:keyword", (req, res) => {
   client
     .search({
       //keyword
-      q: req.params.keyword,
+      // q: req.params.keyword,
       index: "postss",
-      size: 999
+      size: 999,
+      body:{
+          query:{
+              multi_match: {
+                  "fields": [ "title" , "author"],
+                  "query":  req.params.keyword ,
+                  "fuzziness": 3,
+                  "prefix_length": 2,
+                  // "max_results": 20
+              }
+          }
+      }
     })
     .then(
       function(body) {
