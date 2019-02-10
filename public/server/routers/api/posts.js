@@ -81,6 +81,16 @@ router.get("/index/:index", (req, res) => {
   });
 });
 
+// @route   GET api/posts/certain
+// @desc    Get all posts given input
+// @access  Public
+router.get("/certain", (req, res) => {
+  const postList = req.body.posts.split(",");
+  Post.find({ _id: { $in: postList } })
+    .then(posts => res.json(posts))
+    .catch(err => res.status(404).json({ nopostfound: "No post found" }));
+});
+
 // @route   POST api/posts/create
 // @desc    Create Post
 // @access  Private
