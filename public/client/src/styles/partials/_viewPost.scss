@@ -7,14 +7,41 @@
   font-family: "Dancing Script", cursive !important;
   font-size: 5rem;
 }
-.blog-author {
-  cursor: pointer;
-  color: violet;
-  font-size: 2rem;
-  font-family: "Amatic SC", cursive !important;
+.blog-author-intro {
+  width: 80%;
+  padding: 1%;
+  position: relative;
+
+  .blog-author {
+    cursor: pointer;
+    color: violet;
+    font-family: "Dancing Script", cursive !important;
+    font-size: 2rem;
+    float: left;
+  }
+
+  .author-img {
+    border-radius: 50%;
+    float: left;
+    width: 6rem;
+    cursor: pointer;
+    border: 1px solid rgba(77, 75, 75, 0.671);
+  }
+
+  .author-description {
+    position: absolute;
+    left: 7.5rem;
+    top: 55px;
+  }
+
+  &:after {
+    content: "";
+    clear: both;
+    display: table;
+  }
 }
 .blog-date {
-  font-family: "Amatic SC", cursive !important;
+  font-family: "Dancing Script", cursive !important;
   font-size: 1.5rem;
 }
 
@@ -193,10 +220,10 @@ i {
 .reply-container {
   height: 0;
   overflow: hidden;
-  transition: height 0.5s ease-in-out;
+  transition: height 1s ease-in-out;
 }
 .show-comment {
-  height: initial;
+  height: auto;
 }
 
 .reply-comment {
@@ -281,4 +308,47 @@ i {
 
 .reply-comment-overwrite {
   border-bottom: none;
+}
+
+/* Pagination */
+.pagination-overwrite {
+  display: flex;
+  justify-content: center;
+}
+
+.page-link {
+  color: skyblue;
+  &:hover {
+    color: palevioletred;
+  }
+}
+
+.selected {
+  font-weight: bold;
+  color: palevioletred;
+}
+
+.pale {
+  color: palevioletred !important;
+}
+
+/* view bar */
+.row {
+  .view-bar {
+    float: left;
+    cursor: pointer;
+  }
+
+  .division-bar {
+    float: left;
+    i {
+      cursor: auto;
+    }
+  }
+
+  &:after {
+    content: "";
+    clear: both;
+    display: table;
+  }
 }

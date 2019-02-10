@@ -21,6 +21,9 @@ import Index from "./Index";
 // Post Page
 import Editor from "../postPage/Editor";
 
+//Search Page
+import Search from "../searchPage/Search";
+
 // Check for token
 if (localStorage.jwtToken) {
   // Decode token and get user info and expiration
@@ -58,6 +61,11 @@ export default class Bloggy extends React.Component {
               path="/post"
               component={localStorage.jwtToken ? Editor : Unauthorized}
             />
+            <Route
+              exact
+              path="/edit/:post_id"
+              component={localStorage.jwtToken ? Editor : Unauthorized}
+            />
             <Route exact path="/register" component={Register} />
             <Route exact path="/login" component={Login} />
             <Route
@@ -66,6 +74,7 @@ export default class Bloggy extends React.Component {
               component={localStorage.jwtToken ? Dashboard : Unauthorized}
             />
             <Route exact path="/view/:post_id" component={View} />
+            <Route exact path="/search/:keyword" component={Search} />
             <Route component={NotFound} />
           </Switch>
           <Footer />
