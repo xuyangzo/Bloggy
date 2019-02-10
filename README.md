@@ -36,6 +36,10 @@ ELASTICSEARCH_LOG=trace
 `REDIS_AUTH_PASSWORD` is your password for Redis<br/>
 `ELASTICSEARCH_HOST` refers to your Elasticsearch host<br/>
 `ELASTICSEARCH_LOG` specifies your Elasticsearch log type<br/>
+`AMPQ_HOST` specifies your RabbitMQ host url<br/>
+`CLOUDINARY_NAME` specifies your Cloudinary host name<br/>
+`CLOUDINARY_KEY` specifies your Cloudinary key<br/>
+`CLOUDINARY_SECRET` specifies your Cloudinary secret<br/>
 
 ## Installation
 
