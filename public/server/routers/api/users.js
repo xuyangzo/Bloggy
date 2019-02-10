@@ -3,11 +3,14 @@ const router = express.Router();
 const gravatar = require("gravatar");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const keys = require("../../config/keys");
+
+require("dotenv").config();
+
 const passport = require("passport");
 const fs = require("fs");
 const Grid = require("gridfs-stream");
 const mongoose = require("mongoose");
+const cloudinary = require("cloudinary");
 var multiparty = require("connect-multiparty")();
 // var Redis = require("ioredis");
 const redis = require("redis");
@@ -42,68 +45,45 @@ const validateLoginInput = require("../../validation/login.validation.js");
 // Load User Model
 const User = require("../../models/User");
 
-// DB Config
-const db = keys.mongoURI;
-
-// Connet to MongoDB
-mongoose
-  .connect(
-    db,
-    { useNewUrlParser: true }
-  )
-  .then(() => {
-    // console.log("MongoDB Connected");
-  })
-  .catch(err => console.log(err));
-
-mongoose.Promise = global.Promise;
-Grid.mongo = mongoose.mongo;
-var gfs;
-var connection = mongoose.connection;
-connection.once("open", () => {
-  gfs = Grid(connection.db, mongoose.mongo);
-
-  // @route   POST api/users/upload/avatar
-  // @desc    Upload user avatar
-  // @access  Private
-  router.post(
-    "/upload/avatar",
-    multiparty,
-    passport.authenticate("jwt", { session: false }),
-    (req, res) => {
-      var filepath = req.files.filename.path;
-      var filename = req.files.filename.name;
-      var writestream = gfs.createWriteStream({ filename: filename });
-      fs.createReadStream(filepath)
-        .on("end", function() {
-          res.send("OK");
-        })
-        .on("error", function() {
-          res.send("ERR");
-        })
-        .pipe(writestream);
-
-      // writestream.on('close', (file) => {
-      //     res.send('Stored File: ' + file.filename);
-      // });
-    }
-  );
-
-  // @route   GET api/users/download/avatar/filename
-  // @desc    Download user avatar
-  // @access  Private
-  router.get("/download/avatar/:filename", function(req, res) {
-    var filename = req.params.filename;
-    console.log(filename);
-    // TODO: set proper mime type + filename, handle errors, etc...
-    gfs
-      // create a read stream from gfs...
-      .createReadStream({ filename: filename })
-      // and pipe it to Express' response
-      .pipe(res);
-  });
+cloudinary.config({
+  cloud_name: "bloggy-image",
+  api_key: "359384838787325",
+  api_secret: "VRiy697bEl6zg_531OXARm_9YB8"
 });
 
+router.post(
+  "/upload/avatar",
+  multiparty,
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    // console.log(req.files);
+    var filepath = req.files.filename.path;
+    console.log(filepath);
+
+    cloudinary.v2.uploader.destroy(req.user.id, function(error, result) {
+      console.log(result, error);
+      var filename = req.files.filename.name;
+      cloudinary.v2.uploader.upload(
+        filepath,
+        { public_id: req.user.id },
+        function(error, result) {
+          res.json(result);
+          console.log(result, error);
+          var new_avatar = result.url;
+          console.log(new_avatar);
+          User.findOneAndUpdate(
+            { _id: req.user.id },
+            { $set: { avatar: new_avatar } },
+            // { $set: postFields },
+            { new: true, useFindAndModify: false }
+          )
+            .then(post => res.json(post))
+            .catch(err => res.status(400).json(err));
+        }
+      );
+    });
+  }
+);
 // @route   GET api/users/test
 // @desc    Tests users route
 // @access  Public
@@ -192,7 +172,7 @@ router.post("/login", (req, res) => {
         // Sign Token
         jwt.sign(
           payload,
-          keys.secretOrKey,
+          process.env.SECRET_OR_KEY,
           { expiresIn: 3600 },
           (err, token) => {
             res.json({
@@ -216,19 +196,20 @@ router.get(
   "/current",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    res.json({
-      id: req.user.id,
-      username: req.user.username,
-      email: req.user.email,
-      avatar: req.user.avatar
-    });
+    User.findOne({ _id: req.user.id })
+      .then(user => res.json(user))
+      .catch(err => res.status(404).json({ usernotfound: "User not found" }));
   }
 );
 
-// @route   GET api/users/public/:user_id
+// @route   GET api/users/:user_id
 // @desc    Return user with that user id
 // @access  Public
-// TODO
+router.get("/:user_id", (req, res) => {
+  User.findOne({ _id: req.params.user_id })
+    .then(user => res.json(user))
+    .catch(err => res.status(404).json({ usernotfound: "User not found" }));
+});
 
 // @route   POST api/users/follow/:followed_user_id
 // @desc    Follow another user
@@ -326,15 +307,13 @@ router.post(
 // @desc    View user
 // @access  Private
 router.get(
-    "/view/:user_id",
-    passport.authenticate("jwt", { session: false }),
-    (req, res) => {
-      User.findOne(
-          { _id: req.user.id },
-      )
-          .then(user => res.json(user))
-          .catch(err => res.status(404).json({ usernotfound: "User not found" }));
-    }
+  "/view/:user_id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    User.findOne({ _id: req.user.id })
+      .then(user => res.json(user))
+      .catch(err => res.status(404).json({ usernotfound: "User not found" }));
+  }
 );
 
 module.exports = router;

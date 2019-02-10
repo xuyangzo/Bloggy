@@ -67,6 +67,9 @@ const PostSchema = new Schema({
     es_indexed: true,
     default: "Anonymous"
   },
+  avatar: {
+    type: String
+  },
   dateTime: {
     type: Date,
     es_indexed: true,
@@ -94,6 +97,14 @@ const PostSchema = new Schema({
   dislikes: [
     {
       linked_dislike_userid: {
+        type: Schema.Types.ObjectId,
+        ref: "users"
+      }
+    }
+  ],
+  favorite: [
+    {
+      linked_favor_userid: {
         type: Schema.Types.ObjectId,
         ref: "users"
       }

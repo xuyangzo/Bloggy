@@ -1,6 +1,107 @@
+@import url("https://fonts.googleapis.com/css?family=Dancing+Script");
+
+.log-out {
+  position: absolute;
+  top: 10px;
+  right: 60px;
+}
+
+/* overwrite bootstrap */
 .profile-img {
   border-radius: 50%;
-  width: 2rem;
-  height: 2rem;
+  width: 32px;
+  height: 32px;
   cursor: pointer;
+  transition: all 1s cubic-bezier(0.075, 0.82, 0.165, 1);
+  position: absolute;
+  right: 150px;
+  top: 10px;
+}
+
+/* overwrite headroom */
+.headroom--unpinned {
+  transition: none !important;
+}
+
+/* info board */
+.info-board {
+  width: 240px;
+  height: 280px;
+  position: absolute;
+  opacity: 0;
+  display: none;
+
+  .temp {
+    position: relative;
+    height: 100%;
+    width: 100%;
+
+    .info-board-content {
+      width: 90%;
+      height: 80%;
+      background-color: white;
+      position: absolute;
+      top: 1.7rem;
+      display: block;
+      margin: 0 5%;
+      z-index: 0;
+      // border: 0.5px solid gray;
+
+      .info-username {
+        font-family: "Dancing Script", cursive !important;
+      }
+      .info-description {
+        font-size: 0.8rem;
+      }
+      .info-bar {
+        .info-item {
+          width: 40%;
+          margin: 0 5%;
+          padding: 5px;
+          box-sizing: border-box;
+          float: left;
+          font-size: 0.8rem;
+          cursor: pointer;
+          .info-icon {
+            font-size: 1rem;
+          }
+          a {
+            text-decoration: none;
+          }
+          &:hover {
+            color: rgb(41, 168, 168) !important;
+            a {
+              color: rgb(41, 168, 168) !important;
+            }
+          }
+        }
+        &:after {
+          content: "";
+          clear: both;
+          display: table;
+        }
+      }
+    }
+  }
+}
+
+/* info board animation */
+@include keyframes(showInfo) {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+.info-board-transition {
+  display: block;
+  @include animation("showInfo 0.5s ease-in-out forwards");
+}
+
+.transparent {
+  // opacity: 0.7;
+  // color:rgba(255, 255, 255, 0.5);
+  background: rgb(204, 204, 204); /* Fallback for older browsers without RGBA-support */
+  background: rgba(204, 204, 204, 0.8);
 }
