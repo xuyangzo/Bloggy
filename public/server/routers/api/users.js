@@ -45,22 +45,6 @@ const validateLoginInput = require("../../validation/login.validation.js");
 // Load User Model
 const User = require("../../models/User");
 
-// DB Config
-const db = process.env.MONGO_URI;
-
-// Connet to MongoDB
-mongoose
-  .connect(db, { useNewUrlParser: true })
-  .then(() => {
-    // console.log("MongoDB Connected");
-  })
-  .catch(err => console.log(err));
-
-mongoose.Promise = global.Promise;
-Grid.mongo = mongoose.mongo;
-var gfs;
-var connection = mongoose.connection;
-
 cloudinary.config({
   cloud_name: "bloggy-image",
   api_key: "359384838787325",
