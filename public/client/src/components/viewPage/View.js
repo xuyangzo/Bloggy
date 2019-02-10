@@ -25,15 +25,18 @@ export default class View extends React.Component {
       mycomment: "",
       favorite: "",
       likes: [],
-      dislikes: []
+      dislikes: [],
+      errors: {}
     };
   }
   componentWillReceiveProps = newProps => {
     // console.log(newProps.match.params.post_id);
-    this.setState(prev=>({
-      ...prev,
-      post_id: newProps.match.params.post_id
-    }), () => {
+    this.setState(
+      prev => ({
+        ...prev,
+        post_id: newProps.match.params.post_id
+      }),
+      () => {
         axios
           .get("/api/posts/view/" + this.state.post_id)
           .then(res => {
@@ -52,19 +55,22 @@ export default class View extends React.Component {
             });
           })
           .catch(err => {
-            this.setState({ errors: err.response.data });
-            console.log(err.response.data);
+            // this.setState({ errors: err.response.data });
+            console.log(err);
           });
-    });
-
-  }
+      }
+    );
+  };
   componentDidMount = () => {
     // console.log(this.state.post_id);
     axios
       .get("/api/posts/view/" + this.state.post_id)
       .then(res => {
         // get current userid
-        const userid = jwt_decode(localStorage.jwtToken).id;
+        let userid = "";
+        if (localStorage.jwtToken) {
+          userid = jwt_decode(localStorage.jwtToken).id;
+        }
         this.setState({
           shouldRender: true,
           userid: res.data.linked_userid,
@@ -84,8 +90,8 @@ export default class View extends React.Component {
         });
       })
       .catch(err => {
-        this.setState({ errors: err.response.data });
-        console.log(err.response.data);
+        // this.setState({ errors: err.response.data });
+        console.log(err);
       });
   };
 

@@ -252,7 +252,7 @@ export default class Editor extends React.Component {
           <br />
           <br />
           <button
-            className="btn btn-block btn-secondary"
+            className="btn btn-block editor-button mb-5"
             onClick={this.onClick}
           >
             Post!

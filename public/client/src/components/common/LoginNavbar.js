@@ -58,6 +58,7 @@ class LoginNavbar extends React.Component {
 
   onImgClick = e => {
     this.props.history.push("/dashboard");
+    // this.setState({ showInfoBoard: false });
   };
 
   handleOnPin = e => {};
@@ -117,7 +118,7 @@ class LoginNavbar extends React.Component {
         onPin={this.handleOnPin}
         onUnpin={this.handleOnUnpin}
       >
-        <nav className="navbar navbar-expand-md bg-light" id="mainNav">
+        <nav className="navbar navbar-expand-md transparent" id="mainNav">
           <div className="container">
             <Link className="navbar-brand" to="/">
               Bloggy
@@ -150,7 +151,7 @@ class LoginNavbar extends React.Component {
                     onMouseEnter={this.setInfoBoardOver}
                     onMouseLeave={this.setInfoBoardLeave}
                   >
-                    <h3 className="info-username mt-4 pale">
+                    <h3 className="info-username pale">
                       {this.state.username}
                     </h3>
                     <p className="info-description pl-2 pr-2">

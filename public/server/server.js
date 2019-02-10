@@ -8,6 +8,8 @@ const posts = require("./routers/api/posts");
 const searches = require("./routers/api/search");
 const app = express();
 
+require("dotenv").config();
+
 // Body parser middleware
 app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
 app.use(bodyParser.json({ extended: true, limit: "50mb" }));
@@ -23,14 +25,11 @@ app.use((req, res, next) => {
 });
 
 // DB Config
-const db = require("./config/keys").mongoURI;
+const db = process.env.MONGO_URI;
 
 // Connet to MongoDB
 mongoose
-  .connect(
-    db,
-    { useNewUrlParser: true }
-  )
+  .connect(db, { useNewUrlParser: true })
   .then(() => {
     console.log("MongoDB Connected");
   })
