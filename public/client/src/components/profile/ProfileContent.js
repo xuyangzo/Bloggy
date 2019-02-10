@@ -5,10 +5,11 @@ import InfiniteScroll from "react-infinite-scroller";
 import "animate.css";
 
 
-export default class DashboardContent extends React.Component {
+export default class ProfileContent extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            postList: [],
             allPosts: [],
             onClickPost: props.onClickPost,
             allRenderedPosts: [],
@@ -16,17 +17,28 @@ export default class DashboardContent extends React.Component {
             canLoad: true
         };
 
-        // retrieve first 6 posts info from database
-        axios
-            .get("/api/posts/index/0")
+        // Retrieve post list
+        axios.get("/api/users/" + this.props.userid)
             .then(res => {
-                console.log(res.data);
-                this.setState(prevState => ({
-                    allPosts: prevState.allPosts.concat(res.data),
-                    renderCount: 6
-                }));
+                this.setState({
+                    postList: res.data.posts,
+                });
+                console.log(this.state.postList);
+                // retrieve first 3 posts info from database
+                axios
+                    .get("/api/posts/index/0")
+                    .then(res => {
+                        console.log(res.data);
+                        this.setState(prevState => ({
+                            allPosts: prevState.allPosts.concat(res.data),
+                            renderCount: 6
+                        }));
+                    })
+                    .catch(err => console.log(err.response.data));
             })
             .catch(err => console.log(err.response.data));
+
+
     }
 
     loadFunc = () => {
@@ -157,8 +169,6 @@ export default class DashboardContent extends React.Component {
                             })}
                         </InfiniteScroll>
                     </div>
-
-
                 </div>
             </div>
         )
