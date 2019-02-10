@@ -49,6 +49,7 @@
 
       .info-username {
         font-family: "Dancing Script", cursive !important;
+        margin-top: 30px;
       }
       .info-description {
         font-size: 0.8rem;
@@ -97,4 +98,15 @@
 .info-board-transition {
   display: block;
   @include animation("showInfo 0.5s ease-in-out forwards");
+}
+
+.transparent {
+  // opacity: 0.7;
+  // color:rgba(255, 255, 255, 0.5);
+  background: rgb(
+    204,
+    204,
+    204
+  ); /* Fallback for older browsers without RGBA-support */
+  background: rgba(204, 204, 204, 0.8);
 }

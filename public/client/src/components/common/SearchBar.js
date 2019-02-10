@@ -94,7 +94,7 @@ export default class SearchBar extends React.Component {
                                        
                                        
                                      >
-                                       {result._source.title}
+                                       {<p>{result._source.title} -----by {result._source.author}</p>}
                                      </Link>
                                    );
                                  }

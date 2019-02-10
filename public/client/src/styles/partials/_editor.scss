@@ -70,3 +70,11 @@
   height: 600px !important;
   overflow-y: scroll !important;
 }
+
+.editor-button {
+  background-color: rgba(108, 201, 238, 0.6) !important;
+  transition: background 0.5s ease-in-out;
+  &:hover {
+    background-color: rgba(215, 110, 145, 0.6) !important;
+  }
+}
