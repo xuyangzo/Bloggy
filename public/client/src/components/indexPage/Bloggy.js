@@ -12,8 +12,8 @@ import LoginNavbar from "../common/LoginNavbar";
 import View from "../viewPage/View";
 import Unauthorized from "../utils/Unauthorized";
 
-// Dashboard
-import Dashboard from "../dashboard/Dashboard";
+// Profile
+import Profile from "../profile/Profile";
 
 // Index Page
 import Index from "./Index";
@@ -68,11 +68,13 @@ export default class Bloggy extends React.Component {
             />
             <Route exact path="/register" component={Register} />
             <Route exact path="/login" component={Login} />
-            <Route
+            {/* <Route
               exact
               path="/dashboard"
               component={localStorage.jwtToken ? Dashboard : Unauthorized}
-            />
+            /> */}
+            <Route exact path = "/profile/:userid"
+            component={Profile} />
             <Route exact path="/view/:post_id" component={View} />
             <Route exact path="/search/:keyword" component={Search} />
             <Route component={NotFound} />
