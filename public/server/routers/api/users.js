@@ -12,31 +12,22 @@ const Grid = require("gridfs-stream");
 const mongoose = require("mongoose");
 const cloudinary = require("cloudinary");
 var multiparty = require("connect-multiparty")();
-// var Redis = require("ioredis");
-const redis = require("redis");
-var msg_count = 0;
-const sub = redis.createClient({
-  host: "redis-10859.c84.us-east-1-2.ec2.cloud.redislabs.com",
-  port: "10859",
-  no_ready_check: true,
-  auth_pass: "LdDfI0ZyLFrLh5XTVKgpisyXKKFx3ZCz"
-});
+var amqp = require('amqplib/callback_api');
 
-const pub = redis.createClient({
-  host: "redis-10859.c84.us-east-1-2.ec2.cloud.redislabs.com",
-  port: "10859",
-  no_ready_check: true,
-  auth_pass: "LdDfI0ZyLFrLh5XTVKgpisyXKKFx3ZCz"
-});
+// Recieve message
+// amqp.connect('amqp://ctogbbgq:ti_gnQ6QmDLfl9s_k2XQKjopGwYEBOG5@caterpillar.rmq.cloudamqp.com/ctogbbgq', function(err, conn) {
+//     conn.createChannel(function(err, ch) {
+//         var q = 'follow';
+//
+//         ch.assertQueue(q, {durable: false});
+//         console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", q);
+//         ch.consume(q, function(msg) {
+//             console.log(" [x] Received %s", msg.content.toString());
+//         }, {noAck: true});
+//     });
+// });
 
-//
-//
-sub.once("connect", function() {
-  console.log("redis connected");
-});
-sub.on("error", function(err) {
-  console.log("redis client connection failed", err);
-});
+
 
 // Load Input Validation
 const validateRegisterInput = require("../../validation/register.validation.js");
@@ -46,9 +37,9 @@ const validateLoginInput = require("../../validation/login.validation.js");
 const User = require("../../models/User");
 
 cloudinary.config({
-  cloud_name: "bloggy-image",
-  api_key: "359384838787325",
-  api_secret: "VRiy697bEl6zg_531OXARm_9YB8"
+  cloud_name: process.env.CLOUDINARY_NAME,
+  api_key: process.env.CLOUDINARY_KEY,
+  api_secret: process.env.CLOUDINARY_SECRET
 });
 
 router.post(
@@ -230,6 +221,21 @@ router.post(
           errors.email = "This user has already been followed!";
           return res.status(404).json(errors);
         } else {
+
+            //RabbitMQ Connection
+            amqp.connect(process.env.AMPQ_HOST, function(err, conn) {
+                conn.createChannel(function(err, ch) {
+                    var q = 'follow';
+                    console.log("wttfffff");
+                    ch.assertQueue(q, {durable: false});
+                    // Note: on Node 6 Buffer.from(msg) should be used
+                    ch.sendToQueue(q, new Buffer('I followed you!'));
+                    console.log(" [x] Sent 'I followed you!'");
+                });
+                setTimeout(function() { conn.close(); process.exit(0) }, 500);
+
+            });
+
           User.findOneAndUpdate(
             { _id: req.params.followed_user_id },
             { $push: { beingFollowed: req.user.id } },

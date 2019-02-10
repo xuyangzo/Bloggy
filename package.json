@@ -20,6 +20,8 @@
     "start-concurrent": "concurrently \"yarn run dev-server\" \"yarn run serve-backend\""
   },
   "dependencies": {
+    "amqp": "^0.2.7",
+    "amqplib": "^0.5.3",
     "animate.css": "^3.7.0",
     "axios": "^0.18.0",
     "babel-cli": "^6.26.0",
