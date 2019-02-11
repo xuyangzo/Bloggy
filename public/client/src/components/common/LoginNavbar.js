@@ -19,6 +19,9 @@ class LoginNavbar extends React.Component {
       description: ""
     };
   }
+  onGotoSearch = e => {
+    this.props.history.push(`/search/${e}`);
+  }
 
   componentDidMount = e => {
     // retrieve avatar and userid
@@ -65,7 +68,7 @@ class LoginNavbar extends React.Component {
 
   handleOnUnpin = e => {
     this.setState({ unpin: true });
-    console.log("unpin");
+    // console.log("unpin");
   };
 
   // toggle info board
@@ -132,12 +135,12 @@ class LoginNavbar extends React.Component {
               aria-expanded="false"
               aria-label="Toggle navigation"
             >
-              <span class="navbar-toggler-icon" />
+              <span className="navbar-toggler-icon" />
             </button>
 
             <div className="collapse navbar-collapse" id="navbarResponsive">
-              <div class="ml-auto">
-                <SearchBar initial={this.state.unpin} />
+              <div className="ml-auto">
+                <SearchBar initial={this.state.unpin} onGotoSearch={this.onGotoSearch}/>
               </div>
               <div
                 className={classnames("info-board", {
