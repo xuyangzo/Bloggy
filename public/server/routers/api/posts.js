@@ -91,7 +91,7 @@ router.get("/index/:index", (req, res) => {
 // @route   GET api/posts/certain
 // @desc    Get all posts given input
 // @access  Public
-router.get("/certain", (req, res) => {
+router.post("/certain", (req, res) => {
   const postList = req.body.posts.split(",");
   Post.find({ _id: { $in: postList } })
     .then(posts => res.json(posts))
