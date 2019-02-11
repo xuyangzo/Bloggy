@@ -13,54 +13,171 @@ export default class ProfileContent extends React.Component {
             allPosts: [],
             onClickPost: props.onClickPost,
             allRenderedPosts: [],
-            renderCount: 0,
-            canLoad: true
+            renderCount: -1,
+            canLoad: true,
+            navName: "Blogs"
         };
 
         // Retrieve post list
         axios.get("/api/users/" + this.props.userid)
             .then(res => {
+                const postList = res.data.posts.reverse();
                 this.setState({
-                    postList: res.data.posts,
-                });
-                console.log(this.state.postList);
-                // retrieve first 3 posts info from database
-                axios
-                    .get("/api/posts/index/0")
-                    .then(res => {
-                        console.log(res.data);
-                        this.setState(prevState => ({
-                            allPosts: prevState.allPosts.concat(res.data),
-                            renderCount: 6
-                        }));
-                    })
-                    .catch(err => console.log(err.response.data));
-            })
-            .catch(err => console.log(err.response.data));
-
-
+                    postList: postList,
+                    username: res.data.username,
+                    avatar: res.data.avatar,
+                    description: 
+                        ('description' in res.data) ? res.data.description
+                        : res.data.username+" has nothing to say...",
+                    favorites: res.data.favorites,
+                    following: res.data.following.length,
+                    followers: res.data.beingFollowed.length,
+                    renderCount: 0
+                })}
+            )
+            .catch(err => console.log(err));
     }
 
     loadFunc = () => {
         // if load before state initialize
-        if (this.state.allPosts.length === 0) return;
+        if (this.state.renderCount === -1) return;
 
-        // retrieve following 6 posts info from database
-        axios
-            .get("/api/posts/index/" + this.state.renderCount)
-            .then(res => {
-                if (!res.data || !!res.data) {
-                    this.setState({ canLoad: false });
-                }
-                this.setState(prevState => ({
-                    allPosts: prevState.allPosts.concat(res.data),
-                    renderCount: prevState.renderCount + 6
-                }));
-            })
-            .catch(err => console.log(err.response.data));
+        // Posts left
+        const currRender = this.state.renderCount;
+        const postLength = this.state.postList.length
+        const postLeft = postLength - currRender;
+        console.log(`PostsLeft: ${postLeft}`);
 
-        console.log("load more!");
-    };
+        if (this.state.navName=="Blogs") {
+            if (postLeft<3) {
+                this.setState({
+                    canLoad: false
+                }, () => {
+                    // Load the rest of the posts if more than 0 left
+                    if (postLeft!=0) { 
+                        const postString = this.state.postList.slice(
+                            currRender, currRender+postLeft
+                        ).join(',');
+                        const postObj = {
+                            posts: postString
+                        };
+                        axios.post("/api/posts/certain", postObj)
+                        .then(res => {
+                            this.setState(prevState => ({
+                                allPosts: prevState.allPosts.concat(res.data.reverse()),
+                                renderCount: this.state.postList.length,
+                                canLoad: false
+                            }));
+                        })
+                        .catch(err => {
+                            console.log(err.response.data);
+                        });
+                    }
+                })
+            } else {
+                // Load next 3 posts
+                const postString = this.state.postList.slice(
+                    currRender, currRender+3
+                ).join(',');
+                const postObj = {
+                    posts: postString
+                };
+                console.log(postString);
+                axios.post("/api/posts/certain", postObj)
+                .then(res => {
+                    this.setState(prevState => ({
+                        allPosts: prevState.allPosts.concat(res.data.reverse()),
+                        renderCount: this.state.renderCount+3
+                    }));
+                })
+                .catch(err => {
+                    console.log(err.response.data);
+                });
+            }
+        }
+        else if (this.state.navName=="Favorites") {
+            if (postLeft<3) {
+                this.setState({
+                    canLoad: false
+                }, () => {
+                    // Load the rest of the posts if more than 0 left
+                    if (postLeft!=0) { 
+                        const postString = this.state.postList.slice(
+                            currRender, currRender+postLeft
+                        ).join(',');
+                        const postObj = {
+                            posts: postString
+                        };
+                        axios.post("/api/posts/certain", postObj)
+                        .then(res => {
+                            this.setState(prevState => ({
+                                allPosts: prevState.allPosts.concat(res.data),
+                                renderCount: this.state.postList.length,
+                                canLoad: false
+                            }));
+                        })
+                        .catch(err => {
+                            console.log(err.response.data);
+                        });
+                    }
+                })
+            } else {
+                // Load next 3 posts
+                const postString = this.state.postList.slice(
+                    currRender, currRender+3
+                ).join(',');
+                const postObj = {
+                    posts: postString
+                };
+                console.log(postString);
+                axios.post("/api/posts/certain", postObj)
+                .then(res => {
+                    this.setState(prevState => ({
+                        allPosts: prevState.allPosts.concat(res.data),
+                        renderCount: this.state.renderCount+3
+                    }));
+                })
+                .catch(err => {
+                    console.log(err.response.data);
+                });
+            }
+        }
+    }
+
+    handleNavClick = (navName) => {
+        this.setState({
+            postList: [],
+            allPosts: [],
+            allRenderedPosts: [],
+            renderCount: -1,
+            canLoad: true,
+            navName: navName
+        }, () => {
+            if (navName=="Blogs") {
+                axios.get("/api/users/" + this.props.userid)
+                .then(res => {
+                    const postList = res.data.posts.reverse();
+                    this.setState({
+                        postList: postList,
+                        renderCount: 0
+                    })}
+                )
+                .catch(err => console.log(err));
+            }
+            else if (navName=="Favorites") {
+                axios.get("/api/users/" + this.props.userid)
+                .then(res => {
+                    const postList = res.data.favorites
+                    .map(obj => obj._id);
+                    this.setState({
+                        postList: postList,
+                        renderCount: 0
+                    })
+                })
+                .catch(err => console.log(err));
+            }
+        })
+    }
 
     render() {
         return (
@@ -69,47 +186,75 @@ export default class ProfileContent extends React.Component {
                     <div className="col-md-8">
                         <div className="post-preview">
                             <h2 className="post-title">
-                                Profile Name
-                            <span className="ml-2">
+                                {this.state.username}
+                                <span className="ml-2">
                                     <button class="btn btn-outline-secondary my-2 my-sm-0" type="submit">
                                         Follow
-                                </button>
+                                    </button>
                                 </span>
                             </h2>
-                            <h3 className="post-subtitle">
-                                An open-source enthusiast, creator of @IssueHunt and @Boostnoteapp
-                        </h3>
-                            <p className="post-meta">Description</p>
+                            <h4 className="post-subtitle">
+                                {this.state.description}
+                            </h4>
                             <div className="row post-meta">
                                 <div className="col">
-                                    <p className="post-meta">1000 Following</p>
+                                    <p className="post-meta">{this.state.following} Following</p>
                                 </div>
                                 <div className="col">
-                                    <p className="post-meta">1000 Followers</p>
+                                    <p className="post-meta">{this.state.followers} Followers</p>
                                 </div>
                                 <div className="col">
-                                    <i class="fa fa-address-book" aria-hidden="true" />
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div className="col-md-4">
-                        <img alt="Kazz Yokomizo"
-                            src="https://miro.medium.com/fit/c/240/240/1*h8bl3llMMWGkoA242LHcDw.png"
+                        <img alt={this.state.username}
+                            src={this.state.avatar}
                             class="rounded-circle"
                             width="120" height="120" />
                     </div>
                     <div className="col-12">
-                        <nav class="navbar navbar-expand-sm navbar-light border-bottom border-info">
-                            <ul class="navbar-nav">
-                                <li class="nav-item">
-                                    <a class="nav-link active" href="#">Blogs</a>
+                        <nav className="navbar navbar-expand-sm navbar-light border-bottom border-info">
+                            <ul className="navbar-nav">
+                                <li className="nav-item" style={{ cursor: "pointer" }}>
+                                    <a 
+                                        className={
+                                            this.state.navName=="Blogs" ? 
+                                            "nav-link active" : "nav-link"
+                                        }
+                                        onClick={
+                                            () => this.handleNavClick("Blogs")
+                                        }
+                                    >
+                                        Blogs
+                                    </a>
                                 </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#">Favorites</a>
+                                <li class="nav-item" style={{ cursor: "pointer" }}>
+                                    <a 
+                                        class={
+                                            this.state.navName=="Favorites" ? 
+                                            "nav-link active" : "nav-link"
+                                        }
+                                        onClick={
+                                            () => this.handleNavClick("Favorites")
+                                        }
+                                    >
+                                        Favorites
+                                    </a>
                                 </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#">Comments</a>
+                                <li class="nav-item" style={{ cursor: "pointer" }}>
+                                    <a 
+                                        class={
+                                            this.state.navName=="Comments" ? 
+                                            "nav-link active" : "nav-link"
+                                        }
+                                        onClick={
+                                            () => this.handleNavClick("Comments")
+                                        }
+                                    >
+                                        Comments
+                                    </a>
                                 </li>
                             </ul>
                         </nav>
@@ -134,13 +279,13 @@ export default class ProfileContent extends React.Component {
                                     <div className="col-md-12 featured-responsive" key={post._id}
                                         onClick={() => this.state.onClickPost(post._id)} style={{ cursor: "pointer" }}>
                                         <div className="featured-place-wrap">
-
                                             <div className="featured-title-box post-preview">
                                                 <div className="row mb-2">
                                                     <div className="col-auto">
-                                                        <img alt="Kazz Yokomizo"
-                                                            src="https://miro.medium.com/fit/c/80/80/1*h8bl3llMMWGkoA242LHcDw.png"
-                                                            class="rounded-circle" height="100%"
+                                                        <img alt={this.state.username}
+                                                            src={this.state.avatar}
+                                                            class="rounded-circle"
+                                                            width="70" height="70"
                                                         />
                                                     </div>
                                                     <div className="col-auto">
@@ -159,7 +304,7 @@ export default class ProfileContent extends React.Component {
                                                 <h3 className="custom post-title">{post.title}</h3>
                                                 <h4 className="custom post-subtitle">{post.subtitle}</h4>
                                                 <div className="bottom-icons">
-                                                    <span className="fa fa-bookmark custom" />
+                                                    {/* <span className="fa fa-bookmark custom" /> */}
                                                 </div>
                                             </div>
                                         </div>
