@@ -7,7 +7,6 @@ import ReactQuill, { Quill } from "react-quill"; // Enable image resize
 import ImageResize from "quill-image-resize-module";
 Quill.register("modules/ImageResize", ImageResize);
 import "react-quill/dist/quill.snow.css";
-import { QuillDeltaToHtmlConverter } from "quill-delta-to-html";
 
 import setAuthToken from "../utils/setAuthToken";
 
@@ -29,116 +28,63 @@ export default class Editor extends React.Component {
       sources: this.props.location.sources ? this.props.location.sources : [],
       tags: [],
       expand: this.props.location.subtitle,
+      images: [],
       errors: {},
-      contents: {},
-      images: []
+      editor: {}
     };
     console.log(this.state);
   }
 
   // set HTML content
   handleChange = (value, delta, source, editor) => {
-    this.setState({ text: value, contents: editor.getContents() });
+    const contents = editor.getContents().ops;
+    // check if any image gets deleted
+    for (let i = 0; i < this.state.images.length; i++) {
+      var find = false;
+      const image = this.state.images[i];
+      for (let j = 0; j < contents.length; j++) {
+        if (content.insert.image === image.url) {
+          find = true;
+        }
+      }
+      if (!find) {
+        // send request to backend to delete image
+        axios
+          .post(`/api/posts/removeimage/${image.imageid}`)
+          .then(res => {
+            console.log(res.data);
+          })
+          .catch(err => console.log(err));
+      }
+    }
+
+    editor.getContents().ops.forEach(op => {
+      if (op.insert.hasOwnProperty("image")) {
+        if (
+          this.state.images.filter(image => {
+            if (image.url === op.insert.image) {
+              return op;
+            }
+          }).length !== this.state.images.length
+        ) {
+        }
+      }
+    });
+
+    this.setState({ text: value, editor });
   };
 
   // POST to backend
   onClick = e => {
     if (localStorage.jwtToken) {
-      // get contents
-      let images = [];
-      let counter = 0;
-      for (let i = 0; i < this.state.contents.ops.length; i++) {
-        const op = this.state.contents.ops[i];
-        // get all images in order
-        if (op.insert.hasOwnProperty("image")) {
-          counter++;
-          const filename = `${this.state.title}_${i}`;
-          const imageid = uuid();
-          const imageObj = {
-            filename,
-            imageid,
-            image: op.insert.image.slice(op.insert.image.indexOf(",") + 1, -1)
-          };
-          setAuthToken(localStorage.jwtToken);
-          // save images
-          axios
-            .post("/api/posts/upload/avatarstring", imageObj)
-            .then(res => {
-              console.log(res.data);
-              images[i] = res.data.url;
-              counter--;
-              if (counter === 0) {
-                // construct Quill Delta object
-                const contents = this.state.contents.ops.filter((op, j) => {
-                  console.log(j);
-                  if (!op.insert.hasOwnProperty("image")) return op;
-                  else {
-                    const img = {
-                      insert: {
-                        image: images[j]
-                      }
-                    };
-                    return img;
-                  }
-                });
-                // convert to HTML
-                const cfg = {};
-                const converter = new QuillDeltaToHtmlConverter(contents, cfg);
-                const html = converter.convert();
-                console.log(html);
-                const singlePost = {
-                  text: html,
-                  title: this.state.title
-                };
-                // save HTML
-                // if Edit
-                if (this.state.isEdit) {
-                  axios
-                    .post(`/api/posts/edit/${this.state.post_id}`, singlePost)
-                    .then(res => {
-                      console.log(res.data);
-                      this.props.history.push(`/view/${res.data._id}`);
-                    })
-                    .catch(err => {
-                      this.setState({ errors: err.response.data });
-                      console.log(err.response.data);
-                    });
-                } else {
-                  // if create
-                  setAuthToken(localStorage.jwtToken);
-                  axios
-                    .post("/api/posts/create", singlePost)
-                    .then(res => {
-                      console.log(res.data);
-                      this.props.history.push(`/view/${res.data._id}`);
-                    })
-                    .catch(err => {
-                      this.setState({ errors: err.response.data });
-                      console.log(err.response.data);
-                    });
-                }
-              }
-            })
-            .catch(err => console.log(err));
-        }
-      }
-
       const singlePost = {
         title: this.state.title,
         subtitle: this.state.subtitle,
-        text: this.state.html,
+        text: this.state.editor.getHTML(),
         sources: this.state.sources
       };
-    } else {
-      // if user not logged in
-    }
-
-    /*
-    
-    // if Edit
-    if (this.state.isEdit) {
-      if (localStorage.jwtToken) {
-        setAuthToken(localStorage.jwtToken);
+      // if Edit
+      if (this.state.isEdit) {
         axios
           .post(`/api/posts/edit/${this.state.post_id}`, singlePost)
           .then(res => {
@@ -150,12 +96,7 @@ export default class Editor extends React.Component {
             console.log(err.response.data);
           });
       } else {
-        alert("Login expires");
-        location.href = "/login";
-      }
-    } else {
-      // if not Edit but Create
-      if (localStorage.jwtToken) {
+        // if create
         setAuthToken(localStorage.jwtToken);
         axios
           .post("/api/posts/create", singlePost)
@@ -167,12 +108,10 @@ export default class Editor extends React.Component {
             this.setState({ errors: err.response.data });
             console.log(err.response.data);
           });
-      } else {
-        alert("Login expires");
-        location.href = "/login";
       }
+    } else {
+      // if user not logged in
     }
-    */
   };
 
   // update state
@@ -225,6 +164,45 @@ export default class Editor extends React.Component {
     this.setState(prevState => ({ expand: !prevState.expand }));
   };
 
+  // custom handler for image
+  imageHandler = () => {
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.setAttribute("accept", "image/*");
+    input.setAttribute("name", uuid());
+    input.click();
+
+    input.onchange = async () => {
+      const quill = this.reactQuillRef.getEditor();
+      const file = input.files[0];
+      let data = new FormData();
+      data.append("file", file);
+
+      // Save current cursor state
+      const range = quill.getSelection(true);
+
+      // send request to backend to upload image
+      setAuthToken(localStorage.jwtToken);
+      axios
+        .post("/api/posts/upload/file", data, {
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
+        })
+        .then(res => {
+          console.log(res.data);
+          quill.insertEmbed(range.index, "image", res.data.url);
+          this.setState(prevState => ({
+            images: [
+              ...prevState.images,
+              { url: res.data.url, imageid: res.data.imageid }
+            ]
+          }));
+        })
+        .catch(err => console.log(err));
+    };
+  };
+
   render() {
     // setup react-quill
     const toolbarOptions = [
@@ -245,7 +223,12 @@ export default class Editor extends React.Component {
     ];
 
     const modules = {
-      toolbar: toolbarOptions,
+      toolbar: {
+        container: toolbarOptions,
+        handlers: {
+          image: this.imageHandler
+        }
+      },
       ImageResize: {
         modules: ["Resize", "DisplaySize", "Toolbar"]
       }
@@ -301,6 +284,9 @@ export default class Editor extends React.Component {
           <br />
           <br />
           <ReactQuill
+            ref={el => {
+              this.reactQuillRef = el;
+            }}
             theme="snow"
             value={this.state.text}
             onChange={this.handleChange}

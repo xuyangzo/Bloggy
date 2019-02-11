@@ -1,3 +1,5 @@
+require("@babel/polyfill");
+
 import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import jwt_decode from "jwt-decode";
@@ -73,8 +75,7 @@ export default class Bloggy extends React.Component {
               path="/dashboard"
               component={localStorage.jwtToken ? Dashboard : Unauthorized}
             /> */}
-            <Route exact path = "/profile/:userid"
-            component={Profile} />
+            <Route exact path="/profile/:userid" component={Profile} />
             <Route exact path="/view/:post_id" component={View} />
             <Route exact path="/search/:keyword" component={Search} />
             <Route component={NotFound} />
