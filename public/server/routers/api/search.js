@@ -73,7 +73,7 @@ router.get("/subtitle/:subtitle", (req, res) => {
 // @desc    Search Post
 // @access  Public
 router.get("/all/:keyword", (req, res) => {
-    var cursor = req.body.index;
+    var index = req.body.index;
   client
     .search(
         {
