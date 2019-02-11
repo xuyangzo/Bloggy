@@ -12,7 +12,10 @@ export default class Navbar extends React.Component {
   }
   handleOnUnpin = e => {
     this.setState({ unpin: true });
-    console.log("unpin");
+    // console.log("unpin");
+  }
+  onGotoSearch = e =>{
+    this.props.history.push(`/search/${e}`);
   }
   render() {
     return (
@@ -34,13 +37,13 @@ export default class Navbar extends React.Component {
               aria-expanded="false"
               aria-label="Toggle navigation"
             >
-              <span class="navbar-toggler-icon" />
+              <span className="navbar-toggler-icon" />
             </button>
             <div className="collapse navbar-collapse" id="navbarResponsive">
+              <div className="ml-auto">
+                <SearchBar initial={this.state.unpin} onGotoSearch={this.onGotoSearch} />
+              </div>
               <ul className="navbar-nav ml-auto">
-                <li className="nav-item">
-                  <SearchBar initial={this.state.unpin} />
-                </li>
                 <li className="nav-item">
                   <Link className="nav-link" to="/register">
                     Sign Up
