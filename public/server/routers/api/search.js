@@ -73,13 +73,18 @@ router.get("/subtitle/:subtitle", (req, res) => {
 // @desc    Search Post
 // @access  Public
 router.get("/all/:keyword", (req, res) => {
+    var cursor = req.body.index;
   client
-    .search({
+    .search(
+        {
       //keyword
       // q: req.params.keyword,
       index: "postss",
-      size: 999,
+      // scroll: '5s',
+      // size: 999,
       body:{
+          from: 0,
+          size: 12,
           query:{
               multi_match: {
                   "fields": [ "title" , "author"],
@@ -88,13 +93,22 @@ router.get("/all/:keyword", (req, res) => {
                   "prefix_length": 2,
                   // "max_results": 20
               }
-          }
+          },
+          "sort" : [
+              {"dateTime" : { "order" : "desc"}}
+          ]
       }
-    })
+    }
+    )
     .then(
       function(body) {
+        var total = body.hits.total;
+        // console.log(total);
         var hits = body.hits.hits;
-        res.send(hits);
+        var result = {}
+        result.body = hits;
+        result.total = total;
+        res.send(result);
       },
       function(error) {
         console.trace(error.message);
