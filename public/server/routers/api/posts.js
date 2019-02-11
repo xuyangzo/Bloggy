@@ -9,6 +9,7 @@ const nodemailer = require("nodemailer");
 const ejs = require("ejs");
 const fs = require("fs");
 const cloudinary = require("cloudinary");
+const multiparty = require("connect-multiparty")();
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_NAME,
@@ -664,6 +665,9 @@ router.post(
   }
 );
 
+// @route   POST api/posts/upload/avatarstring
+// @desc    Upload image as Base64str
+// @access  Private
 router.post(
   "/upload/avatarstring",
   passport.authenticate("jwt", { session: false }),
@@ -703,4 +707,26 @@ router.post(
     });
   }
 );
+
+// @route   POST api/posts/upload/file
+// @desc    Upload image as File
+// @access  Private
+router.post(
+  "/upload/file",
+  multiparty,
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const filename = req.files.file.path;
+    console.log(req.body);
+    const imageid = uuidv1();
+    cloudinary.v2.uploader.upload(filename, { public_id: imageid }, function(
+      error,
+      result
+    ) {
+      res.json({ ...result, imageid: imageid });
+      console.log(result, error);
+    });
+  }
+);
+
 module.exports = router;
