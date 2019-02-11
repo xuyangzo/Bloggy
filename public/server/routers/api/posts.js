@@ -729,4 +729,19 @@ router.post(
   }
 );
 
+// @route   POST api/posts/upload/file
+// @desc    Upload image as File
+// @access  Private
+router.post(
+    "/removeimgae/:imageid",
+    multiparty,
+    passport.authenticate("jwt", { session: false }),
+    (req, res) => {
+        var imageid = req.params.imageid;
+        cloudinary.v2.uploader.destroy(imageid, function(error, result) {
+            console.log(result, error);
+        });
+    }
+);
+
 module.exports = router;
