@@ -7,16 +7,17 @@ export default class SearchBar extends React.Component {
                    this.state = {
                      inputValue: "",
                      resultList: [],
-                     
+                     event : false
                    };
                     
                  }
 
                 componentWillMount(){
-                    document.addEventListener('mousedown',this.handleClick,false);
+
+                    document.addEventListener('click',this.handleClick,false);
                 }
                 componentWillUnmount() {
-                    document.removeEventListener('mousedown', this.handleClick, false);
+                    document.removeEventListener('click', this.handleClick, false);
                 }
                 componentWillReceiveProps(nextProps){
                     if(nextProps.initial === true){
@@ -24,6 +25,7 @@ export default class SearchBar extends React.Component {
                     }
                 }
                 handleClick = e => {
+                  // console.log(e);
                     if(this.node.contains(e.target)){
                         return;
                     }
@@ -59,7 +61,7 @@ export default class SearchBar extends React.Component {
                        <div className="input-group" ref={node => this.node = node}>
                        <input
                          type="text"
-                         className="form-control"
+                         className="form-control input_length"
                          onKeyDown={this.onKeyPressed}
                          aria-label="Text input with dropdown button"
                          value={this.state.inputValue}
@@ -74,10 +76,11 @@ export default class SearchBar extends React.Component {
                        <div className="input-group-append">
                          <button
                            className="btn btn-outline-secondary "
-                           type="button"
-                           data-toggle="dropdown"
-                           aria-haspopup="true"
-                           aria-expanded="true"
+                            type="button"
+                          //  data-toggle="dropdown"
+                          //  aria-haspopup="true"
+                          //  aria-expanded="true"
+                          onClick={this.handleOnClick}
                          >
                            Search{" "}
                          </button>
@@ -91,8 +94,7 @@ export default class SearchBar extends React.Component {
                                        className="dropdown-item show"
                                        to={"/view/" + result._id}
                                        key={result._id}
-                                       
-                                       
+                                       onClick={this.onHandleClose}
                                      >
                                        {<p>{result._source.title} -----by {result._source.author}</p>}
                                      </Link>
@@ -114,51 +116,22 @@ export default class SearchBar extends React.Component {
                      this.handleChange(evt.target.value)
                    );
                  }
-                 onClick = search => {
-                   const searchType = search;
-                   const keyword = this.state.inputValue;
-                   axios
-                     .get(`/api/search/${searchType}/${keyword}`)
-                     .then(res => {
-                       //console.log(res.data);
-                     })
-                     .catch(err => {
-                       this.setState({
-                         errors: err.response.data
-                       });
-                       console.log(err.response.data);
-                     });
+                 handleOnClick = e => {
+                  //  console.log(456);
+                   this.props.onGotoSearch(this.state.inputValue);
                  };
 
                  onKeyPressed = e => {
                    if (e.keyCode === 13) {
-                     const searchType = "all";
-                     const keyword = this.state.inputValue;
-                     axios
-                       .get(
-                         `/api/search/${searchType}/${keyword}`
-                       )
-                       .then(res => {
-                         console.log(res.data);
-                         for (
-                           let index = 0;
-                           index < res.data.length;
-                           index++
-                         ) {
-                           const element = res.data[index];
-                           console.log(element._source.title);
-                           return (
-                             <div>element._source.title</div>
-                           );
-                         }
-                       })
-                       .catch(err => {
-                         this.setState({
-                           errors: err.response.data
-                         });
-                         console.log(err.response.data);
-                       });
+                     
+                    this.props.onGotoSearch(this.state.inputValue);
                    }
                  };
+                onHandleClose = e => {
+                  this.setState(() => ({
+                    resultList: []
+                  }));
+                };
                }
+
 
