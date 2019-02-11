@@ -11,11 +11,10 @@ const fs = require("fs");
 const cloudinary = require("cloudinary");
 
 cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_NAME,
-    api_key: process.env.CLOUDINARY_KEY,
-    api_secret: process.env.CLOUDINARY_SECRET
+  cloud_name: process.env.CLOUDINARY_NAME,
+  api_key: process.env.CLOUDINARY_KEY,
+  api_secret: process.env.CLOUDINARY_SECRET
 });
-
 
 // Load Input Validation
 const validatePostInput = require("../../validation/post.validation.js");
@@ -666,32 +665,42 @@ router.post(
 );
 
 router.post(
-    "/upload/avatarstring",
-    passport.authenticate("jwt", { session: false }),
-    (req, res) => {
-        // console.log(req.files);
-        var base64 = req.body.avatarstring;
-        var filepath = '/uplaod/title.jpg';
-        var imageid = req.body.imageid;
-        var filename = req.body.filename;
-        // var filepath = req.files.filename.path;
-        // console.log(filepath);
-        var bitmap = new Buffer(base64str, 'base64');
-        fs.writeFileSync(filename, bitmap);
-        console.log('******** converted successful ********');
+  "/upload/avatarstring",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    // console.log(req.files);
+    var base64str = req.body.image;
 
-            // var filename = req.files.filename.name;
-        cloudinary.v2.uploader.upload(
-                filepath,
-                { public_id: imageid},
-                function(error, result) {
-                    res.json(result);
-                    console.log(result, error);
-                    // var new_avatar = result.url;
-                    // console.log(new_avatar);
-                }
-        );
+    var filepath = __dirname + moment().format() + ".png";
 
-    }
+    var imageid = req.body.imageid;
+    var filename = req.body.filename;
+    // var filepath = req.files.filename.path;
+    // console.log(filepath);
+    var bitmap = new Buffer(base64str, "base64");
+    console.log("object?" + Buffer.isBuffer(bitmap));
+    fs.open(filepath, "w", 0755, function(err, fd) {
+      console.log(fd);
+      fs.writeFile(filepath, bitmap, function(err) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log("successsful!!!");
+          // var filename = req.files.filename.name;
+          cloudinary.v2.uploader.upload(
+            filepath,
+            { public_id: imageid },
+            function(error, result) {
+              res.json(result);
+              console.log(result, error);
+              // var new_avatar = result.url;
+              // console.log(new_avatar);
+            }
+          );
+        }
+      });
+      console.log("******** converted successful ********");
+    });
+  }
 );
 module.exports = router;
