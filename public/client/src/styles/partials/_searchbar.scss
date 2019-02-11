@@ -7,3 +7,78 @@
     margin-left: auto;
     margin-right: auto;
 }
+.center2 {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.input-group>.form-control, .input-group>.form-control-plaintext{
+  width: 250px;
+  position: relative;
+  flex: 1 1 auto;
+  margin-bottom: 0;
+}
+
+/* Google Fonts */
+@import url("https://fonts.googleapis.com/css?family=Dancing+Script");
+@import url("https://fonts.googleapis.com/css?family=Dosis");
+
+#grid1 {
+//   padding: 10px;
+  -webkit-perspective: 1000px;
+  perspective: 1000px;
+
+  background: rgba(206, 206, 206, 0.568);
+  width: 100%;
+   padding-left: 4.5%;
+   padding-right: 3%;
+
+  .grid-item1 {
+    background: white;
+    height: 300px;
+    margin: 1rem 1.5rem;
+    display: inline-block;
+    border-radius: 4px;
+    padding: 25px;
+    color: black;
+    width: 21%;
+    background-position: center;
+    background-size: cover;
+    box-sizing: border-box;
+    transition: all 2s cubic-bezier(0.075, 0.82, 0.165, 1);
+    cursor: pointer;
+    background: url("/client/src/image/grid-bg1.jpg");
+    background-size: 100% 100%;
+    padding: 3%;
+    // margin-left:1px;
+    &:hover {
+      box-shadow: 0px 25px 30px -20px rgba(0, 0, 0, 0.2);
+      color: palevioletred;
+    }
+
+    &:nth-child(4n-5) {
+      height: 300px;
+    }
+
+    &:nth-child(2n) {
+      height: 300px;
+    }
+
+    &:nth-child(3n) {
+      height: 300px;
+    }
+
+    .grid-title {
+      font-family: "Dancing Script", cursive;
+    }
+
+    .grid-subtitle {
+      font-family: "Dancing Script", cursive;
+    }
+
+    .grid-author,
+    .grid-time {
+      font-family: "Dosis", sans-serif;
+    }
+  }
+}
