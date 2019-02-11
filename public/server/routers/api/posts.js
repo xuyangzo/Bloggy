@@ -672,6 +672,7 @@ router.post(
         // console.log(req.files);
         var base64 = req.body.avatarstring;
         var filepath = '/uplaod/title.jpg';
+        var imageid = req.body.imageid;
         var filename = req.body.filename;
         // var filepath = req.files.filename.path;
         // console.log(filepath);
@@ -682,13 +683,12 @@ router.post(
             // var filename = req.files.filename.name;
         cloudinary.v2.uploader.upload(
                 filepath,
-                { public_id: req.user.id },
+                { public_id: imageid},
                 function(error, result) {
                     res.json(result);
                     console.log(result, error);
-                    var new_avatar = result.url;
-                    console.log(new_avatar);
-
+                    // var new_avatar = result.url;
+                    // console.log(new_avatar);
                 }
         );
 
