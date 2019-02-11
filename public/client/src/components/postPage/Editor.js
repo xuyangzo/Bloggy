@@ -6,6 +6,7 @@ import ReactQuill, { Quill } from "react-quill"; // Enable image resize
 import ImageResize from "quill-image-resize-module";
 Quill.register("modules/ImageResize", ImageResize);
 import "react-quill/dist/quill.snow.css";
+import { QuillDeltaToHtmlConverter } from "quill-delta-to-html";
 
 import setAuthToken from "../utils/setAuthToken";
 
@@ -27,25 +28,104 @@ export default class Editor extends React.Component {
       sources: this.props.location.sources ? this.props.location.sources : [],
       tags: [],
       expand: this.props.location.subtitle,
-      errors: {}
+      errors: {},
+      contents: {},
+      images: []
     };
     console.log(this.state);
   }
 
   // set HTML content
   handleChange = (value, delta, source, editor) => {
-    this.setState({ text: value, html: editor.getHTML() });
+    this.setState({ text: value, contents: editor.getContents() });
   };
 
   // POST to backend
   onClick = e => {
-    const singlePost = {
-      title: this.state.title,
-      subtitle: this.state.subtitle,
-      text: this.state.html,
-      sources: this.state.sources
-    };
+    if (localStorage.jwtToken) {
+      // get contents
+      let images = [];
+      let counter = this.state.contents.ops.length;
+      for (let i = 0; i < this.state.contents.ops.length; i++) {
+        const op = this.state.contents.ops[i];
+        // get all images in order
+        if (op.insert.hasOwnProperty("image")) {
+          const filename = `${this.state.title}_${i}`;
+          const imageid = `${this.state.post_id}_${i}`;
+          images = { ...images, [filename]: op.insert.image };
+          const imageObj = {
+            filename,
+            imageid,
+            image: op.insert.image
+          };
+          setAuthToken(localStorage.jwtToken);
+          // save images
+          axios
+            .post("/api/posts/upload/avatarstring", imageObj)
+            .then(res => {
+              images[i] = res.data.secure_url;
+              counter--;
+              if (counter === 0) {
+                // construct Quill Delta object
+                const contents = this.state.contents.ops.filter((op, j) => {
+                  if (!op.insert.hasOwnProperty("image")) return op;
+                  else {
+                    const img = {
+                      insert: {
+                        image: images[j]
+                      }
+                    };
+                  }
+                });
+                // convert to HTML
+                const cfg = {};
+                const converter = new QuillDeltaToHtmlConverter(contents, cfg);
+                const html = converter.convert();
+                // save HTML
+                // if Edit
+                if (this.state.isEdit) {
+                  axios
+                    .post(`/api/posts/edit/${this.state.post_id}`, singlePost)
+                    .then(res => {
+                      console.log(res.data);
+                      this.props.history.push(`/view/${res.data._id}`);
+                    })
+                    .catch(err => {
+                      this.setState({ errors: err.response.data });
+                      console.log(err.response.data);
+                    });
+                } else {
+                  // if create
+                  setAuthToken(localStorage.jwtToken);
+                  axios
+                    .post("/api/posts/create", singlePost)
+                    .then(res => {
+                      console.log(res.data);
+                      this.props.history.push(`/view/${res.data._id}`);
+                    })
+                    .catch(err => {
+                      this.setState({ errors: err.response.data });
+                      console.log(err.response.data);
+                    });
+                }
+              }
+            })
+            .catch(err => console.log(err));
+        }
+      }
 
+      const singlePost = {
+        title: this.state.title,
+        subtitle: this.state.subtitle,
+        text: this.state.html,
+        sources: this.state.sources
+      };
+    } else {
+      // if user not logged in
+    }
+
+    /*
+    
     // if Edit
     if (this.state.isEdit) {
       if (localStorage.jwtToken) {
@@ -83,6 +163,7 @@ export default class Editor extends React.Component {
         location.href = "/login";
       }
     }
+    */
   };
 
   // update state
