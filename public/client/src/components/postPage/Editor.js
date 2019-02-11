@@ -1,6 +1,7 @@
 import React from "react";
 import classnames from "classnames";
 import axios from "axios";
+import uuid from "uuid";
 
 import ReactQuill, { Quill } from "react-quill"; // Enable image resize
 import ImageResize from "quill-image-resize-module";
@@ -45,29 +46,31 @@ export default class Editor extends React.Component {
     if (localStorage.jwtToken) {
       // get contents
       let images = [];
-      let counter = this.state.contents.ops.length;
+      let counter = 0;
       for (let i = 0; i < this.state.contents.ops.length; i++) {
         const op = this.state.contents.ops[i];
         // get all images in order
         if (op.insert.hasOwnProperty("image")) {
+          counter++;
           const filename = `${this.state.title}_${i}`;
-          const imageid = `${this.state.post_id}_${i}`;
-          images = { ...images, [filename]: op.insert.image };
+          const imageid = uuid();
           const imageObj = {
             filename,
             imageid,
-            image: op.insert.image
+            image: op.insert.image.slice(op.insert.image.indexOf(",") + 1, -1)
           };
           setAuthToken(localStorage.jwtToken);
           // save images
           axios
             .post("/api/posts/upload/avatarstring", imageObj)
             .then(res => {
-              images[i] = res.data.secure_url;
+              console.log(res.data);
+              images[i] = res.data.url;
               counter--;
               if (counter === 0) {
                 // construct Quill Delta object
                 const contents = this.state.contents.ops.filter((op, j) => {
+                  console.log(j);
                   if (!op.insert.hasOwnProperty("image")) return op;
                   else {
                     const img = {
@@ -75,12 +78,18 @@ export default class Editor extends React.Component {
                         image: images[j]
                       }
                     };
+                    return img;
                   }
                 });
                 // convert to HTML
                 const cfg = {};
                 const converter = new QuillDeltaToHtmlConverter(contents, cfg);
                 const html = converter.convert();
+                console.log(html);
+                const singlePost = {
+                  text: html,
+                  title: this.state.title
+                };
                 // save HTML
                 // if Edit
                 if (this.state.isEdit) {
