@@ -23,7 +23,7 @@ export default class Search extends React.Component {
             .then(res => {
                 // console.log(res.data);
                 this.setState(() => ({
-                    posts: res.data
+                    posts: res.data.body
                 }));
             })
             .catch(err => {
@@ -42,7 +42,7 @@ export default class Search extends React.Component {
             .then(res => {
                 // console.log(res.data);
                 this.setState(() => ({
-                    posts: res.data
+                    posts: res.data.body
                 }));
             })
             .catch(err => {
