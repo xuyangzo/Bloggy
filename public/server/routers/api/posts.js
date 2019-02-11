@@ -733,7 +733,7 @@ router.post(
 // @desc    Upload image as File
 // @access  Private
 router.post(
-    "/removeimgae/:imageid",
+    "/removeimage/:imageid",
     multiparty,
     passport.authenticate("jwt", { session: false }),
     (req, res) => {
