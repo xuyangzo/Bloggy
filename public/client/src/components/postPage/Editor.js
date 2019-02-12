@@ -28,7 +28,7 @@ export default class Editor extends React.Component {
       sources: this.props.location.sources ? this.props.location.sources : [],
       tags: [],
       expand: this.props.location.subtitle,
-      images: [],
+      images: this.props.location.images ? this.props.location.images : [],
       errors: {},
       editor: {}
     };
@@ -40,19 +40,27 @@ export default class Editor extends React.Component {
     const contents = editor.getContents().ops;
     // check if any image gets deleted
     for (let i = 0; i < this.state.images.length; i++) {
-      var find = false;
+      var find = [false];
       const image = this.state.images[i];
       for (let j = 0; j < contents.length; j++) {
+        const content = contents[j];
         if (content.insert.image === image.url) {
-          find = true;
+          find[0] = true;
         }
       }
-      if (!find) {
+      if (!find[0]) {
         // send request to backend to delete image
+        console.log(image.imageid);
         axios
           .post(`/api/posts/removeimage/${image.imageid}`)
           .then(res => {
             console.log(res.data);
+            // remove it from array
+            this.setState(prevState => ({
+              images: prevState.images.filter(new_image => {
+                if (new_image.imageid != image.imageid) return new_image;
+              })
+            }));
           })
           .catch(err => console.log(err));
       }
@@ -81,7 +89,8 @@ export default class Editor extends React.Component {
         title: this.state.title,
         subtitle: this.state.subtitle,
         text: this.state.editor.getHTML(),
-        sources: this.state.sources
+        sources: this.state.sources,
+        images: this.state.images
       };
       // if Edit
       if (this.state.isEdit) {
@@ -192,12 +201,17 @@ export default class Editor extends React.Component {
         .then(res => {
           console.log(res.data);
           quill.insertEmbed(range.index, "image", res.data.url);
-          this.setState(prevState => ({
-            images: [
-              ...prevState.images,
-              { url: res.data.url, imageid: res.data.imageid }
-            ]
-          }));
+          this.setState(
+            prevState => ({
+              images: [
+                ...prevState.images,
+                { url: res.data.url, imageid: res.data.imageid }
+              ]
+            }),
+            () => {
+              quill.setSelection(range.index + 1);
+            }
+          );
         })
         .catch(err => console.log(err));
     };
