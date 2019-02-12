@@ -26,6 +26,7 @@ export default class View extends React.Component {
       favorite: "",
       likes: [],
       dislikes: [],
+      images: [],
       errors: {}
     };
   }
@@ -51,6 +52,7 @@ export default class View extends React.Component {
               comments: res.data.comments,
               likes: res.data.likes,
               dislikes: res.data.dislikes,
+              images: res.data.images,
               loginModal: false
             });
           })
@@ -83,6 +85,7 @@ export default class View extends React.Component {
           comments: res.data.comments,
           likes: res.data.likes,
           dislikes: res.data.dislikes,
+          images: res.data.images,
           favorite:
             res.data.favorite.filter(favor => favor._id.toString() === userid)
               .length > 0,
@@ -137,6 +140,7 @@ export default class View extends React.Component {
       subtitle: this.state.subtitle,
       text: this.state.text,
       sources: this.state.sources,
+      images: this.state.images,
       isEdit: true
     });
   };
