@@ -110,6 +110,16 @@ const PostSchema = new Schema({
       }
     }
   ],
+  images: [
+    {
+      url: {
+        type: String
+      },
+      imageid: {
+        type: String
+      }
+    }
+  ],
 
   comments: [commentSchema]
 });
