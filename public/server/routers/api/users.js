@@ -27,7 +27,28 @@ var amqp = require('amqplib/callback_api');
 //     });
 // });
 
+const redis = require("redis");
+var msg_count = 0;
+const redisClient = redis.createClient({
+    host: process.env.REDIS_HOST,
+    port: process.env.REDIS_PORT,
+    no_ready_check: true,
+    auth_pass: process.env.REDIS_AUTH_PASSWORD
+});
 
+const pub = redis.createClient({
+    host: "redis-13298.c60.us-west-1-2.ec2.cloud.redislabs.com",
+    port: 13298,
+    no_ready_check: true,
+    auth_pass: "lejXnnMDJsceSToZMbfMc17ZO38kH4RK"
+})
+const sub = redis.createClient({
+    host: "redis-13298.c60.us-west-1-2.ec2.cloud.redislabs.com",
+    port: 13298,
+    no_ready_check: true,
+    auth_pass: "lejXnnMDJsceSToZMbfMc17ZO38kH4RK"
+})
+sub.send_command('config', ['set', 'notify-keyspace-events', 'Ex'], SubscribeExpired);
 
 // Load Input Validation
 const validateRegisterInput = require("../../validation/register.validation.js");
@@ -308,8 +329,51 @@ router.post(
     )
       .then(user => res.json(user))
       .catch(err => res.status(404).json({ usernotfound: "User not found" }));
+
+    var nextdate = new Date();
+    nextdate.setDate(nextdate.getDate()+1);
+    nextdate.setHours(00);
+    nextdate.setMinutes(00);
+    nextdate.setSeconds(00);
+    // var date2=new Date('2019/2/12 21:09:00');    //end
+    // console.log(date2);
+    console.log(nextdate.getTime())
+    var date1=new Date();    //start
+    console.log(date1);
+    console.log(date1.getTime())
+    var date3=Math.round(nextdate.getTime()/1000)-Math.round(date1.getTime()/1000); // time difference
+    console.log(date3);
+    console.log('task---start')
+    pub.setex(req.user.id, date3, '', (err) => {
+    if (err) {
+        return console.log('Adding delay task failed!!!', err);
+    }
+        console.log('add delay task succeeded!!!');
+    });
+    console.log('task---end')
   }
 );
+
+
+function SubscribeExpired(e, r) {
+    // let sub = redis.createClient();
+    const expired_subKey = '__keyevent@0__:expired';
+    sub.subscribe(expired_subKey, function () {
+
+        sub.on('message', function (chan, msg) {
+            //msg就是过期的key值，由于过期了，所有回调时只有key值
+            //相应的处理代码
+            console.log('after 10s')
+            console.log(msg);
+            pub.setex(req.user.id, date3, '', (err) => {
+                if (err) {
+                    return console.log('Adding delay task failed!!!', err);
+                }
+                console.log('add delay task succeeded!!!');
+            });
+        });
+    });
+}
 
 // @route   GET api/users/view/:user_id
 // @desc    View user
