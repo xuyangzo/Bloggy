@@ -145,6 +145,7 @@ router.post(
     // if (req.body.dateTime) postFields.dateTime = req.body.dateTime;
     if (req.body.text) postFields.text = req.body.text;
     if (req.body.sources) postFields.sources = req.body.sources;
+    if (req.body.images) postFields.images = req.body.images;
 
     // save post
     new Post(postFields).save().then(post => {
@@ -748,15 +749,16 @@ router.post(
 // @desc    Upload image as File
 // @access  Private
 router.post(
-    "/removeimage/:imageid",
-    multiparty,
-    passport.authenticate("jwt", { session: false }),
-    (req, res) => {
-        var imageid = req.params.imageid;
-        cloudinary.v2.uploader.destroy(imageid, function(error, result) {
-            console.log(result, error);
-        });
-    }
+  "/removeimage/:imageid",
+  multiparty,
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    var imageid = req.params.imageid;
+    cloudinary.v2.uploader.destroy(imageid, function(error, result) {
+      console.log(result, error);
+      res.json(result);
+    });
+  }
 );
 
 module.exports = router;
