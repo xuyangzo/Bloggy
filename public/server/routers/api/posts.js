@@ -91,7 +91,7 @@ router.get("/all", (req, res) => {
 router.get("/index/:index", (req, res) => {
   const index = parseInt(req.params.index, 10);
   redisClient.lrange("posts", -3 - index, -1 - index, function(err, items) {
-    // if (err) throw err;
+    if (err) throw err;
     // var posts = [];
     var posts = [];
     for (var i = items.length - 1; i >= 0; i--) {
