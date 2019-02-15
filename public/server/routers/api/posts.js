@@ -51,6 +51,19 @@ const redisClient = redis.createClient({
   auth_pass: process.env.REDIS_AUTH_PASSWORD
 });
 
+const pub = redis.createClient({
+    host: "redis-13298.c60.us-west-1-2.ec2.cloud.redislabs.com",
+    port: 13298,
+    no_ready_check: true,
+    auth_pass: "lejXnnMDJsceSToZMbfMc17ZO38kH4RK"
+})
+const sub = redis.createClient({
+    host: "redis-13298.c60.us-west-1-2.ec2.cloud.redislabs.com",
+    port: 13298,
+    no_ready_check: true,
+    auth_pass: "lejXnnMDJsceSToZMbfMc17ZO38kH4RK"
+})
+// sub.send_command('config', ['set', 'notify-keyspace-events', 'Ex'], SubscribeExpired);
 // @route   GET api/posts/test
 // @desc    Tests users route
 // @access  Public
@@ -177,6 +190,8 @@ router.post(
     });
   }
 );
+
+
 
 // @route   POST api/posts/edit
 // @desc    Edit Post

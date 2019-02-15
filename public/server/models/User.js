@@ -59,6 +59,10 @@ const UserSchema = new Schema({
   subscribe: {
     type: Boolean,
     default: true
+  }, 
+  subscribe_freq:{
+    type: Number,
+    default: 1
   }
 });
 
