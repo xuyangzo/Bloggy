@@ -332,19 +332,17 @@ router.post(
 
     var nextdate = new Date();
     nextdate.setDate(nextdate.getDate()+1);
-    nextdate.setHours(00);
+    nextdate.setHours(09);
     nextdate.setMinutes(00);
     nextdate.setSeconds(00);
-    // var date2=new Date('2019/2/12 21:09:00');    //end
-    // console.log(date2);
-    console.log(nextdate.getTime())
-    var date1=new Date();    //start
-    console.log(date1);
-    console.log(date1.getTime())
-    var date3=Math.round(nextdate.getTime()/1000)-Math.round(date1.getTime()/1000); // time difference
-    console.log(date3);
+    // console.log(nextdate.getTime())
+    var now=new Date();    //start
+    // console.log(date1);
+    console.log(now.getTime())
+    var delay_time=Math.round(nextdate.getTime()/1000)-Math.round(now.getTime()/1000); // time difference
+    // console.log(date3);
     console.log('task---start')
-    pub.setex(req.user.id, date3, '', (err) => {
+    pub.setex(req.user.id, delay_time, '', (err) => {
     if (err) {
         return console.log('Adding delay task failed!!!', err);
     }
@@ -354,6 +352,19 @@ router.post(
   }
 );
 
+router.post(
+    "/subscribe/option",
+    passport.authenticate("jwt", { session: false }),
+    (req, res) => {
+        User.findOneAndUpdate(
+            {_id: req.user.id},
+            {$set: {subscribe_freq: req.body.subscribe_freq}},
+            {safe: true, useFindAndModify: false}
+        )
+            .then(user => res.json(user))
+            .catch(err => res.status(404).json({usernotfound: "User not found"}));
+    }
+);
 
 function SubscribeExpired(e, r) {
     // let sub = redis.createClient();
@@ -361,16 +372,76 @@ function SubscribeExpired(e, r) {
     sub.subscribe(expired_subKey, function () {
 
         sub.on('message', function (chan, msg) {
-            //msg就是过期的key值，由于过期了，所有回调时只有key值
-            //相应的处理代码
+            //msg contains user id
             console.log('after 10s')
-            console.log(msg);
-            pub.setex(req.user.id, date3, '', (err) => {
-                if (err) {
-                    return console.log('Adding delay task failed!!!', err);
+            console.log('Received: 'msg);
+            var user_id = msg;
+            subscribe = false;
+
+            User.findOne({ _id: user_id }).then(user => {
+                if (user) {
+                    if (user.subscribe) {
+                        //Send email
+                        let mailOptions = {
+                            from: '"Bloggy" <bloggy233@gmail.com>', // sender address
+                            to: user.email, // list of receivers
+                            subject: "Notice from Bloggy", // Subject line
+                            html: "<b>Hello world?</b>" // html body
+                        };
+                        // send mail with defined transport object
+                        transporter.sendMail(mailOptions, (error, info) => {
+                            if (error) {
+                                return console.log(error);
+                            }
+                            console.log("Message sent: %s", info.messageId);
+                        });
+                        //Check if there are any changes on the email frequency and set next email date
+                        var nextdate = new Date();
+                        if(user.subscribe_freq != 4){
+                            if(user.subscribe_freq == 0){
+                                nextdate.setDate(nextdate.getDate()+1);
+
+                            }
+                            else if(user.subscribe_freq == 1){
+                                let num = 7-nextdate.getDay() + 1;
+                                nextdate.setDate(nextdate.getDate() + num);
+                            }
+                            else if(user.subscribe_freq == 2){
+                                let num = 14-nextdate.getDay() + 1;
+                                nextdate.setDate(nextdate.getDate() + num);
+                            }
+                            else if(user.subscribe_freq == 3){
+                                let target_month = nextdate.getMonth() + 1;
+                                if (target_month == 13){
+                                    nextdate.setFullYear(nextdate.getFullYear() + 1);
+                                    nextdate.setMonth(1);
+                                    nextdate.setDate(1);
+                                }
+                                else{
+                                    nextdate.setMonth(nextdate.getMonth() + 1);
+                                }
+                                nextdate.setDate(1);
+
+                            }
+                            nextdate.setHours(09);
+                            nextdate.setMinutes(00);
+                            nextdate.setSeconds(00);
+                            var now =new Date();    //start
+
+                            var delay_time=Math.round(nextdate.getTime()/1000)-Math.round(now.getTime()/1000); // time difference
+                            //Public next email task
+                            pub.setex(req.user.id, delay_time, '', (err) => {
+                                if (err) {
+                                    return console.log('Adding delay task failed!!!', err);
+                                }
+                                console.log('add delay task succeeded!!!');
+                            });
+                        }
+
+                    }
                 }
-                console.log('add delay task succeeded!!!');
             });
+
         });
     });
 }
