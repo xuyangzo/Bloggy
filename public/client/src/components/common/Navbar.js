@@ -6,17 +6,16 @@ export default class Navbar extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      
       unpin: false
     };
   }
   handleOnUnpin = e => {
     this.setState({ unpin: true });
     // console.log("unpin");
-  }
-  onGotoSearch = e =>{
+  };
+  onGotoSearch = e => {
     this.props.history.push(`/search/${e}`);
-  }
+  };
   render() {
     return (
       <Headroom onUnpin={this.handleOnUnpin}>
@@ -41,7 +40,10 @@ export default class Navbar extends React.Component {
             </button>
             <div className="collapse navbar-collapse" id="navbarResponsive">
               <div className="ml-auto">
-                <SearchBar initial={this.state.unpin} onGotoSearch={this.onGotoSearch} />
+                <SearchBar
+                  initial={this.state.unpin}
+                  onGotoSearch={this.onGotoSearch}
+                />
               </div>
               <ul className="navbar-nav ml-auto">
                 <li className="nav-item">

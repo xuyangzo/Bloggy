@@ -120,6 +120,18 @@ const PostSchema = new Schema({
       }
     }
   ],
+  preview: [
+    {
+      url: {
+        type: String,
+        default: ""
+      },
+      imageid: {
+        type: String,
+        default: ""
+      }
+    }
+  ],
 
   comments: [commentSchema]
 });

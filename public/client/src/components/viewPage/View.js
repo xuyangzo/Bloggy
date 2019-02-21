@@ -2,6 +2,8 @@ import React from "react";
 import axios from "axios";
 import setAuthToken from "../utils/setAuthToken";
 import jwt_decode from "jwt-decode";
+import { connect } from "react-redux";
+import { setLoginModal } from "../../actions/modalActions";
 
 import ViewHeader from "./ViewHeader";
 import Comment from "./Comment";
@@ -9,7 +11,7 @@ import Thumb from "./Thumb";
 import LoginModal from "../common/LoginModal";
 import Loader from "../utils/Loader";
 
-export default class View extends React.Component {
+class View extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -166,7 +168,7 @@ export default class View extends React.Component {
     } else {
       // if there is no auth token
       // user need to login first
-      this.setState({ loginModal: true });
+      this.props.dispatch(setLoginModal(true));
     }
   };
 
@@ -245,3 +247,5 @@ export default class View extends React.Component {
     );
   }
 }
+
+export default connect()(View);

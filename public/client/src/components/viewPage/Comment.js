@@ -210,10 +210,10 @@ export default class Comment extends React.Component {
     }
     return (
       <div id="comment-section">
-        <LoginModal
+        {/* <LoginModal
           modalIsOpen={this.state.loginModal}
           clearModal={this.clearModal}
-        />
+        /> */}
         <p>COMMENTS</p>
         <hr />
         {this.state.commentsNotReply.length === 0 ? (
