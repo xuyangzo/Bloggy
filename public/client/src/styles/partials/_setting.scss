@@ -1,0 +1,45 @@
+.update-subscribe {
+  .select-input {
+    width: 30%;
+    height: 30px;
+    border: none;
+    background: whitesmoke;
+    transform: translate(0, -5px);
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  .select-button {
+    width: 100%;
+    background-color: white;
+    color: skyblue;
+    border: 1px solid skyblue;
+    transition: all 0.5s ease-in-out;
+
+    &:hover {
+      color: whitesmoke;
+      background-color: rgba(135, 206, 235, 0.6);
+    }
+  }
+}
+
+.setting-container {
+  min-height: 100vh;
+
+  form {
+    padding: 20px 20px;
+    box-shadow: 0 15px 30px 0 rgba(0, 0, 0, 0.11),
+      0 5px 15px 0 rgba(0, 0, 0, 0.08);
+
+    .single-choice {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      border-bottom: solid 1px $light-gray;
+      margin: 20px 0;
+      padding: 10px 0;
+    }
+  }
+}
