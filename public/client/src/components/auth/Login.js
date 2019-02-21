@@ -1,9 +1,11 @@
 import React from "react";
-import axios from "axios";
 import TextFieldGroup from "../common/TextFieldGroup";
-import setAuthToken from "../utils/setAuthToken";
+import { connect } from "react-redux";
+import { loginUser } from "../../actions/authActions";
+import PropTypes from "prop-types";
+import { withRouter } from "react-router-dom";
 
-export default class Login extends React.Component {
+class Login extends React.Component {
   constructor(props) {
     super(props);
 
@@ -16,13 +18,23 @@ export default class Login extends React.Component {
 
   // if user already logs in, push it to dashboard
   componentDidMount = () => {
-    if (localStorage.jwtToken) {
+    if (this.props.auth.isAuthenticated) {
       this.props.history.push("/dashboard");
     }
   };
 
   onChange = e => {
     this.setState({ [e.target.name]: e.target.value });
+  };
+
+  componentWillReceiveProps = newProps => {
+    if (newProps.auth.isAuthenticated) {
+      this.props.history.push("/dashboard");
+    }
+
+    if (newProps.errors) {
+      this.setState({ errors: newProps.errors });
+    }
   };
 
   onSubmit = e => {
@@ -33,30 +45,14 @@ export default class Login extends React.Component {
       password: this.state.password
     };
 
-    axios
-      .post("/api/users/login", User)
-      .then(res => {
-        console.log(res.data);
-        // Save to localstorage
-        const { token } = res.data;
-        localStorage.setItem("jwtToken", token);
-        // Set token to Auth header
-        setAuthToken(token);
-        // Set current user
-        location.href = "/dashboard";
-        // this.props.history.push("/dashboard");
-      })
-      .catch(err => {
-        this.setState({ errors: err.response.data });
-        console.log(err.response.data);
-      });
+    this.props.loginUser(User);
   };
 
   render() {
     const { errors } = this.state;
 
     return (
-      <div className="row mt-5">
+      <div className="mt-5 login-container">
         <div className="col-md-8 m-auto">
           <h1 className="display-4 text-center title-font">Log In</h1>
           <p className="lead text-center subtitle-font">
@@ -92,3 +88,19 @@ export default class Login extends React.Component {
     );
   }
 }
+
+Login.propTypes = {
+  loginUser: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired,
+  errors: PropTypes.object.isRequired
+};
+
+const mapStateToProps = state => ({
+  auth: state.auth,
+  errors: state.errors
+});
+
+export default connect(
+  mapStateToProps,
+  { loginUser }
+)(withRouter(Login));

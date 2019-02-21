@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css?family=Cinzel");
+
 @import "./partials/dashboard";
 @import "./partials/variables";
 @import "./partials/mixin";
@@ -13,9 +15,52 @@
 @import "./partials/indexGrid";
 @import "./partials/modal";
 @import "./partials/loader";
+@import "./partials/setting";
 
 html,
 body {
   margin: 0;
   padding: 0;
+}
+
+.login-container,
+.signup-container {
+  min-height: 100vh;
+}
+
+.notfound-button {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transform: translate(0, 100px);
+  border: 1px solid skyblue;
+  width: 30%;
+  height: 45px;
+  color: skyblue;
+
+  &:hover {
+    color: white;
+    text-decoration: none;
+    background: skyblue;
+  }
+}
+
+.goto-login-button {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border: 1px solid palevioletred;
+  width: 30%;
+  height: 45px;
+  color: palevioletred;
+
+  &:hover {
+    color: white;
+    text-decoration: none;
+    background: palevioletred;
+  }
+}
+
+.shadow-font {
+  font-family: "Cinzel", serif;
 }

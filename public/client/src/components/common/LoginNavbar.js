@@ -5,6 +5,8 @@ import axios from "axios";
 import setAuthToken from "../utils/setAuthToken";
 import Headroom from "react-headroom";
 import classnames from "classnames";
+import { connect } from "react-redux";
+import { logoutUser } from "../../actions/authActions";
 
 class LoginNavbar extends React.Component {
   constructor(props) {
@@ -21,7 +23,7 @@ class LoginNavbar extends React.Component {
   }
   onGotoSearch = e => {
     this.props.history.push(`/search/${e}`);
-  }
+  };
 
   componentDidMount = e => {
     // retrieve avatar and userid
@@ -53,10 +55,9 @@ class LoginNavbar extends React.Component {
     }
   };
 
-  onClick = e => {
+  onLogoutUser = e => {
     e.preventDefault();
-    localStorage.removeItem("jwtToken");
-    window.location.reload();
+    this.props.dispatch(logoutUser());
   };
 
   onImgClick = e => {
@@ -140,7 +141,10 @@ class LoginNavbar extends React.Component {
 
             <div className="collapse navbar-collapse" id="navbarResponsive">
               <div className="ml-auto">
-                <SearchBar initial={this.state.unpin} onGotoSearch={this.onGotoSearch}/>
+                <SearchBar
+                  initial={this.state.unpin}
+                  onGotoSearch={this.onGotoSearch}
+                />
               </div>
               <div
                 className={classnames("info-board", {
@@ -177,7 +181,9 @@ class LoginNavbar extends React.Component {
                       </div>
                       <div className="info-item">
                         <i className="fas fa-cog info-icon mr-2" />
-                        <Link to="/">Setting</Link>
+                        <Link to="/setting" onClick={this.setInfoBoardLeave}>
+                          Setting
+                        </Link>
                       </div>
                       <div className="info-item">
                         <i className="far fa-clock info-icon mr-2" />
@@ -208,7 +214,7 @@ class LoginNavbar extends React.Component {
                   <a
                     className="nav-link log-out"
                     href="#"
-                    onClick={this.onClick}
+                    onClick={this.onLogoutUser}
                   >
                     Log Out
                   </a>
@@ -222,4 +228,4 @@ class LoginNavbar extends React.Component {
   }
 }
 
-export default LoginNavbar;
+export default connect()(LoginNavbar);
