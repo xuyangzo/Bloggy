@@ -2,12 +2,14 @@ import React from "react";
 import axios from "axios";
 import classnames from "classnames";
 import jwt_decode from "jwt-decode";
+import { connect } from "react-redux";
+import { setLoginModal } from "../../actions/modalActions";
+import PropTypes from "prop-types";
 
 import setAuthToken from "../utils/setAuthToken";
-import LoginModal from "../common/LoginModal";
 import DeleteModal from "../common/DeleteModal";
 
-export default class Thumb extends React.Component {
+class Thumb extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -18,9 +20,6 @@ export default class Thumb extends React.Component {
       hotness: props.likes.length - props.dislikes.length,
       isLike: false,
       isDislike: false,
-      loginModal: false,
-      deleteModal: false,
-      showDeleteEdit: false,
       isFavor: false
     };
   }
@@ -101,7 +100,7 @@ export default class Thumb extends React.Component {
         });
     } else {
       // if user not logged in
-      this.setState({ loginModal: true });
+      this.props.setLoginModal();
     }
   };
 
@@ -134,13 +133,8 @@ export default class Thumb extends React.Component {
         });
     } else {
       // if user not logged in
-      this.setState({ loginModal: true });
+      this.props.setLoginModal();
     }
-  };
-
-  // clear login modal
-  clearModal = () => {
-    this.setState({ loginModal: false, deleteModal: false });
   };
 
   // Delete Post
@@ -166,17 +160,17 @@ export default class Thumb extends React.Component {
         });
     } else {
       // if user not logged in
-      this.setState({ loginModal: true });
+      this.props.setLoginModal();
     }
   };
 
   render() {
     return (
       <div className="text-center">
-        <LoginModal
+        {/* <LoginModal
           modalIsOpen={this.state.loginModal}
           clearModal={this.clearModal}
-        />
+        /> */}
         <DeleteModal
           modalIsOpen={this.state.deleteModal}
           clearModal={this.clearModal}
@@ -238,11 +232,11 @@ export default class Thumb extends React.Component {
             Forward{" "}
           </div>{" "}
           <div className="division-bar">
-            {this.state.showDeleteEdit && (
+            {this.props.auth.user.id === this.state.user_id && (
               <i className="fas fa-grip-lines-vertical ml-3 mr-3" />
             )}
           </div>
-          {this.state.showDeleteEdit && (
+          {this.props.auth.user.id === this.state.user_id && (
             <div className="delete-bar">
               <div className="view-bar" onClick={this.onDeletePost}>
                 <i
@@ -256,7 +250,7 @@ export default class Thumb extends React.Component {
               </div>
             </div>
           )}
-          {this.state.showDeleteEdit && (
+          {this.props.auth.user.id === this.state.user_id && (
             <div className="view-bar" onClick={() => this.props.onGotoEdit()}>
               <i className="fas fa-edit mr-2" style={{ color: "purple" }} />
               Edit
@@ -267,3 +261,21 @@ export default class Thumb extends React.Component {
     );
   }
 }
+
+const mapStateToProps = state => ({
+  auth: state.auth
+});
+
+const mapDispatchToProps = dispatch => ({
+  setLoginModal: () => dispatch(setLoginModal(true))
+});
+
+Thumb.propTypes = {
+  auth: PropTypes.object.isRequired,
+  setLoginModal: PropTypes.func.isRequired
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Thumb);

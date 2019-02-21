@@ -1,24 +1,21 @@
 import React from "react";
 import Modal from "react-modal";
 import TextFieldGroup from "../common/TextFieldGroup";
-import axios from "axios";
+import { connect } from "react-redux";
+import { loginUserAndSetLoginModalFalse } from "../../actions/authActions";
+import { setLoginModal } from "../../actions/modalActions";
+import PropTypes from "prop-types";
 
-export default class LoginModal extends React.Component {
+class LoginModal extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      modalIsOpen: props.modalIsOpen,
-      clearModal: props.clearModal,
       email: "",
       password: "",
       errors: {}
     };
   }
-
-  componentWillReceiveProps = newProps => {
-    this.setState({ modalIsOpen: newProps.modalIsOpen });
-  };
 
   componentDidMount = () => {
     Modal.setAppElement("#app");
@@ -32,25 +29,12 @@ export default class LoginModal extends React.Component {
   onSubmit = e => {
     e.preventDefault();
 
-    const User = {
+    const user = {
       email: this.state.email,
       password: this.state.password
     };
 
-    axios
-      .post("/api/users/login", User)
-      .then(res => {
-        console.log(res.data);
-        // Save to localstorage
-        const { token } = res.data;
-        localStorage.setItem("jwtToken", token);
-        // Reload
-        window.location.reload();
-      })
-      .catch(err => {
-        this.setState({ errors: err.response.data });
-        console.log(err.response.data);
-      });
+    this.props.loginUserAndSetLoginModalFalse(user);
   };
 
   /* react-modal lifecycle */
@@ -61,8 +45,7 @@ export default class LoginModal extends React.Component {
   afterOpenModal = () => {};
 
   closeModal = () => {
-    this.setState({ modalIsOpen: false });
-    this.state.clearModal();
+    this.props.setLoginModal();
   };
 
   render() {
@@ -83,7 +66,7 @@ export default class LoginModal extends React.Component {
     return (
       <div>
         <Modal
-          isOpen={this.state.modalIsOpen}
+          isOpen={this.props.modal.isOpenLoginModal}
           onAfterOpen={this.afterOpenModal}
           onRequestClose={this.closeModal}
           style={customStyles}
@@ -124,3 +107,27 @@ export default class LoginModal extends React.Component {
     );
   }
 }
+
+LoginModal.propTypes = {
+  loginUserAndSetLoginModalFalse: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired,
+  errors: PropTypes.object.isRequired
+};
+
+const mapStateToProps = state => ({
+  auth: state.auth,
+  errors: state.errors,
+  modal: state.modal
+});
+
+const mapDispatchToProps = dispatch => ({
+  setLoginModal: () => dispatch(setLoginModal(false)),
+  loginUserAndSetLoginModalFalse: user => {
+    loginUserAndSetLoginModalFalse(user, dispatch);
+  }
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(LoginModal);

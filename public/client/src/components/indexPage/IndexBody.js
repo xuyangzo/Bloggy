@@ -23,6 +23,7 @@ class Body extends React.Component {
           allPosts: prevState.allPosts.concat(res.data),
           renderCount: 3
         }));
+        // retrieve user profile image
       })
       .catch(err => console.log(err.response.data));
   }
@@ -82,13 +83,16 @@ class Body extends React.Component {
                   >
                     <h1 className="grid-title">{post.title}</h1>
                     <h4 className="grid-subtitle">{post.subtitle}</h4>
-                    <p className="grid-author">{post.author}</p>
+
                     <Moment
                       className="grid-time"
                       format="MMMM Do YYYY, hh:mm a"
                     >
                       {post.dateTime}
                     </Moment>
+                    <br />
+
+                    <p className="grid-author">{post.author}</p>
                   </div>
                 );
                 return temp;

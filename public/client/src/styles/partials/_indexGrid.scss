@@ -25,7 +25,7 @@
     box-sizing: border-box;
     transition: all 2s cubic-bezier(0.075, 0.82, 0.165, 1);
     cursor: pointer;
-    background: url("/client/src/image/grid-bg1.jpg");
+    // background: url("/client/src/image/grid-bg1.jpg");
     background-size: 100% 100%;
     padding: 3%;
 
@@ -54,8 +54,12 @@
       font-family: "Dancing Script", cursive;
     }
 
-    .grid-author,
     .grid-time {
+      font-family: "Dosis", sans-serif;
+      font-size: 0.8rem;
+    }
+
+    .grid-author {
       font-family: "Dosis", sans-serif;
     }
   }
