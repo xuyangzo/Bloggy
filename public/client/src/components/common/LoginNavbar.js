@@ -199,7 +199,7 @@ class LoginNavbar extends React.Component {
               </li> */}
                 <li className="nav-item">
                   <img
-                    className="profile-img mt-1"
+                    className="profile-img"
                     id="profile-img"
                     alt="profile picture"
                     src={this.state.avatar}
