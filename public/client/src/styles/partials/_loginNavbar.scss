@@ -12,10 +12,24 @@
   width: 32px;
   height: 32px;
   cursor: pointer;
-  transition: all 1s cubic-bezier(0.075, 0.82, 0.165, 1);
   position: absolute;
   right: 150px;
   top: 10px;
+}
+
+.profile-img-animation {
+  @include animation(
+    "scaleAndMove 1s cubic-bezier(0.075, 0.82, 0.165, 1) forwards"
+  );
+}
+
+@include keyframes(scaleAndMove) {
+  0% {
+    transform: translate(0x, 0) scale(1);
+  }
+  100% {
+    transform: translate(-15px, 15px) scale(1.7);
+  }
 }
 
 /* overwrite headroom */

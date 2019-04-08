@@ -177,86 +177,51 @@ class Thumb extends React.Component {
           post_id={this.state.post_id}
           onGotoIndex={this.props.onGotoIndex}
         />
-        <div className="row">
-          <div className="view-bar ml-5">
+        <aside className="row view-sidebar">
+          <div className="view-bar">
             <i className="fab fa-hotjar" style={{ color: "red" }} />{" "}
             <span className="hot-width">{this.state.hotness} </span>
           </div>
-          <div className="division-bar">
-            <i className="fas fa-grip-lines-vertical ml-3 mr-3" />
-          </div>
           <div className="view-bar" onClick={this.onPostLike}>
             <i
-              className={classnames("far fa-thumbs-up ml-1 mr-2", {
+              className={classnames("fas fa-thumbs-up mr-2 up-icon", {
                 "red-thumb": this.state.isLike,
-                "red-thumb-animation": this.state.isLike,
-                fas: this.state.isLike
+                "red-thumb-animation": this.state.isLike
               })}
             />
-            Like
-          </div>
-          <div className="division-bar">
-            <i className="fas fa-grip-lines-vertical ml-3 mr-3" />
           </div>
           <div className="view-bar" onClick={this.onPostDislike}>
             <i
-              className={classnames("far fa-thumbs-down ml-1 mr-2", {
+              className={classnames("fas fa-thumbs-down mr-2 down-icon", {
                 "blue-thumb": this.state.isDislike,
-                "blue-thumb-animation": this.state.isDislike,
-                fas: this.state.isDislike
+                "blue-thumb-animation": this.state.isDislike
               })}
             />
-            Dislike
           </div>{" "}
-          <div className="division-bar">
-            <i className="fas fa-grip-lines-vertical ml-3 mr-3" />
-          </div>
           <div className="view-bar" onClick={this.onPostFavor}>
             <i
-              className={classnames("far fa-heart mr-2 animated", {
+              className={classnames("fas fa-heart mr-2 animated fav-icon", {
                 pale: this.state.isFavor,
-                fas: this.state.isFavor,
                 rubberBand: this.state.isFavor
               })}
             />
-            Favorite
           </div>{" "}
-          <div className="division-bar">
-            <i className="fas fa-grip-lines-vertical ml-3 mr-3" />
-          </div>
           <div className="view-bar" onClick={this.onForward}>
-            <i
-              className="fas fa-share-square mr-2"
-              style={{ color: "orange" }}
-            />
-            Forward{" "}
+            <i className="fas fa-share-square mr-2 share-icon" title="share!" />
           </div>{" "}
-          <div className="division-bar">
-            {this.props.auth.user.id === this.state.user_id && (
-              <i className="fas fa-grip-lines-vertical ml-3 mr-3" />
-            )}
-          </div>
           {this.props.auth.user.id === this.state.user_id && (
             <div className="delete-bar">
               <div className="view-bar" onClick={this.onDeletePost}>
-                <i
-                  className="fas fa-trash-alt mr-2"
-                  style={{ color: "rgb(189, 202, 5)" }}
-                />
-                Delete
-              </div>
-              <div className="division-bar">
-                <i className="fas fa-grip-lines-vertical ml-3 mr-3" />
+                <i className="fas fa-trash-alt mr-2 delete-icon" />
               </div>
             </div>
           )}
           {this.props.auth.user.id === this.state.user_id && (
             <div className="view-bar" onClick={() => this.props.onGotoEdit()}>
-              <i className="fas fa-edit mr-2" style={{ color: "purple" }} />
-              Edit
+              <i className="fas fa-edit mr-2 edit-icon" />
             </div>
           )}
-        </div>
+        </aside>
       </div>
     );
   }
