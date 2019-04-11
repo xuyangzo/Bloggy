@@ -13,11 +13,13 @@
     }
   },
   "scripts": {
-    "build": "webpack",
+    "build": "webpack -p --config ./webpack.prod.js",
     "watch": "webpack --watch",
     "dev-server": "webpack-dev-server",
     "serve-backend": "nodemon public/server/server.js",
-    "start-concurrent": "concurrently \"yarn run dev-server\" \"yarn run serve-backend\""
+    "start-concurrent": "concurrently \"yarn run dev-server\" \"yarn run serve-backend\"",
+    "start": "node public/server/server.js",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install && npm run start"
   },
   "dependencies": {
     "amqp": "^0.2.7",
@@ -91,8 +93,10 @@
     "@babel/preset-env": "^7.3.1",
     "@babel/preset-react": "^7.0.0",
     "assert": "^1.4.1",
+    "html-webpack-plugin": "^3.2.0",
     "nodemon": "^1.18.9",
     "webpack-cli": "^3.1.2",
-    "webpack-dev-server": "^3.1.10"
+    "webpack-dev-server": "^3.1.10",
+    "webpack-merge": "^4.2.1"
   }
 }

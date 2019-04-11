@@ -12,13 +12,16 @@ class LoginNavbar extends React.Component {
   constructor(props) {
     super(props);
 
+    this.startTime = new Date();
+
     this.state = {
       avatar: "",
       unpin: false,
       showInfoBoard: false,
       infoBoardStyle: {},
       username: "",
-      description: ""
+      description: "",
+      infoBoardTimer: false
     };
   }
   onGotoSearch = e => {
@@ -74,19 +77,25 @@ class LoginNavbar extends React.Component {
 
   // toggle info board
   toggleInfoBoard = () => {
-    if (!this.state.showInfoBoard) {
-      // send request to backend
-      axios.get("/api/users/current").then(res => {
-        this.setState(prevState => ({
-          showInfoBoard: !prevState.showInfoBoard,
-          username: res.data.username,
-          description: res.data.description
-        }));
-      });
-    } else {
-      this.setState(prevState => {
-        return { showInfoBoard: !prevState.showInfoBoard };
-      });
+    // throttle
+    const currentTime = new Date();
+
+    if (currentTime - this.startTime > 300) {
+      this.startTime = currentTime;
+      if (!this.state.showInfoBoard) {
+        // send request to backend
+        axios.get("/api/users/current").then(res => {
+          this.setState(prevState => ({
+            showInfoBoard: !prevState.showInfoBoard,
+            username: res.data.username,
+            description: res.data.description
+          }));
+        });
+      } else {
+        this.setState(prevState => {
+          return { showInfoBoard: !prevState.showInfoBoard };
+        });
+      }
     }
   };
 
@@ -105,12 +114,6 @@ class LoginNavbar extends React.Component {
   };
 
   render() {
-    const style = {
-      transform: this.state.showInfoBoard
-        ? `translate(-15px, 15px) scale(1.7) `
-        : ""
-    };
-
     return (
       <Headroom
         style={{
@@ -199,14 +202,15 @@ class LoginNavbar extends React.Component {
               </li> */}
                 <li className="nav-item">
                   <img
-                    className="profile-img"
+                    className={classnames("profile-img", {
+                      "profile-img-animation": this.state.showInfoBoard
+                    })}
                     id="profile-img"
                     alt="profile picture"
                     src={this.state.avatar}
                     onClick={this.onImgClick}
                     onMouseEnter={this.toggleInfoBoard}
                     onMouseLeave={this.toggleInfoBoard}
-                    style={style}
                   />
                 </li>
 
