@@ -78,28 +78,9 @@ class LoginNavbar extends React.Component {
   // toggle info board
   toggleInfoBoard = () => {
     // throttle
-    // clearTimeout(this.infoBoardTimer);
-    // console.log("debounce!");
-    // this.infoBoardTimer = setTimeout(() => {
-    //   if (!this.state.showInfoBoard) {
-    //     // send request to backend
-    //     axios.get("/api/users/current").then(res => {
-    //       this.setState(prevState => ({
-    //         showInfoBoard: !prevState.showInfoBoard,
-    //         username: res.data.username,
-    //         description: res.data.description
-    //       }));
-    //     });
-    //   } else {
-    //     this.setState(prevState => {
-    //       return { showInfoBoard: !prevState.showInfoBoard };
-    //     });
-    //   }
-    // }, 100);
-
     const currentTime = new Date();
 
-    if (currentTime - this.startTime > 500) {
+    if (currentTime - this.startTime > 300) {
       this.startTime = currentTime;
       if (!this.state.showInfoBoard) {
         // send request to backend
