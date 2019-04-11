@@ -25,6 +25,11 @@ app.use((req, res, next) => {
   next();
 });
 
+// support SEO
+app.use(
+  require("prerender-node").set("prerenderToken", "19ZUm6zRkx0SsRy5Blcn")
+);
+
 // DB Config
 const db = process.env.MONGO_URI;
 
