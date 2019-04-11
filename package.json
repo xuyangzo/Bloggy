@@ -19,7 +19,7 @@
     "serve-backend": "nodemon public/server/server.js",
     "start-concurrent": "concurrently \"yarn run dev-server\" \"yarn run serve-backend\"",
     "start": "node public/server/server.js",
-    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install && npm run start"
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install && npm run build"
   },
   "dependencies": {
     "amqp": "^0.2.7",
