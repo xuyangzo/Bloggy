@@ -25,11 +25,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// support SEO
-app.use(
-  require("prerender-node").set("prerenderToken", "19ZUm6zRkx0SsRy5Blcn")
-);
-
 // DB Config
 const db = process.env.MONGO_URI;
 
@@ -56,6 +51,11 @@ app.use("/api/search", searches);
 if (process.env.NODE_ENV === "production") {
   // set static folder
   app.use(express.static("public/client/build"));
+
+  // support SEO
+  app.use(
+    require("prerender-node").set("prerenderToken", "19ZUm6zRkx0SsRy5Blcn")
+  );
 
   app.get("*", (req, res) => {
     res.sendFile(path.resolve(__dirname, "public", "client", "build"));
