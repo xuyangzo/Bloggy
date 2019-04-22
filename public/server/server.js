@@ -50,6 +50,7 @@ app.use("/api/search", searches);
 // Serve static assets if in production
 if (process.env.NODE_ENV === "production") {
   // set static folder
+  app.use(express.static(__dirname));
   app.use(express.static("public/client/build"));
 
   // support SEO
@@ -57,8 +58,8 @@ if (process.env.NODE_ENV === "production") {
     require("prerender-node").set("prerenderToken", "19ZUm6zRkx0SsRy5Blcn")
   );
 
-  app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "public", "client", "build"));
+  app.get("/*", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "client", "build"));
   });
 }
 
