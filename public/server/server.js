@@ -51,7 +51,7 @@ app.use("/api/search", searches);
 if (process.env.NODE_ENV === "production") {
   // set static folder
   const publicPath = path.join(__dirname, "public", "client", "build");
-  app.use(express.static(publicPath);
+  app.use(express.static(publicPath));
 
   // support SEO
   app.use(
