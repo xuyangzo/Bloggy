@@ -51,12 +51,13 @@ app.use("/api/search", searches);
 if (process.env.NODE_ENV === "production") {
   // set static folder
   const publicPath = path.join(__dirname, "public", "client", "build");
-  app.use(express.static(publicPath));
 
-  // support SEO
-  app.use(
-    require("prerender-node").set("prerenderToken", "19ZUm6zRkx0SsRy5Blcn")
-  );
+  // // support SEO
+  // app.use(
+  //   require("prerender-node").set("prerenderToken", "19ZUm6zRkx0SsRy5Blcn")
+  // );
+
+  app.use(express.static(publicPath));
 
   app.get("*", (req, res) => {
     res.sendFile(path.join(publicPath, "index.html"));

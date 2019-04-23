@@ -1,6 +1,7 @@
 const path = require("path");
 const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 module.exports = {
   entry: ["./public/client/src/app.js", "@babel/polyfill"],
@@ -17,12 +18,24 @@ module.exports = {
         loader: "babel-loader"
       },
       {
-        test: /\.scss$/,
-        use: ["style-loader", "css-loader", "sass-loader"]
-      },
-      {
-        test: /\.css$/,
-        use: ["style-loader", "css-loader"]
+        test: /\.s?css$/,
+        use: ExtractTextPlugin.extract({
+          fallback: "style-loader",
+          use: [
+            {
+              loader: "css-loader",
+              options: {
+                sourceMap: true
+              }
+            },
+            {
+              loader: "sass-loader",
+              options: {
+                sourceMap: true
+              }
+            }
+          ]
+        })
       },
       {
         test: /\.(jpeg|jpg|woff|woff2|eot|ttf|svg|png)(\?.*$|$)/,
@@ -37,7 +50,8 @@ module.exports = {
     new HtmlWebpackPlugin({
       filename: "index.html",
       template: "./public/index.html"
-    })
+    }),
+    new ExtractTextPlugin("styles.css")
   ],
   devtool: "cheap-module-eval-source-map",
   devServer: {
