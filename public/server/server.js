@@ -58,7 +58,7 @@ if (process.env.NODE_ENV === "production") {
     require("prerender-node").set("prerenderToken", "19ZUm6zRkx0SsRy5Blcn")
   );
 
-  app.get("/*", (req, res) => {
+  app.get("*", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "client", "build"));
   });
 }
