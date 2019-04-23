@@ -50,7 +50,7 @@ app.use("/api/search", searches);
 // Serve static assets if in production
 if (process.env.NODE_ENV === "production") {
   // set static folder
-  const publicPath = path.join(__dirname, "public", "client", "build");
+  const publicPath = path.join(__dirname, "..", "client", "build");
 
   // // support SEO
   // app.use(
