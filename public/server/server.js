@@ -50,7 +50,8 @@ app.use("/api/search", searches);
 // Serve static assets if in production
 if (process.env.NODE_ENV === "production") {
   // set static folder
-  app.use(express.static(path.join(__dirname, "public", "client", "build")));
+  const publicPath = path.join(__dirname, "public", "client", "build");
+  app.use(express.static(publicPath);
 
   // support SEO
   app.use(
@@ -58,9 +59,7 @@ if (process.env.NODE_ENV === "production") {
   );
 
   app.get("*", (req, res) => {
-    res.sendFile(
-      path.join(__dirname, "public", "client", "build", "index.html")
-    );
+    res.sendFile(path.join(publicPath, "index.html"));
   });
 }
 
