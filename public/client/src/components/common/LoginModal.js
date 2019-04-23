@@ -5,6 +5,7 @@ import { connect } from "react-redux";
 import { loginUserAndSetLoginModalFalse } from "../../actions/authActions";
 import { setLoginModal } from "../../actions/modalActions";
 import PropTypes from "prop-types";
+import img from "../../image/city2.jpg";
 
 class LoginModal extends React.Component {
   constructor(props) {
@@ -56,7 +57,7 @@ class LoginModal extends React.Component {
         left: "20%",
         right: "20%",
         bottom: "20%",
-        background: "url('/client/src/image/city5.jpg')"
+        background: `url(${img})`
       }
     };
 

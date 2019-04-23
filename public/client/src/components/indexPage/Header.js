@@ -9,7 +9,7 @@ const Header = () => {
     <header
       id="header_image"
       className="masthead"
-      style={{ backgroundImage: img }}
+      style={{ backgroundImage: `url(${img})` }}
     >
       <div className="overlay" />
       <div className="container">
