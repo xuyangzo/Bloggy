@@ -12,7 +12,7 @@ const Grid = require("gridfs-stream");
 const mongoose = require("mongoose");
 const cloudinary = require("cloudinary");
 var multiparty = require("connect-multiparty")();
-var amqp = require('amqplib/callback_api');
+var amqp = require("amqplib/callback_api");
 
 // Recieve message
 // amqp.connect('amqp://ctogbbgq:ti_gnQ6QmDLfl9s_k2XQKjopGwYEBOG5@caterpillar.rmq.cloudamqp.com/ctogbbgq', function(err, conn) {
@@ -30,25 +30,29 @@ var amqp = require('amqplib/callback_api');
 const redis = require("redis");
 var msg_count = 0;
 const redisClient = redis.createClient({
-    host: process.env.REDIS_HOST,
-    port: process.env.REDIS_PORT,
-    no_ready_check: true,
-    auth_pass: process.env.REDIS_AUTH_PASSWORD
+  host: process.env.REDIS_HOST,
+  port: process.env.REDIS_PORT,
+  no_ready_check: true,
+  auth_pass: process.env.REDIS_AUTH_PASSWORD
 });
 
 const pub = redis.createClient({
-    host: "redis-13298.c60.us-west-1-2.ec2.cloud.redislabs.com",
-    port: 13298,
-    no_ready_check: true,
-    auth_pass: "lejXnnMDJsceSToZMbfMc17ZO38kH4RK"
-})
+  host: "redis-13298.c60.us-west-1-2.ec2.cloud.redislabs.com",
+  port: 13298,
+  no_ready_check: true,
+  auth_pass: "lejXnnMDJsceSToZMbfMc17ZO38kH4RK"
+});
 const sub = redis.createClient({
-    host: "redis-13298.c60.us-west-1-2.ec2.cloud.redislabs.com",
-    port: 13298,
-    no_ready_check: true,
-    auth_pass: "lejXnnMDJsceSToZMbfMc17ZO38kH4RK"
-})
-sub.send_command('config', ['set', 'notify-keyspace-events', 'Ex'], SubscribeExpired);
+  host: "redis-13298.c60.us-west-1-2.ec2.cloud.redislabs.com",
+  port: 13298,
+  no_ready_check: true,
+  auth_pass: "lejXnnMDJsceSToZMbfMc17ZO38kH4RK"
+});
+sub.send_command(
+  "config",
+  ["set", "notify-keyspace-events", "Ex"],
+  SubscribeExpired
+);
 
 // Load Input Validation
 const validateRegisterInput = require("../../validation/register.validation.js");
@@ -244,20 +248,21 @@ router.post(
           errors.email = "This user has already been followed!";
           return res.status(404).json(errors);
         } else {
-
-            //RabbitMQ Connection
-            amqp.connect(process.env.AMPQ_HOST, function(err, conn) {
-                conn.createChannel(function(err, ch) {
-                    var q = 'follow';
-                    console.log("wttfffff");
-                    ch.assertQueue(q, {durable: false});
-                    // Note: on Node 6 Buffer.from(msg) should be used
-                    ch.sendToQueue(q, new Buffer('I followed you!'));
-                    console.log(" [x] Sent 'I followed you!'");
-                });
-                setTimeout(function() { conn.close(); process.exit(0) }, 500);
-
+          //RabbitMQ Connection
+          amqp.connect(process.env.AMPQ_HOST, function(err, conn) {
+            conn.createChannel(function(err, ch) {
+              var q = "follow";
+              console.log("wttfffff");
+              ch.assertQueue(q, { durable: false });
+              // Note: on Node 6 Buffer.from(msg) should be used
+              ch.sendToQueue(q, new Buffer("I followed you!"));
+              console.log(" [x] Sent 'I followed you!'");
             });
+            setTimeout(function() {
+              conn.close();
+              process.exit(0);
+            }, 500);
+          });
 
           User.findOneAndUpdate(
             { _id: req.params.followed_user_id },
@@ -331,119 +336,113 @@ router.post(
       .catch(err => res.status(404).json({ usernotfound: "User not found" }));
 
     var nextdate = new Date();
-    nextdate.setDate(nextdate.getDate()+1);
-    nextdate.setHours(9);
-    nextdate.setMinutes(0);
-    nextdate.setSeconds(0);
+    nextdate.setDate(nextdate.getDate() + 1);
+    nextdate.setHours(09);
+    nextdate.setMinutes(00);
+    nextdate.setSeconds(00);
     // console.log(nextdate.getTime())
-    var now=new Date();    //start
+    var now = new Date(); //start
     // console.log(date1);
-    console.log(now.getTime())
-    var delay_time=Math.round(nextdate.getTime()/1000)-Math.round(now.getTime()/1000); // time difference
+    console.log(now.getTime());
+    var delay_time =
+      Math.round(nextdate.getTime() / 1000) - Math.round(now.getTime() / 1000); // time difference
     // console.log(date3);
-    console.log('task---start')
-    pub.setex(req.user.id, delay_time, '', (err) => {
-    if (err) {
-        return console.log('Adding delay task failed!!!', err);
-    }
-        console.log('add delay task succeeded!!!');
+    console.log("task---start");
+    pub.setex(req.user.id, delay_time, "", err => {
+      if (err) {
+        return console.log("Adding delay task failed!!!", err);
+      }
+      console.log("add delay task succeeded!!!");
     });
-    console.log('task---end')
+    console.log("task---end");
   }
 );
 
 router.post(
-    "/subscribe/option",
-    passport.authenticate("jwt", { session: false }),
-    (req, res) => {
-        User.findOneAndUpdate(
-            {_id: req.user.id},
-            {$set: {subscribe_freq: req.body.subscribe_freq}},
-            {safe: true, useFindAndModify: false}
-        )
-            .then(user => res.json(user))
-            .catch(err => res.status(404).json({usernotfound: "User not found"}));
-    }
+  "/subscribe/option",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    User.findOneAndUpdate(
+      { _id: req.user.id },
+      { $set: { subscribe_freq: req.body.subscribe_freq } },
+      { safe: true, useFindAndModify: false }
+    )
+      .then(user => res.json(user))
+      .catch(err => res.status(404).json({ usernotfound: "User not found" }));
+  }
 );
 
 function SubscribeExpired(e, r) {
-    // let sub = redis.createClient();
-    const expired_subKey = '__keyevent@0__:expired';
-    sub.subscribe(expired_subKey, function () {
+  // let sub = redis.createClient();
+  const expired_subKey = "__keyevent@0__:expired";
+  sub.subscribe(expired_subKey, function() {
+    sub.on("message", function(chan, msg) {
+      //msg contains user id
+      console.log("after 10s");
+      console.log("Received: ", msg);
+      var user_id = msg;
+      subscribe = false;
 
-        sub.on('message', function (chan, msg) {
-            //msg contains user id
-            console.log('after 10s')
-            console.log('Received: ',msg);
-            var user_id = msg;
-            subscribe = false;
-
-            User.findOne({ _id: user_id }).then(user => {
-                if (user) {
-                    if (user.subscribe) {
-                        //Send email
-                        let mailOptions = {
-                            from: '"Bloggy" <bloggy233@gmail.com>', // sender address
-                            to: user.email, // list of receivers
-                            subject: "Notice from Bloggy", // Subject line
-                            html: "<b>Hello world?</b>" // html body
-                        };
-                        // send mail with defined transport object
-                        transporter.sendMail(mailOptions, (error, info) => {
-                            if (error) {
-                                return console.log(error);
-                            }
-                            console.log("Message sent: %s", info.messageId);
-                        });
-                        //Check if there are any changes on the email frequency and set next email date
-                        var nextdate = new Date();
-                        if(user.subscribe_freq != 4){
-                            if(user.subscribe_freq == 0){
-                                nextdate.setDate(nextdate.getDate()+1);
-
-                            }
-                            else if(user.subscribe_freq == 1){
-                                let num = 7-nextdate.getDay() + 1;
-                                nextdate.setDate(nextdate.getDate() + num);
-                            }
-                            else if(user.subscribe_freq == 2){
-                                let num = 14-nextdate.getDay() + 1;
-                                nextdate.setDate(nextdate.getDate() + num);
-                            }
-                            else if(user.subscribe_freq == 3){
-                                let target_month = nextdate.getMonth() + 1;
-                                if (target_month == 13){
-                                    nextdate.setFullYear(nextdate.getFullYear() + 1);
-                                    nextdate.setMonth(1);
-                                    nextdate.setDate(1);
-                                }
-                                else{
-                                    nextdate.setMonth(nextdate.getMonth() + 1);
-                                }
-                                nextdate.setDate(1);
-
-                            }
-                            nextdate.setHours(09);
-                            nextdate.setMinutes(00);
-                            nextdate.setSeconds(00);
-                            var now =new Date();    //start
-
-                            var delay_time=Math.round(nextdate.getTime()/1000)-Math.round(now.getTime()/1000); // time difference
-                            //Public next email task
-                            pub.setex(req.user.id, delay_time, '', (err) => {
-                                if (err) {
-                                    return console.log('Adding delay task failed!!!', err);
-                                }
-                                console.log('add delay task succeeded!!!');
-                            });
-                        }
-
-                    }
-                }
+      User.findOne({ _id: user_id }).then(user => {
+        if (user) {
+          if (user.subscribe) {
+            //Send email
+            let mailOptions = {
+              from: '"Bloggy" <bloggy233@gmail.com>', // sender address
+              to: user.email, // list of receivers
+              subject: "Notice from Bloggy", // Subject line
+              html: "<b>Hello world?</b>" // html body
+            };
+            // send mail with defined transport object
+            transporter.sendMail(mailOptions, (error, info) => {
+              if (error) {
+                return console.log(error);
+              }
+              console.log("Message sent: %s", info.messageId);
             });
+            //Check if there are any changes on the email frequency and set next email date
+            var nextdate = new Date();
+            if (user.subscribe_freq != 4) {
+              if (user.subscribe_freq == 0) {
+                nextdate.setDate(nextdate.getDate() + 1);
+              } else if (user.subscribe_freq == 1) {
+                let num = 7 - nextdate.getDay() + 1;
+                nextdate.setDate(nextdate.getDate() + num);
+              } else if (user.subscribe_freq == 2) {
+                let num = 14 - nextdate.getDay() + 1;
+                nextdate.setDate(nextdate.getDate() + num);
+              } else if (user.subscribe_freq == 3) {
+                let target_month = nextdate.getMonth() + 1;
+                if (target_month == 13) {
+                  nextdate.setFullYear(nextdate.getFullYear() + 1);
+                  nextdate.setMonth(1);
+                  nextdate.setDate(1);
+                } else {
+                  nextdate.setMonth(nextdate.getMonth() + 1);
+                }
+                nextdate.setDate(1);
+              }
+              nextdate.setHours(09);
+              nextdate.setMinutes(00);
+              nextdate.setSeconds(00);
+              var now = new Date(); //start
 
-        });
+              var delay_time =
+                Math.round(nextdate.getTime() / 1000) -
+                Math.round(now.getTime() / 1000); // time difference
+              //Public next email task
+              pub.setex(req.user.id, delay_time, "", err => {
+                if (err) {
+                  return console.log("Adding delay task failed!!!", err);
+                }
+                console.log("add delay task succeeded!!!");
+              });
+            }
+          }
+        }
+      });
     });
+  });
 }
 
 // @route   GET api/users/view/:user_id
@@ -457,6 +456,63 @@ router.get(
       .then(user => res.json(user))
       .catch(err => res.status(404).json({ usernotfound: "User not found" }));
   }
+);
+
+// Runwei
+// Post: change password
+router.post(
+    "/change_password",
+    passport.authenticate("jwt", { session: false }),
+    (req, res) => {
+        const old_password = req.body.old_password;
+        const new_password = req.body.new_password;
+
+        User.findOne({ _id: req.user.id })
+            .then(user => {
+            // check for user
+            if (!user) {
+                errors.email = "User not found";
+                return res.status(404).json(errors);
+            }
+            else {
+                // Check if old password is correct
+                bcrypt.compare(old_password, user.password).then(isMatch => {
+                    if (!isMatch) {
+                        errors.password = "Incorrect old password.";
+                        return res.status(400).json(errors);
+                    }
+                    else {
+                        // Check if new password is the same as old password
+                        bcrypt.compare(new_password, user.password).then(isMatch => {
+                            if (isMatch) {
+                                errors.password = "New password should not be the same as old password.";
+                                return res.status(400).json(errors);
+                            }
+                            else {
+                                // Hash new password
+                                bcrypt.genSalt(10, (err, salt) => {
+                                    bcrypt.hash(new_password, salt, (err, hash) => {
+                                        if (err) throw err;
+                                        // Update password
+                                        User.findOneAndUpdate(
+                                            { _id: req.user.id },
+                                            { $set: { password: hash } },
+                                            (err) => {
+                                                if(err){
+                                                    console.log("Unexpected error");
+                                                }
+                                                return res.sendStatus(200);
+                                            });
+                                    });
+                                });
+
+                            }
+                        });
+                    }
+                });
+            }
+        })
+    }
 );
 
 module.exports = router;

@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const passport = require("passport");
+const path = require("path");
 
 const users = require("./routers/api/users");
 const posts = require("./routers/api/posts");
@@ -45,6 +46,23 @@ require("./config/passport")(passport);
 app.use("/api/users", users);
 app.use("/api/posts", posts);
 app.use("/api/search", searches);
+
+// Serve static assets if in production
+if (process.env.NODE_ENV === "production") {
+  // set static folder
+  const publicPath = path.join(__dirname, "..", "client", "build");
+
+  // // support SEO
+  // app.use(
+  //   require("prerender-node").set("prerenderToken", "19ZUm6zRkx0SsRy5Blcn")
+  // );
+
+  app.use(express.static(publicPath));
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(publicPath, "index.html"));
+  });
+}
 
 const port = process.env.PORT || 8081;
 

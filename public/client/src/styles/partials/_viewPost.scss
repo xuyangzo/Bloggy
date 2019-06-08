@@ -79,7 +79,7 @@ i {
   }
 }
 .red-thumb {
-  color: palevioletred;
+  color: palevioletred !important;
   transition: transform 1s ease-in-out;
 }
 
@@ -101,12 +101,22 @@ i {
   }
 }
 
+.view-sidebar {
+  position: fixed;
+  top: 50%;
+  left: 8%;
+  transform: translate(0, -50%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
 .red-thumb-animation {
   @include animation("jumpAndFall 0.5s 0s 1 ease-in-out forwards");
 }
 
 .blue-thumb {
-  color: skyblue;
+  color: skyblue !important;
 }
 
 .blue-thumb-animation {
@@ -337,6 +347,56 @@ i {
   .view-bar {
     float: left;
     cursor: pointer;
+    text-align: left;
+    margin: 5px 0;
+
+    .up-icon {
+      color: lightgray;
+      transition: color 0.2s ease-in-out;
+      &:hover {
+        color: palevioletred;
+      }
+    }
+
+    .down-icon {
+      color: lightgray;
+      transition: color 0.2s ease-in-out;
+      &:hover {
+        color: skyblue;
+      }
+    }
+
+    .fav-icon {
+      color: lightgray;
+      transition: color 0.2s ease-in-out;
+      &:hover {
+        color: palevioletred;
+      }
+    }
+
+    .share-icon {
+      color: lightgray;
+      transition: color 0.2s ease-in-out;
+      &:hover {
+        color: $light-orange;
+      }
+    }
+
+    .delete-icon {
+      color: lightgray;
+      transition: color 0.2s ease-in-out;
+      &:hover {
+        color: $light-green;
+      }
+    }
+
+    .edit-icon {
+      color: lightgray;
+      transition: color 0.2s ease-in-out;
+      &:hover {
+        color: $light-violet;
+      }
+    }
   }
 
   .division-bar {

@@ -1,7 +1,11 @@
 yarn-error.log
 node_modules
 .DS_Store
+<<<<<<< HEAD
 public/bundle.js
+=======
+public/client/build
+>>>>>>> dc035452872c2537e103f640852c653d354f68c7
 yarn.lock
 package-lock.json
 bloggy.code-workspace

@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import img from "./../../image/about-bg.jpg";
 
 import "animate.css";
 
@@ -8,7 +9,7 @@ const Header = () => {
     <header
       id="header_image"
       className="masthead"
-      style={{ backgroundImage: "url('./client/src/image/about-bg.jpg')" }}
+      style={{ backgroundImage: `url(${img})` }}
     >
       <div className="overlay" />
       <div className="container">
