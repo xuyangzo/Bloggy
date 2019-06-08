@@ -457,4 +457,61 @@ router.get(
   }
 );
 
+// Runwei
+// Post: change password
+router.post(
+    "/change_password",
+    passport.authenticate("jwt", { session: false }),
+    (req, res) => {
+        const old_password = req.body.old_password;
+        const new_password = req.body.new_password;
+
+        User.findOne({ _id: req.user.id })
+            .then(user => {
+            // check for user
+            if (!user) {
+                errors.email = "User not found";
+                return res.status(404).json(errors);
+            }
+            else {
+                // Check if old password is correct
+                bcrypt.compare(old_password, user.password).then(isMatch => {
+                    if (!isMatch) {
+                        errors.password = "Incorrect old password.";
+                        return res.status(400).json(errors);
+                    }
+                    else {
+                        // Check if new password is the same as old password
+                        bcrypt.compare(new_password, user.password).then(isMatch => {
+                            if (isMatch) {
+                                errors.password = "New password should not be the same as old password.";
+                                return res.status(400).json(errors);
+                            }
+                            else {
+                                // Hash new password
+                                bcrypt.genSalt(10, (err, salt) => {
+                                    bcrypt.hash(new_password, salt, (err, hash) => {
+                                        if (err) throw err;
+                                        // Update password
+                                        User.findOneAndUpdate(
+                                            { _id: req.user.id },
+                                            { $set: { password: hash } },
+                                            (err) => {
+                                                if(err){
+                                                    console.log("Unexpected error");
+                                                }
+                                                return res.sendStatus(200);
+                                            });
+                                    });
+                                });
+
+                            }
+                        });
+                    }
+                });
+            }
+        })
+    }
+);
+
 module.exports = router;
