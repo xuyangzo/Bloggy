@@ -332,9 +332,9 @@ router.post(
 
     var nextdate = new Date();
     nextdate.setDate(nextdate.getDate()+1);
-    nextdate.setHours(09);
-    nextdate.setMinutes(00);
-    nextdate.setSeconds(00);
+    nextdate.setHours(9);
+    nextdate.setMinutes(0);
+    nextdate.setSeconds(0);
     // console.log(nextdate.getTime())
     var now=new Date();    //start
     // console.log(date1);
@@ -374,7 +374,7 @@ function SubscribeExpired(e, r) {
         sub.on('message', function (chan, msg) {
             //msg contains user id
             console.log('after 10s')
-            console.log('Received: 'msg);
+            console.log('Received: ',msg);
             var user_id = msg;
             subscribe = false;
 
