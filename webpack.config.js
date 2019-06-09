@@ -7,7 +7,7 @@ module.exports = {
   entry: ["./public/client/src/app.js", "@babel/polyfill"],
   output: {
     path: path.join(__dirname, "public/client/build"),
-    publicPath: "public/client/build",
+    publicPath: "/",
     filename: "bundle.js"
   },
   mode: "development",
@@ -50,7 +50,7 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       filename: "index.html",
-      template: "./public/index.html"
+      template: "./index.html"
     }),
     new ExtractTextPlugin("styles.css")
   ],
