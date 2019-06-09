@@ -34,7 +34,7 @@ export default class Favorite extends React.Component {
     ];
 
     // check if in dashboard or profile
-    axios.get("/api/favorites/list");
+    // axios.get("/api/favorites/list");
 
     this.setState(prevState => ({ ...prevState, favoritesList: mock }));
   };
