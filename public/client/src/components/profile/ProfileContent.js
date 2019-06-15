@@ -1,6 +1,7 @@
 import React from "react";
 import axios from "axios";
 import Moment from "react-moment";
+import Follow from "./Follow"
 import InfiniteScroll from "react-infinite-scroller";
 import "animate.css";
 
@@ -201,12 +202,7 @@ export default class ProfileContent extends React.Component {
               <h2 className="post-title">
                 {this.state.username}
                 <span className="ml-2">
-                  <button
-                    class="btn btn-outline-secondary my-2 my-sm-0"
-                    type="submit"
-                  >
-                    Follow
-                  </button>
+                  <Follow userid={this.props.userid} />
                 </span>
               </h2>
               <h4 className="post-subtitle">{this.state.description}</h4>
@@ -225,7 +221,7 @@ export default class ProfileContent extends React.Component {
             <img
               alt={this.state.username}
               src={this.state.avatar}
-              class="rounded-circle"
+              className="rounded-circle"
               width="120"
               height="120"
             />
@@ -245,9 +241,9 @@ export default class ProfileContent extends React.Component {
                     Blogs
                   </a>
                 </li>
-                <li class="nav-item" style={{ cursor: "pointer" }}>
+                <li className="nav-item" style={{ cursor: "pointer" }}>
                   <a
-                    class={
+                    className={
                       this.state.navName == "Favorites"
                         ? "nav-link active"
                         : "nav-link"
@@ -257,9 +253,9 @@ export default class ProfileContent extends React.Component {
                     Favorites
                   </a>
                 </li>
-                <li class="nav-item" style={{ cursor: "pointer" }}>
+                <li className="nav-item" style={{ cursor: "pointer" }}>
                   <a
-                    class={
+                    className={
                       this.state.navName == "Comments"
                         ? "nav-link active"
                         : "nav-link"
@@ -279,9 +275,9 @@ export default class ProfileContent extends React.Component {
               hasMore={this.state.canLoad}
               loader={
                 <div className="loader" key={0}>
-                  <div class="d-flex justify-content-center">
-                    <div class="spinner-border" role="status">
-                      <span class="sr-only">Loading...</span>
+                  <div className="d-flex justify-content-center">
+                    <div className="spinner-border" role="status">
+                      <span className="sr-only">Loading...</span>
                     </div>
                   </div>
                 </div>
@@ -302,7 +298,7 @@ export default class ProfileContent extends React.Component {
                             <img
                               alt={this.state.username}
                               src={this.state.avatar}
-                              class="rounded-circle"
+                              className="rounded-circle"
                               width="70"
                               height="70"
                             />

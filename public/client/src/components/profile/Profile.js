@@ -6,7 +6,6 @@ import setAuthToken from "../utils/setAuthToken";
 import Unauthorized from "../utils/Unauthorized";
 
 import ProfileContent from "./ProfileContent";
-
 export default class Profile extends React.Component {
   constructor(props) {
     super(props);
@@ -22,10 +21,10 @@ export default class Profile extends React.Component {
 
   render() {
     return (
-      <div class="container my-5" style={{ paddingTop: "65px" }}>
-        <div class="row justify-content-md-center">
+      <div className="container my-5" style={{ paddingTop: "65px" }}>
+        <div className="row justify-content-md-center">
         
-          <div class="col-sm-10 col-md-12 mx-auto">
+          <div className="col-sm-10 col-md-12 mx-auto">
             <Favorite />
             
             <ProfileContent
