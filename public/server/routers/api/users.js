@@ -239,6 +239,31 @@ router.get("/:user_id", (req, res) => {
 });
 
 // @route   POST api/users/follow/:followed_user_id
+// @desc    Check if following another user
+// @access  Private
+router.post(
+  "/check_follow/:followed_user_id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    User.findOne({_id: req.params.followed_user_id}).then(user =>{
+      if (!user) {
+        errors.email = "User not found";
+        return res.status(404).json(errors);
+      }
+      if (user.beingFollowed.includes(req.user.id)) {
+        res.json({
+          "follow": true
+        });
+      }else{
+        res.json({
+          "follow": false
+        });
+      }
+    })
+  }
+);
+
+// @route   POST api/users/follow/:followed_user_id
 // @desc    Follow another user
 // @access  Private
 router.post(
@@ -299,6 +324,7 @@ router.post(
       .catch(err => res.status(404).json({ usernotfound: "User not found" }));
   }
 );
+
 
 // @route   POST api/users/unfollow/:followed_user_id
 // @desc    Unfollow another user
