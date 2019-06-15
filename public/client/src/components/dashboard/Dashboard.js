@@ -13,10 +13,10 @@ export default class Dashboard extends React.Component {
 
     render() {
         return (
-            <div class="container my-5" style={{ paddingTop: "65px" }}>
-                <div class="row justify-content-md-center">
+            <div className="container my-5" style={{ paddingTop: "65px" }}>
+                <div className="row justify-content-md-center">
 
-                    <div class="col-sm-10 col-md-12 mx-auto">
+                    <div className="col-sm-10 col-md-12 mx-auto">
                        
                         Dashboard Page
                     </div>
