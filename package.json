@@ -15,7 +15,7 @@
   "scripts": {
     "build": "webpack -p --config ./webpack.prod.js",
     "watch": "webpack --watch",
-    "dev-server": "webpack-dev-server",
+    "dev-server": "webpack-dev-server --content-base",
     "serve-backend": "nodemon public/server/server.js",
     "start-concurrent": "concurrently \"yarn run dev-server\" \"yarn run serve-backend\"",
     "start": "node public/server/server.js",
