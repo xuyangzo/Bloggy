@@ -1,0 +1,73 @@
+.favorites {
+  width: 100%;
+  margin: 50px auto;
+  display: block;
+  box-shadow: 0px 25px 30px -20px rgba(0, 0, 0, 0.2);
+  padding: 20px 0;
+
+  .left-bar {
+    float: left;
+    width: 20%;
+    text-align: center;
+    border-right: 1px solid lightgray;
+
+    i {
+      font-size: 1rem;
+      color: gray;
+      transition: color 0.3s ease-in-out;
+    }
+
+    .selected {
+      background: rgb(241, 156, 185);
+      color: white;
+      font-weight: normal;
+
+      &:hover {
+        color: white !important;
+        background: rgb(241, 156, 185) !important;
+      }
+    }
+
+    .favorite-list-item,
+    .favorite-list-new {
+      height: 40px;
+      line-height: 40px;
+      margin: 0 5px;
+      cursor: pointer;
+      border-radius: 3px;
+      transition: color 0.3s ease-in-out;
+
+      &:hover {
+        color: palevioletred;
+        background: rgb(238, 237, 237);
+      }
+    }
+
+    .favorite-list-new {
+      &:hover,
+      &:hover i {
+        color: skyblue;
+      }
+    }
+
+    hr {
+      width: 95%;
+      margin-top: 5px;
+      margin-bottom: 5px;
+      margin-right: 0;
+    }
+  }
+
+  .right-bar {
+    float: left;
+  }
+
+  &:after {
+    content: "";
+    display: table;
+    clear: both;
+    width: 0;
+    height: 0;
+    visibility: hidden;
+  }
+}
