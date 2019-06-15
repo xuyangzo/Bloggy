@@ -31,6 +31,8 @@ import Editor from "../postPage/Editor";
 //Search Page
 import Search from "../searchPage/Search";
 
+//Dashboard
+import Dashboard from "../dashboard/Dashboard"
 const store = appstore();
 
 // Check for token
@@ -88,11 +90,11 @@ class Bloggy extends React.Component {
               />
               <Route exact path="/register" component={Register} />
               <Route exact path="/login" component={Login} />
-              {/* <Route
+               <Route
               exact
               path="/dashboard"
               component={localStorage.jwtToken ? Dashboard : Unauthorized}
-            /> */}
+            /> 
               <Route exact path="/profile/:userid" component={Profile} />
               <Route exact path="/view/:post_id" component={View} />
               <Route exact path="/search/:keyword" component={Search} />
