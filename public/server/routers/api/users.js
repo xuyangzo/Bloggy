@@ -72,32 +72,41 @@ router.post(
   multiparty,
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    // console.log(req.files);
-    var filepath = req.files.filename.path;
+    console.log(req.files);
+    var filepath = req.files.avatar.path;
     console.log(filepath);
-
-    cloudinary.v2.uploader.destroy(req.user.id, function(error, result) {
-      console.log(result, error);
-      var filename = req.files.filename.name;
-      cloudinary.v2.uploader.upload(
-        filepath,
-        { public_id: req.user.id },
-        function(error, result) {
-          res.json(result);
-          console.log(result, error);
-          var new_avatar = result.url;
-          console.log(new_avatar);
-          User.findOneAndUpdate(
-            { _id: req.user.id },
-            { $set: { avatar: new_avatar } },
-            // { $set: postFields },
-            { new: true, useFindAndModify: false }
-          )
-            .then(post => res.json(post))
-            .catch(err => res.status(400).json(err));
-        }
-      );
-    });
+    var type = req.files.avatar.type;
+    if(type.indexOf("jpg") < 0 || type.indexOf("jepg") < 0){
+      res.status(400).json("error");
+    }else{
+      fs.stat(filepath, function (err, stats) {
+        console.log(stats);        //true
+      })
+      cloudinary.v2.uploader.destroy(req.user.id, function(error, result) {
+        console.log(result, error);
+        var filename = req.files.avatar.originalFilename;
+        cloudinary.v2.uploader.upload(
+          filepath,
+          { public_id: req.user.id },
+          function(error, result) {
+            res.json(result);
+            console.log(result, error);
+            var new_avatar = result.url;
+            console.log(new_avatar);
+            User.findOneAndUpdate(
+              { _id: req.user.id },
+              { $set: { avatar: new_avatar } },
+              // { $set: postFields },
+              { new: true, useFindAndModify: false }
+            )
+              .then(post => res.json(post))
+              .catch(err => res.status(400).json(err));
+          }
+        );
+      });
+    }
+ 
+    
   }
 );
 
