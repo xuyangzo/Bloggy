@@ -1,5 +1,5 @@
 import React from "react";
-
+import ProfilePhoto from './uploadImage';
 export default class Dashboard extends React.Component {
     constructor(props) {
         super(props);
@@ -17,8 +17,9 @@ export default class Dashboard extends React.Component {
                 <div className="row justify-content-md-center">
 
                     <div className="col-sm-10 col-md-12 mx-auto">
-                       
+                    
                         Dashboard Page
+                        <ProfilePhoto token={this.state.token}/>
                     </div>
                 </div>
             </div>
