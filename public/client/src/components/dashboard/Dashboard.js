@@ -1,9 +1,5 @@
 import React from "react";
 import ProfilePhoto from './uploadImage';
-<<<<<<< HEAD
-=======
-
->>>>>>> a301361ae764856cf8714cd7a83f5abb094bb73e
 export default class Dashboard extends React.Component {
     constructor(props) {
         super(props);

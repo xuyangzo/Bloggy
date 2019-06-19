@@ -2,10 +2,7 @@ import React from 'react';
 import jwt_decode from "jwt-decode";
 import axios from 'axios';
 
-<<<<<<< HEAD
-=======
 import ve from "./../../../../server/routers/api/users"
->>>>>>> a301361ae764856cf8714cd7a83f5abb094bb73e
 //import './styles/styles.scss';
 //import './../styles/styles.scss'
 const Spinner = () => (
@@ -41,10 +38,6 @@ class ProfilePhoto extends React.Component {
             decoded
         };
     }
-<<<<<<< HEAD
-
-
-=======
     /*
     export const registerUser = (userInfo, history) => dispatch => {
   // register user
@@ -63,7 +56,6 @@ class ProfilePhoto extends React.Component {
     });
 };
     */
->>>>>>> a301361ae764856cf8714cd7a83f5abb094bb73e
 
     ComponentDidMount()
     {
@@ -77,11 +69,7 @@ class ProfilePhoto extends React.Component {
 
         let user = this.state.decoded;
 
-<<<<<<< HEAD
-
-=======
         /*
->>>>>>> a301361ae764856cf8714cd7a83f5abb094bb73e
         let data = {
             user,
             files: {
@@ -89,13 +77,8 @@ class ProfilePhoto extends React.Component {
             }
         };
 
-<<<<<<< HEAD
-        ///api/users/register
-        axios.post("/api/users/upload/avatar",data)
-=======
         
         axios.post("./../../../../server/routers/api/users",data)
->>>>>>> a301361ae764856cf8714cd7a83f5abb094bb73e
         .then(res => {
             console.log(res);
         })
@@ -103,11 +86,7 @@ class ProfilePhoto extends React.Component {
             console.log(err)
         });
 
-<<<<<<< HEAD
-
-=======
         */
->>>>>>> a301361ae764856cf8714cd7a83f5abb094bb73e
 
 
     }
