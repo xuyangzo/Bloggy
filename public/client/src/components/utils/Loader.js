@@ -1,16 +1,7 @@
 import React from "react";
 
 const Loader = () => (
-  <div className="lds-roller">
-    <div />
-    <div />
-    <div />
-    <div />
-    <div />
-    <div />
-    <div />
-    <div />
-  </div>
+  <div className="lds-dual-ring"></div>
 );
 
 export default Loader;

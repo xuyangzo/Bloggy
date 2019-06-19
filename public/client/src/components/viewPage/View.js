@@ -175,7 +175,8 @@ class View extends React.Component {
   render() {
     return (
       <div className="container col-md-8 m-auto">
-        {this.state.shouldRender && <Loader />}
+        {!this.state.shouldRender && <Loader />}
+        
         <LoginModal
           modalIsOpen={this.state.loginModal}
           clearModal={this.clearModal}
