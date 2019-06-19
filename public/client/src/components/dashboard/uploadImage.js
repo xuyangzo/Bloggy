@@ -2,7 +2,6 @@ import React from 'react';
 import jwt_decode from "jwt-decode";
 import axios from 'axios';
 
-import ve from "./../../../../server/routers/api/users"
 //import './styles/styles.scss';
 //import './../styles/styles.scss'
 const Spinner = () => (
@@ -11,17 +10,18 @@ const Spinner = () => (
     </div>
 
 );
-
+/*
 const Button = (props) => (
     <div>
         <label htmlFor='multi'>
             <input id="file" type="file" name="file" accept="image/*" onChange={props.onChange} className="inputfile" />
             {
-                //<label htmlFor="file" > <h1 className="btn btn-info">Choose a file</h1></label>     
+
             }
         </label>
     </div>
 );
+*/
 
 /*
     <input type="file" name="file" id="file" class="inputfile" />
@@ -35,58 +35,43 @@ class ProfilePhoto extends React.Component {
             token: props.token,
             error: undefined,
             PhotoUrl: '',
-            decoded
+            fileInfo: undefined
         };
     }
-    /*
-    export const registerUser = (userInfo, history) => dispatch => {
-  // register user
-  axios
-    .post("/api/users/register", userInfo)
-    .then(res => {
-      console.log(res.data);
-      history.push("/login");
-    })
-    .catch(err => {
-      console.log(err.response.data);
-      dispatch({
-        type: "SET_ERRORS",
-        errors: err.response.data
-      });
-    });
-};
-    */
+
+
 
     ComponentDidMount()
     {
 
     }
-
-    onChange = e => {
-        const file = e.target.files[0];
-        console.log(file);
-        console.log(this.state.decoded);
-
+    onSubmit = () => {
+        console.log("submitting...");
         let user = this.state.decoded;
 
-        /*
         let data = {
             user,
             files: {
-                avatar: file
+                avatar: this.state.fileInfo
             }
         };
 
-        
-        axios.post("./../../../../server/routers/api/users",data)
+        ///api/users/register
+        axios.post("/api/users/upload/avatar",data)
         .then(res => {
             console.log(res);
         })
-        .catch(err => {
-            console.log(err)
-        });
 
-        */
+    }
+    onChange = e => {
+        const file = e.target.files[0]
+        console.log(file);
+        this.setState(() => ({
+            fileInfo: file
+        }));
+
+
+
 
 
     }
@@ -95,7 +80,11 @@ class ProfilePhoto extends React.Component {
         return (
             <div>
                 <h3>Want to change or upload your photo?</h3>
-                <Button onChange={this.onChange}/>
+                
+                    <input id="file" type="file" name="file" accept="image/*" onChange={this.onChange} className="inputfile" />
+                    <button type="submit" value="Submit" onClick={this.onSubmit}>submit!</button>
+                
+                
             </div>
         );
     }
