@@ -7,6 +7,7 @@ const path = require("path");
 const users = require("./routers/api/users");
 const posts = require("./routers/api/posts");
 const searches = require("./routers/api/search");
+const favorites = require("./routers/api/favorite")
 const app = express();
 
 require("dotenv").config();
